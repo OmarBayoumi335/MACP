@@ -1,4 +1,4 @@
-package com.example.macp
+package com.example.androidstudio
 
 import org.junit.Test
 
