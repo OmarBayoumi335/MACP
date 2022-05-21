@@ -1,13 +1,13 @@
-package com.example.androidstudio
+package com.example.androidstudio.Login
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.animation.AlphaAnimation
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.androidstudio.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashScreenActivity : AppCompatActivity() {

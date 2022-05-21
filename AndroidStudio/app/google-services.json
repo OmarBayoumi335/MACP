@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "8984037607",
+    "firebase_url": "https://enigma-350909-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "enigma-350909",
+    "storage_bucket": "enigma-350909.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8984037607:android:c832f835a53dca12337a42",
+        "android_client_info": {
+          "package_name": "com.example.androidstudio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "8984037607-pbu4jhriqtmlsg8v0qtj9muj5kroubj1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.androidstudio",
+            "certificate_hash": "cd2110cd500cc09e925c5a1195e2e2dea17e1948"
+          }
+        },
+        {
+          "client_id": "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABN8HUT1ggvGc9leGhVcih6XUAblOPqI4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
