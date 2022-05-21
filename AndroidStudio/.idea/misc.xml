@@ -8,6 +8,11 @@
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.1" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout-w936dp/activity_login.xml" value="0.11041666666666666" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_login.xml" value="0.33" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/content_main.xml" value="0.21105072463768115" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_login.xml" value="0.2015625" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_login_back.xml" value="0.21041666666666667" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_splash_screen.xml" value="0.1" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/main.xml" value="0.1" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/splash_screen.xml" value="0.14722222222222223" />
       </map>
     </option>
