@@ -14,16 +14,23 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener{
 
     private var clientId = "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com"
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        auth = Firebase.auth
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(clientId)
@@ -54,7 +61,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == 0) {
             // The Task returned from this call is always completed, no need to attach
@@ -67,8 +73,30 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account = completedTask.getResult(ApiException::class.java)
+            val idToken = account.idToken
+
+            if (idToken != null) {
+
+                // Got an ID token from Google. Use it to authenticate
+                // with Firebase.
+                val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+                auth.signInWithCredential(firebaseCredential)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.i("Login", "signInWithCredential:success")
+                            val user = auth.currentUser
+                            signIn()
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.i("Login", "signInWithCredential:failure", task.exception)
+                        }
+                    }
+            } else {
+                // Shouldn't happen.
+                Log.i("Login", "No ID token!")
+            }
             Log.i("Login", "Success Login, Logged in")
-            signIn()
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -90,6 +118,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun signIn() {
+
         val intent = Intent(this, MenuActivity::class.java)
         startActivity(intent)
         overridePendingTransition(0, 0);
@@ -98,8 +127,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
 
     override fun onStart() {
         super.onStart()
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account != null){
+        //val account = GoogleSignIn.getLastSignedInAccount(this)
+        val currentUser = auth.currentUser
+        Log.i("Login", "" + currentUser?.displayName.toString())
+        if (currentUser != null){
             Log.i("Login", "Existing login, Logged in")
             signIn()
         }
