@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/menuFragment"
-        android:name="com.example.androidstudio.Home.MenuFragment"
+        android:name="com.example.androidstudio.home.MenuFragment"
         android:label="fragment_menu"
         tools:layout="@layout/fragment_menu" >
         <action
@@ -17,5 +17,26 @@
         android:id="@+id/setupGameFragment"
         android:name="com.example.androidstudio.home.lobby.SetupGameFragment"
         android:label="fragment_setup_game"
-        tools:layout="@layout/fragment_setup_game" />
+        tools:layout="@layout/fragment_setup_game" >
+        <action
+            android:id="@+id/action_setupGameFragment_to_partyInvitationFragment"
+            app:destination="@id/partyInvitationFragment" />
+        <action
+            android:id="@+id/action_setupGameFragment_to_createPartyFragment"
+            app:destination="@id/createPartyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createPartyFragment"
+        android:name="com.example.androidstudio.home.lobby.CreatePartyFragment"
+        android:label="fragment_create_party"
+        tools:layout="@layout/fragment_create_party" />
+    <fragment
+        android:id="@+id/partyInvitationFragment"
+        android:name="com.example.androidstudio.home.lobby.PartyInvitationFragment"
+        android:label="fragment_party_invitation"
+        tools:layout="@layout/fragment_party_invitation" >
+        <action
+            android:id="@+id/action_partyInvitationFragment_to_createPartyFragment"
+            app:destination="@id/createPartyFragment" />
+    </fragment>
 </navigation>

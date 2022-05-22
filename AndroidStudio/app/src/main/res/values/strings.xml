@@ -4,8 +4,25 @@
     <string name="hint_username_login">You can change your username at any time in your profile</string>
     <string name="button_logout">Logout</string>
     <string name="button_play">Play</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="profile_name">ex. Matteo</string>
     <string name="profile_change_name_button">Save</string>
+    <string name="find_friend_textview">Search:</string>
+    <string name="add_friend_button">Add</string>
+    <string name="find_friend_hint">ex. #123456</string>
+    <string name="add_friend_title">Add a friend</string>
+    <string name="party_creation_button">Create party</string>
+    <string name="party_invitations">Party invitations</string>
+    <string name="back">Back</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="invitations_title">Invitations</string>
+    <string name="lobby_title_textview">Lobby</string>
+    <string name="leave_lobby_button">Leave</string>
+    <string name="team1">Team1</string>
+    <string name="team2">Team2</string>
+    <string name="lobby_ready">Ready</string>
+    <string name="leave_lobby_alert">Leave lobby</string>
+    <string name="leave_lobby_alert_message">Are you sure you want to leave the lobby?</string>
+    <string name="invites_friends">Invites friends</string>
+    <string name="close">Close</string>
 </resources>
