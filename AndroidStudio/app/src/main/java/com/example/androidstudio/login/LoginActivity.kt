@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidstudio.R
 import com.example.androidstudio.classi.User
@@ -50,7 +51,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
 
         signInButton.setOnClickListener(this);
 
-
+        for (i in 0 until signInButton.getChildCount()) {
+            val v: View = signInButton.getChildAt(i)
+            if (v is TextView) {
+                val tv = v
+                tv.setText(R.string.google_button)
+            }
+        }
     }
 
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

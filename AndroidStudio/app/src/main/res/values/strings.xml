@@ -25,4 +25,6 @@
     <string name="leave_lobby_alert_message">Are you sure you want to leave the lobby?</string>
     <string name="invites_friends">Invites friends</string>
     <string name="close">Close</string>
+    <string name="google_button">Google</string>
+    <string name="access_with_google">Access with:</string>
 </resources>
