@@ -4,6 +4,7 @@ class User(username: String, id: String) {
     private var username: String
     private var id: String
     private var friends: List<User>
+    private var pendingFriendRequests: List<User>
 
     constructor() : this("", "#0000000")
 
@@ -11,6 +12,7 @@ class User(username: String, id: String) {
         this.username = username
         this.id = id
         this.friends = emptyList()
+        this.pendingFriendRequests = emptyList()
     }
 
     fun getUsername(): String {

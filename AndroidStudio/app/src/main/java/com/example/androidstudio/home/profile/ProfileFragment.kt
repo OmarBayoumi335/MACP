@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.example.androidstudio.R
+import com.example.androidstudio.classi.ServerHandler
+import org.json.JSONObject
 
 
 class ProfileFragment : DialogFragment(), View.OnClickListener {
@@ -25,12 +28,21 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
     private lateinit var rootView: View
     private lateinit var viewAlert: View
 
+//    private lateinit var serverHandler: ServerHandler
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile, container, false)
+
+//        serverHandler = ServerHandler(requireContext())
+//        serverHandler.poll("0", object : ServerHandler.VolleyCallBack {
+//            override fun onSuccess(reply: JSONObject) {
+//                Log.i(Config.API, "Nel profilo notifiche")
+//            }
+//        })
         return rootView
     }
 

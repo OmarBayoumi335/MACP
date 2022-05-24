@@ -2,15 +2,20 @@ package com.example.androidstudio.Login
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.AlphaAnimation
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidstudio.R
+import com.example.androidstudio.classi.ServerHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class SplashScreenActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
@@ -26,7 +31,6 @@ class SplashScreenActivity : AppCompatActivity() {
         fadeOut.duration = 1200
         fadeOut.fillAfter = true
         fadeOut.startOffset = 4200 + fadeIn.startOffset
-
         val intent = Intent(this, LoginActivity::class.java)
 
         GlobalScope.launch(Dispatchers.Main) {

@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidstudio.R
+import com.example.androidstudio.classi.Config
 import com.example.androidstudio.classi.User
 import com.example.androidstudio.home.MenuActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -28,7 +29,7 @@ import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener{
 
-    private var clientId = "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com"
+    private var clientId = Config.CLIENT_ID
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
@@ -60,18 +61,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         }
     }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (requestCode == 1){
-//            val credential = Identity.getSignInClient(this).getSignInCredentialFromIntent(data)
-//            val name = credential.displayName
-//            val familyName = credential.familyName
-//            val token = credential.googleIdToken
-//            val id = credential.id
-//            Log.i("Login", "OnActivityResult: $name\n$familyName\n$token\n$id")
-//        }
-//    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
@@ -97,23 +86,23 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.i("Login", "signInWithCredential:success")
+                            Log.i(Config.LOGINTAG, "signInWithCredential: success")
                             val user = auth.currentUser
                             signIn(user)
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.i("Login", "signInWithCredential:failure", task.exception)
+                            Log.e(Config.LOGINTAG, "signInWithCredential: failure ", task.exception)
                         }
                     }
             } else {
                 // Shouldn't happen.
-                Log.i("Login", "No ID token!")
+                Log.e(Config.LOGINTAG, "No ID token!")
             }
-            Log.i("Login", "Success Login, Logged in")
+            Log.i(Config.LOGINTAG, "Success Login")
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.i("Login", "signInResult:failed code=" + e.statusCode)
+            Log.e(Config.LOGINTAG, "signInResult:failed code = " + e.statusCode)
         }
     }
 
@@ -151,7 +140,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                     }
                 }
                 if(!exist){
-                    Log.i("Login", "User created")
+                    Log.i(Config.LOGINTAG, "New user created")
                     val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
                     val id = createId(lastUserId)
                     val user = User(username, id)
@@ -163,7 +152,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                 overridePendingTransition(0, 0);
                 finish()
             }.addOnFailureListener {
-                Log.e("Login", "Error getting data", it)
+                Log.e(Config.LOGINTAG, "Error getting data Firebase", it)
             }
         }
     }
@@ -231,12 +220,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         super.onStart()
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null){
-            Log.i("Login", "Existing login, Logged in")
+            Log.i(Config.LOGINTAG, "OnStart logged in")
             val currentUser = auth.currentUser
             signIn(currentUser)
         }
         else {
-            Log.i("Login", "Not existing login")
+            Log.w(Config.LOGINTAG, "OnStart account not found")
         }
     }
 }
