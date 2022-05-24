@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.androidstudio.Login.LoginActivity
 import com.example.androidstudio.R
+import com.example.androidstudio.classi.Config
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -18,7 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 class MenuFragment : Fragment(), View.OnClickListener {
     private lateinit var mGoogleSignInClient: GoogleSignInClient
-    private var clientId = "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com"
+    private var clientId = Config.CLIENT_ID
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +58,7 @@ class MenuFragment : Fragment(), View.OnClickListener {
     private fun signOut() {
         mGoogleSignInClient.signOut()
             .addOnCompleteListener(requireActivity()) {
-                Log.i("Login", "Logged out")
+                Log.i(Config.LOGINTAG, "Logged out")
                 val intent = Intent(context, LoginActivity::class.java)
                 startActivity(intent)
                 requireActivity().finish()
