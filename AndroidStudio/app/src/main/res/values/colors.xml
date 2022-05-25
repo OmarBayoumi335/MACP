@@ -5,5 +5,6 @@
     <color name="transparent">#00FFFFFF</color>
     <color name="grey">#9B9B9B</color>
     <color name="friend_found">#4CAF50</color>
+    <color name="friend_sent_added">#FF8922</color>
     <color name="friend_not_found">#F44336</color>
 </resources>

@@ -47,7 +47,7 @@ class ServerHandler(context: Context) {
                 callBack.onSuccess(reply)
             }, {
                     error: VolleyError? ->
-                Log.e(Config.API, "getUserInformation error: " + error.toString())
+                Log.e(Config.API, "get user information error: " + error.toString())
             })
         // Add the request to the RequestQueue.
         queue.add(stringRequest)
@@ -75,7 +75,7 @@ class ServerHandler(context: Context) {
             Request.Method.GET, url
                     + "req=" + Config.GET_SEARCH_FRIEND
                     + "&userId=" + userId
-                    + "&friendId=" + friendId,{
+                    + "&friendId=" + "%23".plus(friendId.substring(1)), {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
@@ -89,12 +89,66 @@ class ServerHandler(context: Context) {
         queue.add(stringRequest)
     }
 
+    fun getFriendsList(userId: String, callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.GET, url
+                    + "req=" + Config.GET_FRIENDS_LIST
+                    + "&userId=" + userId, {
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "get friends list onSuccess: ${reply.toString(2)}")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get friends list error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun getPendingFriendsRequest(userId: String, callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.GET, url
+                    + "req=" + Config.GET_PENDING_FRIENDS_REQUEST
+                    + "&userId=" + userId, {
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "get pending friends list onSuccess: ${reply.toString(2)}")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get pending friends list error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
     fun postChangeName(userId: String, newName: String) {
         val stringRequest = StringRequest(
             Request.Method.POST, url
                     + "req=" + Config.POST_CHANGE_NAME
                     + "&userId=" + userId
                     + "&newName=" + newName,{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "post change name onSuccess: ${reply.toString(2)}")
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "getUserInformation error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun postSendFriendRequest(userId: String, friendId: String) {
+        val stringRequest = StringRequest(
+            Request.Method.POST, url
+                    + "req=" + Config.POST_SEND_FRIEND_REQUEST
+                    + "&userId=" + userId
+                    + "&friendId=" + "%23".plus(friendId.substring(1)),{
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())

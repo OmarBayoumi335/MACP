@@ -14,6 +14,7 @@ class Config {
         // Tags
         val API = "Api request"
         val LOGINTAG = "Login"
+        val ADDFRIENDTAG = "Add friend"
 
         // Api names
         // GET
@@ -26,7 +27,9 @@ class Config {
         // POST
         val POST_SEND_FRIEND_REQUEST = 5
         val POST_CHANGE_NAME = 6
+        val POST_ACCEPT_FRIEND_REQUEST = 8
         // DELETE
         val DELETE_FRIEND = 7
+        val REJECT_FRIEND_REQUEST = 9
     }
 }

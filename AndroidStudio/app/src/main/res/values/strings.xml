@@ -27,4 +27,8 @@
     <string name="close">Close</string>
     <string name="google_button">Google</string>
     <string name="access_with_google">Access with:</string>
+    <string name="friend_found">Request sent!</string>
+    <string name="friend_already_sent">Friend request already sent</string>
+    <string name="friend_already_added">This user is already your friend</string>
+    <string name="friend_not_found">User not found</string>
 </resources>
