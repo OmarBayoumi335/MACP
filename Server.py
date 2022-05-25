@@ -1,5 +1,4 @@
 import pyrebase
-import json
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 
@@ -129,8 +128,6 @@ class EnigmaServer(Resource):
         
         #friend request input(req, userId, friendid)
         if req == SEND_FRIEND_REQUEST:
-            userUsername = db.child("Users").child(userIdValue).get().val()["username"]
-            userId = db.child("Users").child(userIdValue).get().val()["id"]
             for user in users:
                 friendIdField = db.child("Users").child(user).get().val()["id"]
                 if friendId == friendIdField:
@@ -156,7 +153,6 @@ class EnigmaServer(Resource):
     
     def delete(self):
         args = deleteParser.parse_args()
-        users = db.child("Users").get().val()
         req = args['req']
         userIdValue = args['userId']
         friendId = args['friendId']
