@@ -163,19 +163,15 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                 if(!exist){
                     Log.i(Config.LOGINTAG, "New user created")
                     val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
-                    val id = createId(lastUserId)
-                    val user = User(username, id)
-//                    user.addFriend(User("sadfa1", "#gasdgasg1"))
-//                    user.addFriend(User("sadfa2", "#gasdgasg2"))
-//                    user.addFriend(User("sadfa3", "#gasdgasg3"))
-//                    user.addFriend(User("sadfa4", "#gasdgasg4"))
-//                    user.addPendingFriendRequest(User("adfa1", "#asddasf1"))
-//                    user.addPendingFriendRequest(User("adfa2", "#asddasf2"))
-//                    user.addPendingFriendRequest(User("adfa3", "#asddasf3"))
-//                    user.addPendingFriendRequest(User("adfa4", "#asddasf4"))
-//                    database.child("Users").child("utente2").setValue(user)
-                    database.child("Users").child(currentUser.uid).setValue(user)
-                    database.child("UserLastId").setValue(id)
+//                    val id = createId(lastUserId)
+                    serverHandler.getId(object : ServerHandler.VolleyCallBack {
+                        override fun onSuccess(reply: JSONObject?) {
+                            val id = reply?.get("newId").toString()
+                            val user = User(username, id)
+                            database.child("Users").child(currentUser.uid).setValue(user)
+                            database.child("UserLastId").setValue(id)
+                        }
+                    })
                 } else if (!fromOnStart) {
                     serverHandler.postChangeName(auth.uid.toString(), usernameEditText.text.toString())
                 }

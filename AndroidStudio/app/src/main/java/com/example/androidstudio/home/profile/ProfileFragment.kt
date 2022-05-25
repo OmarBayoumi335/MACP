@@ -1,6 +1,8 @@
 package com.example.androidstudio.home.profile
 
 import android.app.AlertDialog
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,23 +14,30 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.example.androidstudio.R
+import com.example.androidstudio.classi.Config
 import com.example.androidstudio.classi.ServerHandler
 import org.json.JSONObject
 
 
 class ProfileFragment : DialogFragment(), View.OnClickListener {
 
-    private var tmp: String = "Cristiano"
+    private lateinit var nameEditText: EditText
+    private lateinit var idTextView: TextView
+
+    private lateinit var username: String
     private lateinit var newName: String
     private lateinit var changeNameButton: Button
 
     private lateinit var rootView: View
     private lateinit var viewAlert: View
 
-//    private lateinit var serverHandler: ServerHandler
+    private lateinit var serverHandler: ServerHandler
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var userid: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,36 +45,42 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile, container, false)
+        sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", MODE_PRIVATE)
 
-//        serverHandler = ServerHandler(requireContext())
-//        serverHandler.poll("0", object : ServerHandler.VolleyCallBack {
-//            override fun onSuccess(reply: JSONObject) {
-//                Log.i(Config.API, "Nel profilo notifiche")
-//            }
-//        })
+        nameEditText = rootView.findViewById<EditText>(R.id.profile_name_edittext)
+        idTextView = rootView.findViewById<TextView>(R.id.profile_id)
+
+        userid = sharedPreferences.getString("UID", "").toString()
+
+        serverHandler = ServerHandler(requireContext())
+        serverHandler.getUserInformation(userid, object : ServerHandler.VolleyCallBack {
+            override fun onSuccess(reply: JSONObject?) {
+                idTextView.text = reply?.get("id").toString()
+                username = reply?.get("username").toString()
+                nameEditText.setText(username)
+            }
+        })
+
         return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val addFriendButton = rootView.findViewById<ImageButton>(R.id.profile_add_friend_button)
+        val addFriendButton = view.findViewById<ImageButton>(R.id.profile_add_friend_button)
         addFriendButton.setOnClickListener(this)
 
-        val profileCloseButton = rootView.findViewById<Button>(R.id.profile_close_button)
+        val profileCloseButton = view.findViewById<Button>(R.id.profile_close_button)
         profileCloseButton.setOnClickListener(this)
 
-        val nameEditText = rootView.findViewById<EditText>(R.id.profile_name_edittext)
-        nameEditText.setText(tmp)
-
-        changeNameButton = rootView.findViewById<Button>(R.id.profile_change_name_button)
+        changeNameButton = view.findViewById<Button>(R.id.profile_change_name_button)
         changeNameButton.visibility = View.GONE
         changeNameButton.setOnClickListener(this)
 
         nameEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 newName = s.toString()
-                if (s.toString() == tmp) {
+                if (s.toString() == username) {
                     changeNameButton.visibility = View.GONE
                 }
                 else {
@@ -104,12 +119,22 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun changeName() {
-        tmp = newName
+        username = newName
+        serverHandler.postChangeName(userid, username)
         changeNameButton.visibility = View.GONE
     }
 
     private fun addFriend() {
         val findFriendName = viewAlert.findViewById<EditText>(R.id.find_friend_editText)
+        serverHandler.getSearchFriend(userid, findFriendName.text.toString(), object : ServerHandler.VolleyCallBack {
+            override fun onSuccess(reply: JSONObject?) {
+                val found: Boolean = reply?.get("found") as Boolean
+                if (found){
+                    Log.i(Config.API, "prova")
+                }
+            }
+        })
+
         val searchResult = viewAlert.findViewById<TextView>(R.id.add_friend_result_textview)
 
         searchResult.text = "Trovato"

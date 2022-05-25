@@ -53,6 +53,42 @@ class ServerHandler(context: Context) {
         queue.add(stringRequest)
     }
 
+    fun getId(callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.GET, url
+                    + "req=" + Config.GET_ID,{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "get id onSuccess: ${reply.toString(2)}")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get id error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun getSearchFriend(userId: String, friendId: String, callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.GET, url
+                    + "req=" + Config.GET_SEARCH_FRIEND
+                    + "&userId=" + userId
+                    + "&friendId=" + friendId,{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "get search friend onSuccess: ${reply.toString(2)}")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get search friend error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
     fun postChangeName(userId: String, newName: String) {
         val stringRequest = StringRequest(
             Request.Method.POST, url

@@ -75,7 +75,7 @@ class EnigmaServer(Resource):
         #get amicizie input(req, userId, friendid)
         if req == SEARCH_FRIEND:
             for user in users:
-                friend = db.child("Users").child(user).child("id").get().val()
+                friend = db.child("Users").child(user)["id"]
                 if friendId == friend:
                     friendIdValue = user
                     if self.serverUtils.checkIfAlreadyAdded(userIdValue, friendId):
