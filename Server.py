@@ -29,9 +29,11 @@ GET_PENDING_FRIENDS_REQUEST = 4
 #post constants
 SEND_FRIEND_REQUEST = 5
 CHANGE_NAME = 6
+ACCEPT_FRIEND_REQUEST = 8
 
 #delete constants
 DELETE_FRIEND = 7
+REJECT_FRIEND_REQUEST = 9
 
 #get parser
 getParser = reqparse.RequestParser()
@@ -72,7 +74,7 @@ class EnigmaServer(Resource):
         userIdValue = args['userId']
         friendId = args['friendId']
         
-        #get amicizie input(req, userId, friendid)
+        #get friends list input(req, userId, friendid)
         if req == SEARCH_FRIEND:
             for user in users:
                 friend = db.child("Users").child(user).child("id").get().val()
@@ -139,10 +141,26 @@ class EnigmaServer(Resource):
                            "pendingFriendRequests": pendingFriendRequests, 
                            "error": False}
         
-        #nome utente input(req, userId, newName)
+        #change username input(req, userId, newName)
         if req == CHANGE_NAME:
             db.child("Users").child(userIdValue).update({"username": newName})
             return {"message": "username changed", "username": newName, "error": False}
+            
+        #accept friend request(req, userId, friendId)
+        if req == ACCEPT_FRIEND_REQUEST:
+            pendingFriendRequestsList = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
+            friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
+            newPendingFriendRequestsList = []
+            for pendingFriend in pendingFriendRequestsList:
+                if pendingFriend["id"] == friendId:
+                    friendsList.append(pendingFriend)
+                    continue
+                newPendingFriendRequestsList.append(pendingFriend)
+            db.child("Users").child(userIdValue).update({"friends": friendsList, "pendingFriendRequests": newPendingFriendRequestsList})
+            return {"message": "friend added to friends list from pending friends requests",
+                    "friendsList": friendsList,
+                    "pendingFriendRequests": newPendingFriendRequestsList,
+                    "error": False}
             
         
         #entra in lobby
@@ -157,7 +175,7 @@ class EnigmaServer(Resource):
         userIdValue = args['userId']
         friendId = args['friendId']
         
-        #delete friend (req, userIdValue, friendId)
+        #delete friend input(req, userIdValue, friendId)
         if req == DELETE_FRIEND:
             friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
             newFriendsList = []
@@ -167,10 +185,20 @@ class EnigmaServer(Resource):
             db.child("Users").child(userIdValue).update({"friends": newFriendsList})
             return {"message": "friend removed", "newFriendsList": newFriendsList, "error": False}
             
+        #reject friend request input(req, userIdValue, friendId)
+        if req == REJECT_FRIEND_REQUEST:
+            pendingFriendRequestsList = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
+            newPendingFriendRequestsList = []
+            for pendingFriendRequest in pendingFriendRequestsList:
+                if pendingFriendRequest["id"] != friendId:
+                    newPendingFriendRequestsList.append(pendingFriendRequest)
+            db.child("Users").child(userIdValue).update({"pendingFriendRequests": newPendingFriendRequestsList})
+            return {"message": "pending friend request removed", "newPendingFriendRequests": newPendingFriendRequestsList, "error": False}
                 
+                
+        
         #delete lobby
         #abbandona lobby
-        #rimuovi dai pending
         #accetta invito lobby
         #rimuovi invito lobby
         return {"message": "delete request failed", "error": True}
