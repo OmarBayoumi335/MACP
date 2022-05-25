@@ -76,15 +76,18 @@ class EnigmaServer(Resource):
         
         #get friends list input(req, userId, friendid)
         if req == SEARCH_FRIEND:
-            for user in users:
-                friend = db.child("Users").child(user).child("id").get().val()
-                if friendId == friend:
-                    friendIdValue = user
-                    if self.serverUtils.checkIfAlreadyAdded(userIdValue, friendId):
-                        return {"Message": "friends already added", "found": True, "requestSent": False, "error": False}
-                    elif self.serverUtils.checkifAlreadySent(userIdValue, friendIdValue):
-                        return {"Message": "friend request already sent", "found": True, "requestSent": True, "error": False}
-            return {"message": "user not found", "found": False, "requestSent": False, "error": False}
+            if db.child("Users").child(userIdValue).get().val()["id"] != friendId:
+                for user in users:
+                    friend = db.child("Users").child(user).child("id").get().val()
+                    if friendId == friend:
+                        friendIdValue = user
+                        if self.serverUtils.checkIfAlreadyAdded(userIdValue, friendId):
+                            return {"Message": "friends already added", "status": "alreadyAdded", "error": False}
+                        elif self.serverUtils.checkifAlreadySent(userIdValue, friendIdValue):
+                            return {"Message": "friend request already sent", "status": "alreadySent", "error": False}
+                        else:
+                            return {"Message": "friend found", "status": "found", "error": False}
+            return {"message": "user not found", "status": "notFound", "error": False}
         
         #get last id per creare utente input(req)
         if req == GET_ID:
@@ -209,7 +212,7 @@ class EnigmaServerUtils():
     
     def checkifAlreadySent(self, userIdValue, friendIdValue):
         userId = db.child("Users").child(userIdValue).get().val()["id"]
-        pendingFriendRequestsList = db.child("Users").child(friendIdValue).child("fpendingFriendRequests").get().val()
+        pendingFriendRequestsList = db.child("Users").child(friendIdValue).child("pendingFriendRequests").get().val()
         if pendingFriendRequestsList != None:
             for friendRequest in pendingFriendRequestsList:
                 requestUserId = friendRequest["id"]
