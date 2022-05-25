@@ -14,10 +14,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classi.Config
+import com.example.androidstudio.classi.ProfileFriendListAdapter
 import com.example.androidstudio.classi.ServerHandler
 import com.example.androidstudio.classi.User
 import org.json.JSONObject
@@ -28,6 +33,9 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
 
     private lateinit var nameEditText: EditText
     private lateinit var idTextView: TextView
+
+    private lateinit var profileFriendsRecyclerView: RecyclerView
+    private lateinit var profileFriendListAdapter: ProfileFriendListAdapter
 
     private lateinit var username: String
     private lateinit var newName: String
@@ -47,11 +55,12 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile, container, false)
         sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", MODE_PRIVATE)
-
-        nameEditText = rootView.findViewById<EditText>(R.id.profile_name_edittext)
-        idTextView = rootView.findViewById<TextView>(R.id.profile_id)
-
         userid = sharedPreferences.getString("UID", "").toString()
+
+        nameEditText = rootView.findViewById(R.id.profile_name_edittext)
+        idTextView = rootView.findViewById(R.id.profile_id)
+
+        profileFriendsRecyclerView = rootView.findViewById(R.id.profile_friends_list_recyclerView)
 
         serverHandler = ServerHandler(requireContext())
         serverHandler.getUserInformation(userid, object : ServerHandler.VolleyCallBack {
@@ -86,13 +95,16 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
                             val friendsNumber = friends.length()
                             for (i in 0 until friendsNumber) {
                                 val id = friends[i].toString().substring(7, 15)
-                                val username = friends[i].toString().substring(29, friends[i].toString().length - 2)
+                                val username = friends[i].toString()
+                                    .substring(29, friends[i].toString().length - 2)
                                 val friendUser = User(username, id)
                                 friendListView += friendUser
                             }
                         }
-                        
                         Log.i(Config.API, "" + friendListView.toString())
+                        profileFriendListAdapter = ProfileFriendListAdapter(friendListView)
+                        profileFriendsRecyclerView.adapter = profileFriendListAdapter
+                        profileFriendsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
                     }
                 })
             }

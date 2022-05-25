@@ -15,6 +15,7 @@ class Config {
         val API = "Api request"
         val LOGINTAG = "Login"
         val ADDFRIENDTAG = "Add friend"
+        val PROFILEFRIENDITEMTAG = "Profile friend item"
 
         // Api names
         // GET
