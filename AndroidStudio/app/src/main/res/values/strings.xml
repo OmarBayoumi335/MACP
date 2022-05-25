@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Enigma</string>
     <string name="username_login">Username</string>
-    <string name="hint_username_login">You can change your username at any time in your profile</string>
+    <string name="hint_username_login">You can change your username at any time</string>
     <string name="button_logout">Logout</string>
     <string name="button_play">Play</string>
     <string name="profile_name">ex. Matteo</string>
