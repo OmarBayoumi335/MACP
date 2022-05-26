@@ -1,6 +1,5 @@
 package com.example.androidstudio.classi
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -34,7 +33,7 @@ class ProfileFriendListAdapter(private val mUser: List<User>): RecyclerView.Adap
         tv1.text = friend.getUsername()
         tv2.text = friend.getId()
         b1.setOnClickListener {
-            Log.i(Config.PROFILEFRIENDITEMTAG, "CIAO")
+            Log.i(Config.PROFILE, "CIAO")
         }
     }
 

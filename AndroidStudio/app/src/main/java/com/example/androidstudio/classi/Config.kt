@@ -1,6 +1,12 @@
 package com.example.androidstudio.classi
 
-import android.content.BroadcastReceiver
+import android.content.Context
+import android.net.ConnectivityManager
+import android.util.Log
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
+
 
 class Config {
     companion object{
@@ -15,7 +21,8 @@ class Config {
         val API = "Api request"
         val LOGINTAG = "Login"
         val ADDFRIENDTAG = "Add friend"
-        val PROFILEFRIENDITEMTAG = "Profile friend item"
+        val PROFILE = "Profile"
+        val PERMISSIONTAG = "Permission"
 
         // Api names
         // GET
@@ -24,7 +31,9 @@ class Config {
         val GET_USER_INFORMATION = 2
         val GET_FRIENDS_LIST = 3
         val GET_PENDING_FRIENDS_REQUEST = 4
+        val GET_USER_EXIST = 10
         // PUT
+        val PUT_NEW_USER = 11
         // POST
         val POST_SEND_FRIEND_REQUEST = 5
         val POST_CHANGE_NAME = 6

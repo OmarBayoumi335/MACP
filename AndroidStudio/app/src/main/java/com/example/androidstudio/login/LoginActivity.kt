@@ -1,7 +1,9 @@
 package com.example.androidstudio.Login
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.androidstudio.R
 import com.example.androidstudio.classi.Config
 import com.example.androidstudio.classi.ServerHandler
-import com.example.androidstudio.classi.User
 import com.example.androidstudio.home.MenuActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -24,10 +25,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import org.json.JSONObject
+import java.net.InetAddress
+import java.net.UnknownHostException
 
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener{
@@ -38,7 +39,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var mGoogleSignInClient: GoogleSignInClient
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var usernameEditText: EditText
@@ -141,107 +141,33 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun signIn(currentUser: FirebaseUser?, fromOnStart: Boolean = false) {
-        database = Firebase.database.reference
         if (currentUser != null) {
-            database.get().addOnSuccessListener {
-                var exist = false
-                var lastUserId = ""
-                for (entry in it.children){
-                    if(entry.key == "UserLastId"){
-                        lastUserId = entry.value as String
-                    } else if(entry.key == "Users"){
-                        for (single_user in entry.children) {
-                            if(single_user.key == currentUser.uid){
-                                exist = true
-                                break
+            serverHandler.getUserExist(currentUser.uid, object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+                    val exist: Boolean? = reply?.getBoolean("exist")
+                    if (!exist!!) {
+                        Log.i(Config.LOGINTAG, "New user created")
+                        val username =
+                            findViewById<EditText>(R.id.login_username_edittext).text.toString()
+                        serverHandler.getId(object : ServerHandler.VolleyCallBack {
+                            override fun onSuccess(reply: JSONObject?) {
+                                val id = reply?.get("newId").toString()
+                                serverHandler.putNewUser(currentUser.uid, username, id)
                             }
-                        }
-                    } else {
-                        continue
+                        })
+                    } else if (!fromOnStart) {
+                        serverHandler.postChangeName(
+                            auth.uid.toString(),
+                            usernameEditText.text.toString()
+                        )
                     }
+                    val intent = Intent(applicationContext, MenuActivity::class.java)
+                    startActivity(intent)
+                    overridePendingTransition(0, 0);
+                    finish()
                 }
-                if(!exist){
-                    Log.i(Config.LOGINTAG, "New user created")
-                    val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
-//                    val id = createId(lastUserId)
-                    serverHandler.getId(object : ServerHandler.VolleyCallBack {
-                        override fun onSuccess(reply: JSONObject?) {
-                            val id = reply?.get("newId").toString()
-                            val user = User(username, id)
-                            database.child("Users").child(currentUser.uid).setValue(user)
-                            database.child("UserLastId").setValue(id)
-                        }
-                    })
-                } else if (!fromOnStart) {
-                    serverHandler.postChangeName(auth.uid.toString(), usernameEditText.text.toString())
-                }
-                val intent = Intent(this, MenuActivity::class.java)
-                startActivity(intent)
-                overridePendingTransition(0, 0);
-                finish()
-            }.addOnFailureListener {
-                Log.e(Config.LOGINTAG, "Error getting data Firebase", it)
-            }
+            })
         }
-    }
-
-    private fun createId(id: String?): String {
-        var output = ""
-        var carryover = true
-        if (id != null) {
-            for(i in id.length-1 downTo 1 step 1){
-                var c = id[i].toString()
-                if(carryover){
-                    val n = decodeId(c[0]) + 1
-                    c = "0"
-                    if(n < 62){
-                        c = encodeId(n)
-                        carryover = false
-                    }
-                }
-                output = output.plus(c)
-            }
-        }
-        output = output.plus("#")
-        output = output.reversed()
-        return output
-    }
-
-    private fun decodeId(c: Char): Int{
-        val hashcode = c.hashCode()
-        var n = 0
-        if(hashcode in 48..57) { // numbers
-            n = hashcode - 48
-        }
-
-        if(hashcode in 97..122) { // lowercase
-            n = hashcode - 97 + 10
-        }
-
-        if(hashcode in 65..90) { // uppercase
-            n = hashcode - 65 + 10 + 26
-        }
-        return n
-    }
-
-    private fun encodeId(n: Int): String{
-        var index = 0
-        var x = ""
-        if(n < 10) { // numbers
-            index = n + 48
-            x = index.toChar().toString()
-        }
-
-        if(n in 10..10+25) { // lowercase
-            index = n - 10 + 97
-            x = index.toChar().toString()
-        }
-
-        if(n >= 10 +26) { // uppercase
-            index = n - (10 + 26) + 65
-            x = index.toChar().toString()
-        }
-        return x
     }
 
     override fun onStart() {
@@ -250,10 +176,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         if (account != null){
             Log.i(Config.LOGINTAG, "OnStart logged in")
             val currentUser = auth.currentUser
-            signIn(currentUser)
+            signIn(currentUser, true)
         }
         else {
             Log.w(Config.LOGINTAG, "OnStart account not found")
         }
     }
+
+    // TODO connection and server check
 }

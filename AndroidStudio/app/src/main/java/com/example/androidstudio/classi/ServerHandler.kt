@@ -125,6 +125,24 @@ class ServerHandler(context: Context) {
         queue.add(stringRequest)
     }
 
+    fun getUserExist(userId: String, callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.GET, url
+                    + "req=" + Config.GET_USER_EXIST
+                    + "&userId=" + userId, {
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "get user exist onSuccess: ${reply.toString(2)}")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get user exist error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
     fun postChangeName(userId: String, newName: String) {
         val stringRequest = StringRequest(
             Request.Method.POST, url
@@ -149,6 +167,25 @@ class ServerHandler(context: Context) {
                     + "req=" + Config.POST_SEND_FRIEND_REQUEST
                     + "&userId=" + userId
                     + "&friendId=" + "%23".plus(friendId.substring(1)),{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "post change name onSuccess: ${reply.toString(2)}")
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "getUserInformation error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun putNewUser(userId: String, username: String, id: String) {
+        val stringRequest = StringRequest(
+            Request.Method.PUT, url
+                    + "req=" + Config.PUT_NEW_USER
+                    + "&userId=" + userId
+                    + "&username=" + username
+                    + "&id=" + "%23".plus(id.substring(1)),{
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())

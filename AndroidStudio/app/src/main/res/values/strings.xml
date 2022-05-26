@@ -31,4 +31,11 @@
     <string name="friend_already_sent">Friend request already sent</string>
     <string name="friend_already_added">This user is already your friend</string>
     <string name="friend_not_found">User not found</string>
+    <string name="profile_name_textview">Name:</string>
+    <string name="profile_friends_tab">Friends</string>
+    <string name="profile_friends_request_tab">Requests</string>
+    <string name="profile_add_friend_tab">Add friend</string>
+    <string name="id">Id: </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
