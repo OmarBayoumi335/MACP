@@ -23,8 +23,10 @@ GET_ID = 1
 GET_USER_INFORMATION = 2
 GET_FRIENDS_LIST = 3
 GET_PENDING_FRIENDS_REQUEST = 4
+GET_USER_EXIST = 10
 
 #put constants
+PUT_NEW_USER = 11
 
 #post constants
 SEND_FRIEND_REQUEST = 5
@@ -53,6 +55,9 @@ putParser = reqparse.RequestParser()
 putParser.add_argument('req', type = int, required = True)
 putParser.add_argument('userId', type = str, required = False)
 putParser.add_argument('friendId', type = str, required = False)
+putParser.add_argument('username', type = str, required = False)
+putParser.add_argument('id', type = str, required = False)
+
 
 
 #delete parser
@@ -91,7 +96,7 @@ class EnigmaServer(Resource):
                 return {"message": "can't add yourself", "status": "yourself", "error": False}
             return {"message": "user not found", "status": "notFound", "error": False}
         
-        #get last id per creare utente input(req)
+        #get last id input(req)
         if req == GET_ID:
             lastId = db.child("UserLastId").get().val()
             newId = self.serverUtils.createId(lastId)
@@ -109,19 +114,41 @@ class EnigmaServer(Resource):
             friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
             return {"message": "obtaining friends list of the current user", "friends": friendsList, "error": False}
         
-        #get per numero amicizie (pending) input(req, userId)
+        #get pending friend requests list (pending) input(req, userId)
         if req == GET_PENDING_FRIENDS_REQUEST:
             pendingFriendRequests = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
             return{"message": "obtaining pending friend requests of the current user", 
                    "pendingFriendRequests": pendingFriendRequests, 
                    "error": False}
         
+        #get return if the current user exist input(req, userId)
+        if req == GET_USER_EXIST:
+            for user in users:
+                if user == userIdValue:
+                    return{"message": "user already exist", 
+                           "exist": True, 
+                           "error": False}
+            return{"message": "user not exist", 
+                   "exist": False, 
+                   "error": False}
+                    
+                    
         #TODO
         #get inviti
         #get utenti lobby
         return {"message": "get request failed", "error": True}
       
     def put(self):
+        args = putParser.parse_args()
+        users = db.child("Users").get().val()
+        req = args['req']
+        userId = args['userId']
+        username = args['username']
+        userIdField = args['id']
+        #put create new user input(req, userId, usrname, id)
+        if req == PUT_NEW_USER:
+            db.child("Users").child(userId).set({"username": username, "id": userIdField})
+            return {"message": "user created", "error": False}
         #lobby creation
         return {"message": "put request failed", "error": True}
     
