@@ -18,30 +18,40 @@ db = firebase.database()
 #request codes and parser arguments
 
 #get constants
-SEARCH_FRIEND = 0
+GET_SEARCH_FRIEND = 0
 GET_ID = 1
 GET_USER_INFORMATION = 2
 GET_FRIENDS_LIST = 3
 GET_PENDING_FRIENDS_REQUEST = 4
 GET_USER_EXIST = 10
+GET_NUM_PENDING_FRIENDS_REQUEST = 12
+GET_LOBBY_INVITES = 17
+GET_NUM_LOBBY_INVITES = 18
+GET_LOBBY_USERS = 19
 
 #put constants
 PUT_NEW_USER = 11
+PUT_NEW_LOBBY = 13
 
 #post constants
-SEND_FRIEND_REQUEST = 5
-CHANGE_NAME = 6
-ACCEPT_FRIEND_REQUEST = 8
+POST_SEND_FRIEND_REQUEST = 5
+POST_CHANGE_NAME = 6
+POST_ACCEPT_FRIEND_REQUEST = 8
+POST_SEND_LOBBY_INVITE = 14
+POST_ENTER_IN_LOBBY = 16
 
 #delete constants
-DELETE_FRIEND = 7
-REJECT_FRIEND_REQUEST = 9
+DELETE_REMOVE_FRIEND = 7
+DELETE_REJECT_FRIEND_REQUEST = 9
+DELETE_LOBBY_INVITE = 15
+
 
 #get parser
 getParser = reqparse.RequestParser()
 getParser.add_argument('req', type = int, required = True)
 getParser.add_argument('userId', type = str, required = False)
 getParser.add_argument('friendId', type = str, required = False)
+getParser.add_argument('lobbyId', type = str, required = False)
 
 #post parser
 postParser = reqparse.RequestParser()
@@ -49,6 +59,7 @@ postParser.add_argument('req', type = int, required = True)
 postParser.add_argument('userId', type = str, required = False)
 postParser.add_argument('friendId', type = str, required = False)
 postParser.add_argument('newName', type = str, required = False)
+postParser.add_argument('lobbyId', type = str, required = False)
 
 #put parser
 putParser = reqparse.RequestParser()
@@ -57,6 +68,7 @@ putParser.add_argument('userId', type = str, required = False)
 putParser.add_argument('friendId', type = str, required = False)
 putParser.add_argument('username', type = str, required = False)
 putParser.add_argument('id', type = str, required = False)
+putParser.add_argument('lobbyId', type = str, required = False)
 
 
 
@@ -65,6 +77,7 @@ deleteParser = reqparse.RequestParser()
 deleteParser.add_argument('req', type = int, required = True)
 deleteParser.add_argument('userId', type = str, required = False)
 deleteParser.add_argument('friendId', type = str, required = False)
+deleteParser.add_argument('lobbyId', type = str, required = False)
 
 # Api call handler
 class EnigmaServer(Resource):
@@ -78,9 +91,10 @@ class EnigmaServer(Resource):
         req = args['req']
         userIdValue = args['userId']
         friendId = args['friendId']
+        lobbyId = args['lobbyId']
         
         #get friends list input(req, userId, friendid)
-        if req == SEARCH_FRIEND:
+        if req == GET_SEARCH_FRIEND:
             if db.child("Users").child(userIdValue).get().val()["id"] != friendId:
                 for user in users:
                     friend = db.child("Users").child(user).child("id").get().val()
@@ -112,11 +126,15 @@ class EnigmaServer(Resource):
         #get friends input(req, userId)
         if req == GET_FRIENDS_LIST:
             friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
+            if friendsList == None:
+                friendsList = []
             return {"message": "obtaining friends list of the current user", "friends": friendsList, "error": False}
         
         #get pending friend requests list (pending) input(req, userId)
         if req == GET_PENDING_FRIENDS_REQUEST:
             pendingFriendRequests = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
+            if pendingFriendRequests == None:
+                pendingFriendRequests = []
             return{"message": "obtaining pending friend requests of the current user", 
                    "pendingFriendRequests": pendingFriendRequests, 
                    "error": False}
@@ -131,11 +149,33 @@ class EnigmaServer(Resource):
             return{"message": "user not exist", 
                    "exist": False, 
                    "error": False}
-                    
-                    
-        #TODO
-        #get inviti
-        #get utenti lobby
+        
+        #get number of pending invites input(req, userId)
+        if req == GET_NUM_PENDING_FRIENDS_REQUEST:
+            pendingRequests = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
+            if pendingRequests == None:
+                pendingRequests = []
+            return {"message": "number of pending friend requests", "pendingRequestsNum": len(pendingRequests), "error": False}
+            
+        #get lobby invites input(req, userId)
+        if req == GET_LOBBY_INVITES:
+            lobbyInvites = db.child("Users").child(userIdValue).child("lobbyInvites").get().val()
+            if lobbyInvites == None:
+                lobbyInvites = []
+            return {"message": "lobby invites", "lobbyInvites": lobbyInvites, "error": False}
+        
+        #get number of lobby invites input(req, userId)
+        if req == GET_NUM_LOBBY_INVITES:
+            lobbyInvites = db.child("Users").child(userIdValue).child("lobbyInvites").get().val()
+            if lobbyInvites == None:
+                lobbyInvites = []
+            return {"message": "number of lobby invites", "lobbyInvites": len(lobbyInvites), "error": False}
+        
+        #get lobby users input(req, lobbyId)
+        if req == GET_LOBBY_USERS:
+            lobbyUsers = db.child("Lobbies").child(lobbyId).child("lobbyUsers").get().val()
+            return {"message": "current users in lobby", "lobbyUsers": lobbyUsers ,"error": False}
+        
         return {"message": "get request failed", "error": True}
       
     def put(self):
@@ -145,11 +185,23 @@ class EnigmaServer(Resource):
         userId = args['userId']
         username = args['username']
         userIdField = args['id']
+        lobbyId = args['lobbyId']
+        
         #put create new user input(req, userId, usrname, id)
         if req == PUT_NEW_USER:
             db.child("Users").child(userId).set({"username": username, "id": userIdField})
             return {"message": "user created", "error": False}
-        #lobby creation
+        
+        #lobby creation input(req, userId, lobbyId)
+        if req == PUT_NEW_LOBBY:
+            masterUser = db.child("Users").child(userId).get().val()
+            masterUsername = masterUser["username"]
+            masterId = masterUser["id"]
+            db.child("Lobbies").child(lobbyId).child("roomMaster").set({"username":masterUsername, "id": masterId})
+            db.child("Lobbies").child(lobbyId).child("lobbyUsers").set([{"username":masterUsername, "id": masterId}])
+            lobby = db.child("Lobbies").child(lobbyId).get().val()
+            return {"message": "lobby created", "lobby": lobby, "error": False}
+        
         return {"message": "put request failed", "error": True}
     
     def post(self):
@@ -159,9 +211,10 @@ class EnigmaServer(Resource):
         userIdValue = args['userId']
         friendId = args['friendId']
         newName = args["newName"]
+        lobbyId = args["lobbyId"]
         
         #friend request input(req, userId, friendid)
-        if req == SEND_FRIEND_REQUEST:
+        if req == POST_SEND_FRIEND_REQUEST:
             for user in users:
                 friendIdField = db.child("Users").child(user).get().val()["id"]
                 if friendId == friendIdField:
@@ -179,12 +232,12 @@ class EnigmaServer(Resource):
                            "error": False}
         
         #change username input(req, userId, newName)
-        if req == CHANGE_NAME:
+        if req == POST_CHANGE_NAME:
             db.child("Users").child(userIdValue).update({"username": newName})
             return {"message": "username changed", "username": newName, "error": False}
             
         #accept friend request(req, userId, friendId)
-        if req == ACCEPT_FRIEND_REQUEST:
+        if req == POST_ACCEPT_FRIEND_REQUEST:
             pendingFriendRequestsList = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
             friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
             if friendsList == None:
@@ -214,9 +267,39 @@ class EnigmaServer(Resource):
                     "pendingFriendRequests": newPendingFriendRequestsList,
                     "error": False}
             
+        #send lobby invite input(req, userId, friendId, lobbyId)
+        if req == POST_SEND_LOBBY_INVITE:
+            sender = db.child("Users").child(userIdValue).get().val()
+            senderName = sender["username"]
+            senderId = sender["id"]
+            for user in users:
+                if db.child("Users").child(user).get().val()["id"] == friendId:
+                    receiver = user
+            currentlobbyInvites = db.child("Users").child(receiver).child("lobbyInvites").get().val()
+            if currentlobbyInvites == None:
+                currentlobbyInvites = []
+            else:
+                for invite in currentlobbyInvites:
+                    if invite["lobbyId"] == lobbyId:
+                        return {"message": "user already invited", "status": "alreadyInvited", "error": False}
+            newLobbyInvites = currentlobbyInvites
+            newLobbyInvites.append({"lobbyId": lobbyId})
+            db.child("Users").child(receiver).update({"lobbyInvites": newLobbyInvites})
+            return {"message": "user invited to lobby", "status": "notInvited", "error": False}
         
-        #entra in lobby
-        #invita alla lobby
+        #enter into lobby input(req, userId, lobbyId)
+        if req == POST_ENTER_IN_LOBBY:
+            lobby = db.child("Lobbies").child(lobbyId).get().val()
+            userUsername = db.child("Users").child(userIdValue).get().val()["username"]
+            userId = db.child("Users").child(userIdValue).get().val()["id"]
+            currentLobbyUsers = db.child("Lobbies").child(lobbyId).child("lobbyUsers").get().val()
+            newLobbyUsers = []
+            for user in currentLobbyUsers:
+                newLobbyUsers.append(user)
+            newLobbyUsers.append({"username":userUsername, "id":userId })
+            db.child("Lobbies").child(lobbyId).update({"lobbyUsers": newLobbyUsers})
+            return {"message": "connected to lobby", "error": False}
+
         #cambia squadra lobby
         #cambia stato (online, offline)?
         return {"message": "post request failed", "error": True}
@@ -226,9 +309,10 @@ class EnigmaServer(Resource):
         req = args['req']
         userIdValue = args['userId']
         friendId = args['friendId']
+        lobbyId = args['lobbyId']
         
         #delete friend input(req, userIdValue, friendId)
-        if req == DELETE_FRIEND:
+        if req == DELETE_REMOVE_FRIEND:
             friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
             newFriendsList = []
             for friend in friendsList:
@@ -238,7 +322,7 @@ class EnigmaServer(Resource):
             return {"message": "friend removed", "newFriendsList": newFriendsList, "error": False}
             
         #reject friend request input(req, userIdValue, friendId)
-        if req == REJECT_FRIEND_REQUEST:
+        if req == DELETE_REJECT_FRIEND_REQUEST:
             pendingFriendRequestsList = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
             newPendingFriendRequestsList = []
             for pendingFriendRequest in pendingFriendRequestsList:
@@ -246,13 +330,20 @@ class EnigmaServer(Resource):
                     newPendingFriendRequestsList.append(pendingFriendRequest)
             db.child("Users").child(userIdValue).update({"pendingFriendRequests": newPendingFriendRequestsList})
             return {"message": "pending friend request removed", "newPendingFriendRequests": newPendingFriendRequestsList, "error": False}
-                
-                
+        
+        #accept lobby invite (req, userId, lobbyId)
+        if req == DELETE_LOBBY_INVITE:
+            lobbyInvites = db.child("Users").child(userIdValue).child("lobbyInvites").get().val()
+            newLobbyInvites = []
+            for invite in lobbyInvites:
+                if invite["lobbyId"] != lobbyId:
+                    newLobbyInvites.append(invite)
+            db.child("Users").child(userIdValue).update({"lobbyInvites": newLobbyInvites})
+            return{"message": "lobby invite removed", "error": False}
         
         #delete lobby
         #abbandona lobby
-        #accetta invito lobby
-        #rimuovi invito lobby
+        
         return {"message": "delete request failed", "error": True}
 
 
