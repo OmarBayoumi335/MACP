@@ -1,9 +1,7 @@
 package com.example.androidstudio.Login
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,8 +9,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidstudio.R
-import com.example.androidstudio.classi.Config
-import com.example.androidstudio.classi.ServerHandler
+import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.classes.ServerHandler
 import com.example.androidstudio.home.MenuActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -27,8 +25,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import org.json.JSONObject
-import java.net.InetAddress
-import java.net.UnknownHostException
 
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener{
@@ -149,12 +145,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                         Log.i(Config.LOGINTAG, "New user created")
                         val username =
                             findViewById<EditText>(R.id.login_username_edittext).text.toString()
-                        serverHandler.getId(object : ServerHandler.VolleyCallBack {
-                            override fun onSuccess(reply: JSONObject?) {
-                                val id = reply?.get("newId").toString()
-                                serverHandler.putNewUser(currentUser.uid, username, id)
-                            }
-                        })
+                        serverHandler.putNewUser(currentUser.uid, username)
                     } else if (!fromOnStart) {
                         serverHandler.postChangeName(
                             auth.uid.toString(),

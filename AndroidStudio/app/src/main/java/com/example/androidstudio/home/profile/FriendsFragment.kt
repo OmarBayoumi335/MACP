@@ -2,17 +2,14 @@ package com.example.androidstudio.home.profile
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classi.Config
-import com.example.androidstudio.classi.ServerHandler
-import com.example.androidstudio.classi.UpdateUI
-import kotlinx.android.synthetic.main.fragment_profile.*
+import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.UpdateUI
 
 class FriendsFragment(profileFragment: ProfileFragment) : Fragment() {
 

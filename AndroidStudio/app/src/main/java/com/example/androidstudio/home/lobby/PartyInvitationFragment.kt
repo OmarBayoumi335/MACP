@@ -20,6 +20,7 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val backButton = view.findViewById<Button>(R.id.button_back_from_party_invitation)
         backButton.setOnClickListener(this)
 

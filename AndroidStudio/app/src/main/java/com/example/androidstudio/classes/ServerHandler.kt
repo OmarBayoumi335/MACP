@@ -1,17 +1,12 @@
-package com.example.androidstudio.classi
+package com.example.androidstudio.classes
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.launch
+import com.example.androidstudio.classes.utils.Config
 import org.json.JSONObject
 
 class ServerHandler(context: Context) {
@@ -43,28 +38,11 @@ class ServerHandler(context: Context) {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
-                Log.i(Config.API, "get user information onSuccess: ${reply.toString(2)}")
+                Log.i(Config.API, "get user information onSuccess: $reply")
                 callBack.onSuccess(reply)
             }, {
                     error: VolleyError? ->
                 Log.e(Config.API, "get user information error: " + error.toString())
-            })
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest)
-    }
-
-    fun getId(callBack: VolleyCallBack) {
-        val stringRequest = StringRequest(
-            Request.Method.GET, url
-                    + "req=" + Config.GET_ID,{
-                    response ->
-                // Display the first 500 characters of the response string.
-                val reply = JSONObject(response.toString())
-                Log.i(Config.API, "get id onSuccess: ${reply.toString(2)}")
-                callBack.onSuccess(reply)
-            }, {
-                    error: VolleyError? ->
-                Log.e(Config.API, "get id error: " + error.toString())
             })
         // Add the request to the RequestQueue.
         queue.add(stringRequest)
@@ -79,7 +57,7 @@ class ServerHandler(context: Context) {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
-                Log.i(Config.API, "get search friend onSuccess: ${reply.toString(2)}")
+                Log.i(Config.API, "get search friend onSuccess: $reply")
                 callBack.onSuccess(reply)
             }, {
                     error: VolleyError? ->
@@ -97,7 +75,7 @@ class ServerHandler(context: Context) {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
-                Log.i(Config.API, "get friends list onSuccess: ${reply.toString(2)}")
+                Log.i(Config.API, "get friends list onSuccess: $reply")
                 callBack.onSuccess(reply)
             }, {
                     error: VolleyError? ->
@@ -115,7 +93,7 @@ class ServerHandler(context: Context) {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
-                Log.i(Config.API, "get pending friends list onSuccess: ${reply.toString(2)}")
+                Log.i(Config.API, "get pending friends list onSuccess: $reply")
                 callBack.onSuccess(reply)
             }, {
                     error: VolleyError? ->
@@ -133,11 +111,29 @@ class ServerHandler(context: Context) {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
-                Log.i(Config.API, "get user exist onSuccess: ${reply.toString(2)}")
+                Log.i(Config.API, "get user exist onSuccess: $reply")
                 callBack.onSuccess(reply)
             }, {
                     error: VolleyError? ->
                 Log.e(Config.API, "get user exist error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun getNumPending(userId: String, callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.GET, url
+                    + "req=" + Config.GET_NUM_PENDING_FRIENDS_REQUEST
+                    + "&userId=" + userId, {
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "get num pending onSuccess: $reply")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get num pending error: " + error.toString())
             })
         // Add the request to the RequestQueue.
         queue.add(stringRequest)
@@ -152,10 +148,10 @@ class ServerHandler(context: Context) {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
-                Log.i(Config.API, "post change name onSuccess: ${reply.toString(2)}")
+                Log.i(Config.API, "post change name onSuccess: $reply")
             }, {
                     error: VolleyError? ->
-                Log.e(Config.API, "getUserInformation error: " + error.toString())
+                Log.e(Config.API, "get change name error: " + error.toString())
             })
         // Add the request to the RequestQueue.
         queue.add(stringRequest)
@@ -170,29 +166,100 @@ class ServerHandler(context: Context) {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
-                Log.i(Config.API, "post change name onSuccess: ${reply.toString(2)}")
+                Log.i(Config.API, "post send friend request onSuccess: $reply")
             }, {
                     error: VolleyError? ->
-                Log.e(Config.API, "getUserInformation error: " + error.toString())
+                Log.e(Config.API, "get send friend request error: " + error.toString())
             })
         // Add the request to the RequestQueue.
         queue.add(stringRequest)
     }
 
-    fun putNewUser(userId: String, username: String, id: String) {
+    fun postAcceptFriendRequest(userId: String, friendId: String) {
+        val stringRequest = StringRequest(
+            Request.Method.POST, url
+                    + "req=" + Config.POST_ACCEPT_FRIEND_REQUEST
+                    + "&userId=" + userId
+                    + "&friendId=" + "%23".plus(friendId.substring(1)),{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "post accept friend request onSuccess: $reply")
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get accept friend request error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun putNewUser(userId: String, username: String) {
         val stringRequest = StringRequest(
             Request.Method.PUT, url
                     + "req=" + Config.PUT_NEW_USER
                     + "&userId=" + userId
-                    + "&username=" + username
-                    + "&id=" + "%23".plus(id.substring(1)),{
+                    + "&username=" + username,{
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
-                Log.i(Config.API, "post change name onSuccess: ${reply.toString(2)}")
+                Log.i(Config.API, "put new user onSuccess: $reply")
             }, {
                     error: VolleyError? ->
-                Log.e(Config.API, "getUserInformation error: " + error.toString())
+                Log.e(Config.API, "put new user error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun putNewLobby(userId: String, lobbyId: String) {
+        val stringRequest = StringRequest(
+            Request.Method.PUT, url
+                    + "req=" + Config.PUT_NEW_LOBBY
+                    + "&userId=" + userId
+                    + "&lobbyId=" + lobbyId,{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "put new lobby onSuccess: $reply")
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "put new lobby error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun deleteRejectFriendRequest(userId: String, friendId: String) {
+        val stringRequest = StringRequest(
+            Request.Method.DELETE, url
+                    + "req=" + Config.DELETE_REJECT_FRIEND_REQUEST
+                    + "&userId=" + userId
+                    + "&friendId=" + "%23".plus(friendId.substring(1)),{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "delete reject friend request onSuccess: $reply")
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "delete reject friend request error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun deleteFriend(userId: String, friendId: String) {
+        val stringRequest = StringRequest(
+            Request.Method.DELETE, url
+                    + "req=" + Config.DELETE_REMOVE_FRIEND
+                    + "&userId=" + userId
+                    + "&friendId=" + "%23".plus(friendId.substring(1)),{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "delete friend onSuccess: $reply")
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "delete friend error: " + error.toString())
             })
         // Add the request to the RequestQueue.
         queue.add(stringRequest)

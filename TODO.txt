@@ -1,0 +1,4 @@
+Lunghezza massima nome per interfaccia profilo sopra i tasti
+Tap to copy sotto id
+ricerca per invitare con recycler che si aggiorna
+Notifiche firebase per richieste di amicizia e richieste di partita

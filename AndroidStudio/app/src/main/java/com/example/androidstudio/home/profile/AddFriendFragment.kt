@@ -12,8 +12,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.example.androidstudio.R
-import com.example.androidstudio.classi.Config
-import com.example.androidstudio.classi.ServerHandler
+import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.classes.ServerHandler
 import org.json.JSONObject
 
 class AddFriendFragment : Fragment(){
@@ -51,24 +51,29 @@ class AddFriendFragment : Fragment(){
             override fun onSuccess(reply: JSONObject?) {
                 val searchResult = rootView.findViewById<TextView>(R.id.add_friend_result_textview)
                 val found = reply?.get("status").toString()
+                Log.i(Config.ADDFRIENDTAG, reply?.get("message").toString())
                 if (found == "found"){
-                    Log.i(Config.ADDFRIENDTAG, "User found")
                     searchResult.text = resources.getString(R.string.friend_found)
                     searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_found))
                     serverHandler.postSendFriendRequest(userid, toFindFriendName)
                 }
                 if (found == "alreadySent"){
-                    Log.i(Config.ADDFRIENDTAG, "Request at this user already sent")
                     searchResult.text = resources.getString(R.string.friend_already_sent)
                     searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_sent_added))
                 }
                 if (found == "alreadyAdded"){
-                    Log.i(Config.ADDFRIENDTAG, "User already added")
                     searchResult.text = resources.getString(R.string.friend_already_added)
                     searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_sent_added))
                 }
+                if (found == "inPending"){
+                    searchResult.text = resources.getString(R.string.friend_in_pending)
+                    searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_sent_added))
+                }
+                if (found == "yourself"){
+                    searchResult.text = resources.getString(R.string.friend_yourself)
+                    searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_sent_added))
+                }
                 if (found == "notFound"){
-                    Log.i(Config.ADDFRIENDTAG, "User not found")
                     searchResult.text = resources.getString(R.string.friend_not_found)
                     searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_not_found))
                 }

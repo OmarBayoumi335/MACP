@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.androidstudio.Login.LoginActivity
 import com.example.androidstudio.R
-import com.example.androidstudio.classi.Config
+import com.example.androidstudio.classes.utils.Config
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

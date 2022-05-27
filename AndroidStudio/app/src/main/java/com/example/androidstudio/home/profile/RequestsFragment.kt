@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classi.ServerHandler
-import com.example.androidstudio.classi.UpdateUI
+import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.UpdateUI
 
 class RequestsFragment(profileFragment: ProfileFragment) : Fragment() {
 

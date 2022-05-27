@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="15dp"
     tools:context=".home.profile.FriendsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profile_friends_list_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 </FrameLayout>

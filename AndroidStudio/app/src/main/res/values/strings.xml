@@ -1,41 +1,57 @@
 <resources>
-    <string name="app_name">Enigma</string>
-    <string name="username_login">Username</string>
-    <string name="hint_username_login">You can change your username at any time</string>
-    <string name="button_logout">Logout</string>
-    <string name="button_play">Play</string>
+
+
+    <!--Profile-->
+    <string name="id">Id: </string>
+    <string name="profile_name_textview">Name:</string>
     <string name="profile_name">ex. Matteo</string>
     <string name="profile_change_name_button">Save</string>
-    <string name="find_friend_textview">Search:</string>
-    <string name="add_friend_button">Add</string>
-    <string name="find_friend_hint">ex. #123456</string>
+    <string name="profile_friends_tab">Friends</string>
+    <string name="profile_friends_request_tab">Requests</string>
+    <string name="profile_add_friend_tab">Add friend</string>
+
+    <!--Profile Friend-->
     <string name="add_friend_title">Add a friend</string>
-    <string name="party_creation_button">Create party</string>
-    <string name="party_invitations">Party invitations</string>
-    <string name="back">Back</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="invitations_title">Invitations</string>
-    <string name="lobby_title_textview">Lobby</string>
-    <string name="leave_lobby_button">Leave</string>
-    <string name="team1">Team1</string>
-    <string name="team2">Team2</string>
-    <string name="lobby_ready">Ready</string>
-    <string name="leave_lobby_alert">Leave lobby</string>
-    <string name="leave_lobby_alert_message">Are you sure you want to leave the lobby?</string>
-    <string name="invites_friends">Invites friends</string>
-    <string name="close">Close</string>
-    <string name="google_button">Google</string>
-    <string name="access_with_google">Access with:</string>
+    <string name="find_friend_textview">Search:</string>
+    <string name="find_friend_hint">ex. #123456</string>
+    <string name="add_friend_button">Add</string>
     <string name="friend_found">Request sent!</string>
     <string name="friend_already_sent">Friend request already sent</string>
     <string name="friend_already_added">This user is already your friend</string>
     <string name="friend_not_found">User not found</string>
-    <string name="profile_name_textview">Name:</string>
-    <string name="profile_friends_tab">Friends</string>
-    <string name="profile_friends_request_tab">Requests</string>
-    <string name="profile_add_friend_tab">Add friend</string>
-    <string name="id">Id: </string>
+    <string name="friend_in_pending">User already in your requests tab</string>
+    <string name="friend_yourself">You can\'t add yourself</string>
+    <string name="remove_friend_alert_title">Remove this friend</string>
+    <string name="remove_friend_alert_message">Want you remove</string>
+
+    <!--Login/Logout-->
+    <string name="username_login">Username</string>
+    <string name="hint_username_login">You can change your username at any time</string>
+    <string name="access_with_google">Access with:</string>
+    <string name="google_button">Google</string>
+    <string name="button_logout">Logout</string>
+
+    <!--Navigation-->
+    <string name="button_play">Play</string>
+    <string name="back">Back</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="close">Close</string>
+    <string name="lobby_ready">Ready</string>
+    <string name="leave_lobby_button">Leave</string>
+    <string name="party_creation_button">Create party</string>
+
+    <!--Lobby-->>
+    <string name="invitations_title">Invitations</string>
+    <string name="party_invitations">Party invitations</string>
+    <string name="invites_friends">Invites friends</string>
+    <string name="lobby_title_textview">Lobby</string>
+    <string name="team1">Team green</string>
+    <string name="team2">Team red</string>
+    <string name="leave_lobby_alert">Leave lobby</string>
+    <string name="leave_lobby_alert_message">Are you sure you want to leave the lobby?</string>
+
+    <string name="app_name">Enigma</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,3 +1,4 @@
+import random
 import pyrebase
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
@@ -17,33 +18,32 @@ db = firebase.database()
 
 #request codes and parser arguments
 
-#get constants
+# GET
 GET_SEARCH_FRIEND = 0
-GET_ID = 1
-GET_USER_INFORMATION = 2
-GET_FRIENDS_LIST = 3
-GET_PENDING_FRIENDS_REQUEST = 4
-GET_USER_EXIST = 10
-GET_NUM_PENDING_FRIENDS_REQUEST = 12
-GET_LOBBY_INVITES = 17
-GET_NUM_LOBBY_INVITES = 18
-GET_LOBBY_USERS = 19
+GET_USER_INFORMATION = 1
+GET_FRIENDS_LIST = 2
+GET_PENDING_FRIENDS_REQUEST = 3
+GET_USER_EXIST = 9
+GET_NUM_PENDING_FRIENDS_REQUEST = 11
+GET_LOBBY_INVITES = 16
+GET_NUM_LOBBY_INVITES = 17
+GET_LOBBY_USERS = 18
 
-#put constants
-PUT_NEW_USER = 11
-PUT_NEW_LOBBY = 13
+# PUT
+PUT_NEW_USER = 10
+PUT_NEW_LOBBY = 12
 
-#post constants
-POST_SEND_FRIEND_REQUEST = 5
-POST_CHANGE_NAME = 6
-POST_ACCEPT_FRIEND_REQUEST = 8
-POST_SEND_LOBBY_INVITE = 14
-POST_ENTER_IN_LOBBY = 16
+# POST
+POST_SEND_FRIEND_REQUEST = 4
+POST_CHANGE_NAME = 5
+POST_ACCEPT_FRIEND_REQUEST = 7
+POST_SEND_LOBBY_INVITE = 13
+POST_ENTER_IN_LOBBY = 15
 
-#delete constants
-DELETE_REMOVE_FRIEND = 7
-DELETE_REJECT_FRIEND_REQUEST = 9
-DELETE_LOBBY_INVITE = 15
+# DELETE
+DELETE_REMOVE_FRIEND = 6
+DELETE_REJECT_FRIEND_REQUEST = 8
+DELETE_LOBBY_INVITE = 14
 
 
 #get parser
@@ -101,21 +101,16 @@ class EnigmaServer(Resource):
                     if friendId == friend:
                         friendIdValue = user
                         if self.serverUtils.checkIfAlreadyAdded(userIdValue, friendId):
-                            return {"Message": "friends already added", "status": "alreadyAdded", "error": False}
-                        elif self.serverUtils.checkifAlreadySent(userIdValue, friendIdValue):
-                            return {"Message": "friend request already sent", "status": "alreadySent", "error": False}
+                            return {"message": "friends already added", "status": "alreadyAdded", "error": False}
+                        elif self.serverUtils.checkifAlreadySent(userIdValue, friendIdValue) == 1:
+                            return {"message": "friend request already sent", "status": "alreadySent", "error": False}
+                        elif self.serverUtils.checkifAlreadySent(userIdValue, friendIdValue) == 0:
+                            return {"message": "friend in your pending list", "status": "inPending", "error": False}
                         else:
-                            return {"Message": "friend found", "status": "found", "error": False}
+                            return {"message": "friend found", "status": "found", "error": False}
             else:
                 return {"message": "can't add yourself", "status": "yourself", "error": False}
             return {"message": "user not found", "status": "notFound", "error": False}
-        
-        #get last id input(req)
-        if req == GET_ID:
-            lastId = db.child("UserLastId").get().val()
-            newId = self.serverUtils.createId(lastId)
-            db.update({"UserLastId": newId})
-            return {"message": "last user Id", "newId": newId, "error": False}
         
         #get user information input(req, userId)
         if req == GET_USER_INFORMATION:
@@ -128,15 +123,23 @@ class EnigmaServer(Resource):
             friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
             if friendsList == None:
                 friendsList = []
-            return {"message": "obtaining friends list of the current user", "friends": friendsList, "error": False}
+            outFriendsList = []
+            for friend in friendsList:
+                friendInfo = db.child("Users").child(friend["uid"]).get().val()
+                outFriendsList.append({"id": friendInfo["id"], "username": friendInfo["username"]})
+            return {"message": "obtaining friends list of the current user", "friends": outFriendsList, "error": False}
         
         #get pending friend requests list (pending) input(req, userId)
         if req == GET_PENDING_FRIENDS_REQUEST:
             pendingFriendRequests = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
             if pendingFriendRequests == None:
                 pendingFriendRequests = []
+            outPendingList = []
+            for pending in pendingFriendRequests:
+                pendingInfo = db.child("Users").child(pending["uid"]).get().val()
+                outPendingList.append({"id": pendingInfo["id"], "username": pendingInfo["username"]})
             return{"message": "obtaining pending friend requests of the current user", 
-                   "pendingFriendRequests": pendingFriendRequests, 
+                   "pendingFriendRequests": outPendingList, 
                    "error": False}
         
         #get return if the current user exist input(req, userId)
@@ -187,9 +190,10 @@ class EnigmaServer(Resource):
         userIdField = args['id']
         lobbyId = args['lobbyId']
         
-        #put create new user input(req, userId, usrname, id)
+        #put create new user input(req, userId, usrname)
         if req == PUT_NEW_USER:
-            db.child("Users").child(userId).set({"username": username, "id": userIdField})
+            userIdValue = self.serverUtils.createId()
+            db.child("Users").child(userId).set({"username": username, "id": userIdValue})
             return {"message": "user created", "error": False}
         
         #lobby creation input(req, userId, lobbyId)
@@ -222,8 +226,8 @@ class EnigmaServer(Resource):
                     if newPendingFriendRequestsList == None:
                         newPendingFriendRequestsList = []   
                         
-                    newUserPending = db.child("Users").child(userIdValue).get().val()
-                    newPendingFriendRequestsList.append({"id": newUserPending["id"], "username": newUserPending["username"]})
+                    # newUserPending = db.child("Users").child(userIdValue).get().val()
+                    newPendingFriendRequestsList.append({"uid": userIdValue})
                     db.child("Users").child(user).update({"pendingFriendRequests": newPendingFriendRequestsList})
                     
                     pendingFriendRequests = db.child("Users").child(user).child("pendingFriendRequests").get().val()
@@ -244,8 +248,8 @@ class EnigmaServer(Resource):
                 friendsList = []
             newPendingFriendRequestsList = []
             for pendingFriend in pendingFriendRequestsList:
-                pendingFriendTmp = {"id": pendingFriend["id"], "username": pendingFriend["username"]}
-                if pendingFriend["id"] == friendId:
+                pendingFriendTmp = {"uid": pendingFriend["uid"]}
+                if db.child("Users").child(pendingFriend["uid"]).get().val()["id"] == friendId:
                     friendsList.append(pendingFriendTmp)
                     continue
                 newPendingFriendRequestsList.append(pendingFriendTmp)
@@ -257,8 +261,8 @@ class EnigmaServer(Resource):
             senderFriendsList = db.child("Users").child(friendSender).child("friends").get().val()
             if senderFriendsList == None:
                 senderFriendsList = []
-            newSenderFriend = db.child("Users").child(userIdValue).get().val()
-            senderFriendsList.append({"id": newSenderFriend["id"], "username": newSenderFriend["username"]})
+            # newSenderFriend = db.child("Users").child(userIdValue).get().val()
+            senderFriendsList.append({"uid": userIdValue})
             db.child("Users").child(friendSender).update({"friends": senderFriendsList})
             
             db.child("Users").child(userIdValue).update({"friends": friendsList, "pendingFriendRequests": newPendingFriendRequestsList})
@@ -316,7 +320,7 @@ class EnigmaServer(Resource):
             friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
             newFriendsList = []
             for friend in friendsList:
-                if friend["id"] != friendId:
+                if db.child("Users").child(friend["uid"]).get().val()["id"] != friendId:
                     newFriendsList.append(friend)
             db.child("Users").child(userIdValue).update({"friends": newFriendsList})
             return {"message": "friend removed", "newFriendsList": newFriendsList, "error": False}
@@ -326,7 +330,7 @@ class EnigmaServer(Resource):
             pendingFriendRequestsList = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
             newPendingFriendRequestsList = []
             for pendingFriendRequest in pendingFriendRequestsList:
-                if pendingFriendRequest["id"] != friendId:
+                if db.child("Users").child(pendingFriendRequest["uid"]).get().val()["id"] != friendId:
                     newPendingFriendRequestsList.append(pendingFriendRequest)
             db.child("Users").child(userIdValue).update({"pendingFriendRequests": newPendingFriendRequestsList})
             return {"message": "pending friend request removed", "newPendingFriendRequests": newPendingFriendRequestsList, "error": False}
@@ -353,50 +357,64 @@ class EnigmaServerUtils():
     def checkifAlreadySent(self, userIdValue, friendIdValue):
         userId = db.child("Users").child(userIdValue).get().val()["id"]
         pendingFriendRequestsList = db.child("Users").child(friendIdValue).child("pendingFriendRequests").get().val()
+        myPendingFriendRequestsList = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
+        if myPendingFriendRequestsList != None:
+            for myPending in myPendingFriendRequestsList:
+                if myPending["uid"] == friendIdValue:
+                    return 0 # Already in pending
         if pendingFriendRequestsList != None:
             for friendRequest in pendingFriendRequestsList:
-                requestUserId = friendRequest["id"]
+                requestUserId = db.child("Users").child(friendRequest["uid"]).get().val()["id"]
                 if userId == requestUserId:
-                    return True
-        return False
+                    return 1 # Already sent
+        return 2 # Found
     
     def checkIfAlreadyAdded(self, userIdValue, friendId):
         friendList = db.child("Users").child(userIdValue).child("friends").get().val()
         if friendList != None:
             for friend in friendList:
-                userFriendId = friend["id"]
+                userFriendId = db.child("Users").child(friend["uid"]).get().val()["id"]
                 if friendId == userFriendId:
                     return True
         return False
     
-    def createId(self, id):
-        output = ""
-        carryover = True
-        if id != None:
-            for i in range(len(id) - 1, 0, -1):
-                c = str(id[i])
-                if carryover:
-                    n = self.decodeId(c[0]) + 1
-                    c = "0"
-                    if n < 62:
-                        c = self.encodeId(n)
-                        carryover = False
-                output += c
-        output += "#"
-        return output[::-1]
+    # def createId(self, id):
+    #     output = ""
+    #     carryover = True
+    #     if id != None:
+    #         for i in range(len(id) - 1, 0, -1):
+    #             c = str(id[i])
+    #             if carryover:
+    #                 n = self.decodeId(c[0]) + 1
+    #                 c = "0"
+    #                 if n < 62:
+    #                     c = self.encodeId(n)
+    #                     carryover = False
+    #             output += c
+    #     output += "#"
+    #     return output[::-1]
+    
+    def createId(self):
+        output = "#"
+        for i in range(7):
+            output += self.encodeId(random.randrange(0, 9+26+26))
+        for user in db.child("Users").get().val():
+            if db.child("Users").child(user).get().val()["id"] == output:
+                output = self.createId()
+        return output
 
-    def decodeId(self, c):
-        hashcode = ord(c)
-        n = 0
-        if hashcode in range(48, 58, 1): # numbers
-            n = hashcode - 48
+    # def decodeId(self, c):
+    #     hashcode = ord(c)
+    #     n = 0
+    #     if hashcode in range(48, 58, 1): # numbers
+    #         n = hashcode - 48
     
-        if hashcode in range(97, 123, 1): # lowercase
-            n = hashcode - 97 + 10
+    #     if hashcode in range(97, 123, 1): # lowercase
+    #         n = hashcode - 97 + 10
     
-        if hashcode in range(65, 91, 1): # uppercase
-            n = hashcode - 65 + 10 + 26
-        return n
+    #     if hashcode in range(65, 91, 1): # uppercase
+    #         n = hashcode - 65 + 10 + 26
+    #     return n
     
     def encodeId(self, n):
         index = 0

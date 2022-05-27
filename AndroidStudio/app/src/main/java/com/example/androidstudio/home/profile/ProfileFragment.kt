@@ -1,33 +1,25 @@
 package com.example.androidstudio.home.profile
 
-import android.app.AlertDialog
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.androidstudio.R
-import com.example.androidstudio.classi.*
-import com.google.android.material.tabs.TabItem
+import com.example.androidstudio.classes.*
+import com.example.androidstudio.classes.adapters.ProfileViewPageAdapter
+import com.example.androidstudio.classes.utils.UpdateUI
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.fragment_profile.*
 import org.json.JSONObject
 
 
@@ -100,6 +92,10 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
         val profileCloseButton = rootView.findViewById<Button>(R.id.profile_close_button)
         profileCloseButton.setOnClickListener(this)
 
+        // Number of requests
+        val requestsTextView = rootView.findViewById<TextView>(R.id.profile_friend_request_notification_textView)
+        UpdateUI.updateNotificationInProfile(this, serverHandler, userid, requestsTextView)
+
         return rootView
     }
 
@@ -114,10 +110,6 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
         layoutParams?.width = w
         layoutParams?.height = h
         viewResize.layoutParams = layoutParams
-
-
-//        val addFriendButton = view.findViewById<ImageButton>(R.id.profile_add_friend_button)
-//        addFriendButton.setOnClickListener(this)
 
         // Change name logic
         changeNameButton = view.findViewById<Button>(R.id.profile_change_name_button)
@@ -144,8 +136,6 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             R.id.profile_change_name_button -> changeName()
             R.id.profile_close_button -> dismiss()
-//            R.id.profile_add_friend_button -> addFriendMenu()
-//            R.id.add_friend_button -> addFriend()
         }
     }
 
@@ -154,50 +144,4 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
         serverHandler.postChangeName(userid, username)
         changeNameButton.visibility = View.GONE
     }
-
-//    private fun addFriendMenu() {
-//        val inflater = LayoutInflater.from(context)
-//        viewAlert = inflater.inflate(R.layout.add_friend_alert, null)
-//        val alertDialog = AlertDialog.Builder(context).setView(viewAlert).create()
-//        val addFriendButton = viewAlert.findViewById<Button>(R.id.add_friend_button)
-//        addFriendButton.setOnClickListener(this)
-//        val addFriendCloseButton = viewAlert.findViewById<Button>(R.id.add_friend_close_button)
-//        addFriendCloseButton.setOnClickListener{
-//            alertDialog.dismiss()
-//        }
-//        alertDialog.show()
-//    }
-
-
-//    private fun addFriend() {
-//        val findFriendName = viewAlert.findViewById<EditText>(R.id.find_friend_editText)
-//        serverHandler.getSearchFriend(userid, findFriendName.text.toString(), object : ServerHandler.VolleyCallBack {
-//            override fun onSuccess(reply: JSONObject?) {
-//                val searchResult = viewAlert.findViewById<TextView>(R.id.add_friend_result_textview)
-//                val found = reply?.get("status").toString()
-//                if (found == "found"){
-//                    Log.i(Config.ADDFRIENDTAG, "User found")
-//                    searchResult.text = resources.getString(R.string.friend_found)
-//                    searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_found))
-//                    serverHandler.postSendFriendRequest(userid, findFriendName.text.toString())
-//                }
-//                if (found == "alreadySent"){
-//                    Log.i(Config.ADDFRIENDTAG, "Request at this user already sent")
-//                    searchResult.text = resources.getString(R.string.friend_already_sent)
-//                    searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_sent_added))
-//                }
-//                if (found == "alreadyAdded"){
-//                    Log.i(Config.ADDFRIENDTAG, "User already added")
-//                    searchResult.text = resources.getString(R.string.friend_already_added)
-//                    searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_sent_added))
-//                }
-//                if (found == "notFound"){
-//                    Log.i(Config.ADDFRIENDTAG, "User not found")
-//                    searchResult.text = resources.getString(R.string.friend_not_found)
-//                    searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_not_found))
-//                }
-//            }
-//        })
-//
-//    }
 }
