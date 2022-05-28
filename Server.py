@@ -295,7 +295,7 @@ class EnigmaServer(Resource):
                     if invite["lobbyId"] == lobbyId:
                         return {"message": "user already invited", "status": "alreadyInvited", "error": False}
             newLobbyInvites = currentlobbyInvites
-            newLobbyInvites.append({"lobbyId": lobbyId})
+            newLobbyInvites.append({"lobbyId": lobbyId, "id": senderId, "username": senderName})
             db.child("Users").child(receiver).update({"lobbyInvites": newLobbyInvites})
             return {"message": "user invited to lobby", "status": "notInvited", "error": False}
         
