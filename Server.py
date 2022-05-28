@@ -176,8 +176,16 @@ class EnigmaServer(Resource):
         
         #get lobby users input(req, lobbyId)
         if req == GET_LOBBY_USERS:
-            lobbyUsers = db.child("Lobbies").child(lobbyId).child("lobbyUsers").get().val()
-            return {"message": "current users in lobby", "lobbyUsers": lobbyUsers ,"error": False}
+            team1 = db.child("Lobbies").child(lobbyId).child("lobbyUsers").child("team1").get().val()
+            team2 = db.child("Lobbies").child(lobbyId).child("lobbyUsers").child("team2").get().val()
+            if team2 == None:
+                team2 = []
+            lobbyUsers = []
+            for user in team1:
+                lobbyUsers.append(user)    
+            lobbyUsers += team2 
+            #lobbyUsers = db.child("Lobbies").child(lobbyId).child("lobbyUsers").get().val()
+            return {"message": "current users in lobby", "lobbyUsers": lobbyUsers , "team1": team1, "team2": team2 ,"error": False}
         
         return {"message": "get request failed", "error": True}
       
@@ -202,7 +210,7 @@ class EnigmaServer(Resource):
             masterUsername = masterUser["username"]
             masterId = masterUser["id"]
             db.child("Lobbies").child(lobbyId).child("roomMaster").set({"username":masterUsername, "id": masterId})
-            db.child("Lobbies").child(lobbyId).child("lobbyUsers").set([{"username":masterUsername, "id": masterId}])
+            db.child("Lobbies").child(lobbyId).child("lobbyUsers").child("team1").set([{"username":masterUsername, "id": masterId}])
             lobby = db.child("Lobbies").child(lobbyId).get().val()
             return {"message": "lobby created", "lobby": lobby, "error": False}
         
@@ -296,12 +304,20 @@ class EnigmaServer(Resource):
             lobby = db.child("Lobbies").child(lobbyId).get().val()
             userUsername = db.child("Users").child(userIdValue).get().val()["username"]
             userId = db.child("Users").child(userIdValue).get().val()["id"]
-            currentLobbyUsers = db.child("Lobbies").child(lobbyId).child("lobbyUsers").get().val()
+            team1Members = db.child("Lobbies").child(lobbyId).child("lobbyUsers").child("team1").get().val()
+            team2Members = db.child("Lobbies").child(lobbyId).child("lobbyUsers").child("team2").get().val()
+            if team2Members == None:
+                team2Members = []
+            lessMembers = team1Members
+            teamWithLessMembers = "team1"
+            if len(team1Members) > len(team2Members):
+                lessMembers = team2Members
+                teamWithLessMembers = "team2"
             newLobbyUsers = []
-            for user in currentLobbyUsers:
+            for user in lessMembers:
                 newLobbyUsers.append(user)
             newLobbyUsers.append({"username":userUsername, "id":userId })
-            db.child("Lobbies").child(lobbyId).update({"lobbyUsers": newLobbyUsers})
+            db.child("Lobbies").child(lobbyId).child("lobbyUsers").update({teamWithLessMembers: newLobbyUsers})
             return {"message": "connected to lobby", "error": False}
 
         #cambia squadra lobby
