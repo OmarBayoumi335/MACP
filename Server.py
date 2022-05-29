@@ -1,5 +1,6 @@
 import random
 import pyrebase
+import time
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 
@@ -53,6 +54,7 @@ getParser.add_argument('req', type = int, required = True)
 getParser.add_argument('userId', type = str, required = False)
 getParser.add_argument('friendId', type = str, required = False)
 getParser.add_argument('lobbyId', type = str, required = False)
+getParser.add_argument('googleUserId', type = str, required = False)
 
 #post parser
 postParser = reqparse.RequestParser()
@@ -70,6 +72,7 @@ putParser.add_argument('friendId', type = str, required = False)
 putParser.add_argument('username', type = str, required = False)
 putParser.add_argument('id', type = str, required = False)
 putParser.add_argument('lobbyId', type = str, required = False)
+putParser.add_argument('googleUserId', type = str, required = False)
 
 
 
@@ -90,12 +93,29 @@ class EnigmaServer(Resource):
         args = getParser.parse_args()
         users = db.child("Users").get().val()
         req = args['req']
-        userIdValue = args['userId']
+        userId = args['userId']
+        googleUserId = args["googleUserId"]
         friendId = args['friendId']
         lobbyId = args['lobbyId']
         
         #get friends list input(req, userId, friendid)
         if req == GET_SEARCH_FRIEND:
+# =============================================================================
+#             start = time.time()
+#             for i in range(5):
+#                 db.child("Users").child("vediamoSeFunge").get().val()
+#             end = time.time()
+#             
+#             start1 = time.time()
+#             for i in range(5):
+#                 for user in users:
+#                     if db.child("Users").child(user).get().val()["id"] == friendId:
+#                         a = 1 + 1
+#                         break
+#             end1 = time.time()
+#             
+#             return {"metodo1": end - start, "metodo2": end1 - start1}
+# =============================================================================
             if db.child("Users").child(userIdValue).get().val()["id"] != friendId:
                 for user in users:
                     friend = db.child("Users").child(user).child("id").get().val()
@@ -115,9 +135,8 @@ class EnigmaServer(Resource):
         
         #get user information input(req, userId)
         if req == GET_USER_INFORMATION:
-            username = db.child("Users").child(userIdValue).get().val()["username"]
-            userId = db.child("Users").child(userIdValue).get().val()["id"]
-            return {"message": "username and password of the current user", "username": username, "id": userId, "error": False}
+            username = db.child("Users").child(userId).get().val()["username"]
+            return {"message": "username and password of the current user", "username": username, "error": False}
         
         #get friends input(req, userId)
         if req == GET_FRIENDS_LIST:
@@ -143,10 +162,10 @@ class EnigmaServer(Resource):
                    "pendingFriendRequests": outPendingList, 
                    "error": False}
         
-        #get return if the current user exist input(req, userId)
+        #get return if the current user exist input(req, googleUserId)
         if req == GET_USER_EXIST:
-            for user in users:
-                if user == userIdValue:
+            for user in db.child("GoogleUserIds").get().val():
+                if user == googleUserId:
                     return{"message": "user already exist", 
                            "exist": True, 
                            "error": False}
@@ -194,15 +213,16 @@ class EnigmaServer(Resource):
         args = putParser.parse_args()
         users = db.child("Users").get().val()
         req = args['req']
-        userId = args['userId']
+        #userId = args['userId']
         username = args['username']
-        userIdField = args['id']
         lobbyId = args['lobbyId']
+        googleUserId = args["googleUserId"]
         
-        #put create new user input(req, userId, usrname)
+        #put create new user input(req, googleUserId, username)
         if req == PUT_NEW_USER:
-            userIdValue = self.serverUtils.createId()
-            db.child("Users").child(userId).set({"username": username, "id": userIdValue})
+            newId = self.serverUtils.createId()
+            db.child("Users").child(newId).set({"username": username})
+            db.child("googleUsersIds").set({googleUserId: newId})
             return {"message": "user created", "error": False}
         
         #lobby creation input(req, userId, lobbyId)
@@ -345,6 +365,7 @@ class EnigmaServer(Resource):
         friendId = args['friendId']
         lobbyId = args['lobbyId']
         
+        
         #delete friend input(req, userIdValue, friendId)
         if req == DELETE_REMOVE_FRIEND:
             friendsList = db.child("Users").child(userIdValue).child("friends").get().val()
@@ -425,12 +446,13 @@ class EnigmaServerUtils():
     #     return output[::-1]
     
     def createId(self):
-        output = "#"
+        output = ""
         for i in range(7):
             output += self.encodeId(random.randrange(0, 9+26+26))
-        for user in db.child("Users").get().val():
-            if db.child("Users").child(user).get().val()["id"] == output:
-                output = self.createId()
+        if db.child("Users").get().val() != None:
+            for user in db.child("Users").get().val():
+                if user == output:
+                    output = self.createId()
         return output
 
     # def decodeId(self, c):
