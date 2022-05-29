@@ -57,8 +57,8 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
         val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
 
         // UID
-        sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", MODE_PRIVATE)
-        userid = sharedPreferences.getString("UID", "").toString()
+        sharedPreferences = requireActivity().getSharedPreferences("lastId", MODE_PRIVATE)
+        userid = sharedPreferences.getString("ID", "").toString()
 
         // Set top part views
         nameEditText = rootView.findViewById(R.id.profile_name_edittext)
@@ -66,7 +66,7 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
         serverHandler = ServerHandler(requireContext())
         serverHandler.getUserInformation(userid, object : ServerHandler.VolleyCallBack {
             override fun onSuccess(reply: JSONObject?) {
-                idTextView.text = resources.getString(R.string.id).plus(reply?.get("id").toString())
+                idTextView.text = resources.getString(R.string.id).plus(userid)
                 username = reply?.get("username").toString()
                 nameEditText.setText(username)
             }

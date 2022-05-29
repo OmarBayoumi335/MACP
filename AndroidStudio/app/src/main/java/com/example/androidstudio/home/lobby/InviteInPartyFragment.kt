@@ -13,7 +13,13 @@ import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
 import com.example.androidstudio.classes.utils.UpdateUI
 
-class InviteInPartyFragment : DialogFragment(), View.OnClickListener {
+class InviteInPartyFragment(lobbyId: String) : DialogFragment(), View.OnClickListener {
+
+    private var lobbyId: String
+
+    init {
+        this.lobbyId = lobbyId
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +39,7 @@ class InviteInPartyFragment : DialogFragment(), View.OnClickListener {
         // Recycler view with update every sec
         val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
         val serverHandler = ServerHandler(requireContext())
-        UpdateUI.updateInviteFriendsList(requireContext(), this, serverHandler, userid, inviteFriendListRecyclerView)
+        UpdateUI.updateInviteFriendsList(requireContext(), this, serverHandler, userid, inviteFriendListRecyclerView, lobbyId)
 
         return rootView
     }

@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
-import com.example.androidstudio.classes.User
+import com.example.androidstudio.classes.types.User
 
 class ProfileFriendListAdapter(private val c: Context,
                                private val mUser: List<User>,

@@ -45,10 +45,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         serverHandler = ServerHandler(applicationContext)
 
         // Setting the name if you have already logged in in the past
-        sharedPreferences = getSharedPreferences("lastGoogleId", MODE_PRIVATE)
-        val lastUid : String = sharedPreferences.getString("UID", "").toString()
+        sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
+        val lastId : String = sharedPreferences.getString("ID", "").toString()
         usernameEditText = findViewById<EditText>(R.id.login_username_edittext)
-        serverHandler.getUserInformation(lastUid, object : ServerHandler.VolleyCallBack {
+        serverHandler.getUserInformation(lastId, object : ServerHandler.VolleyCallBack {
             override fun onSuccess(reply: JSONObject?) {
                 usernameEditText.setText(reply?.get("username").toString())
             }
@@ -104,7 +104,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                             // Sign in success, update UI with the signed-in user's information
                             Log.i(Config.LOGINTAG, "signInWithCredential: success")
                             val user = auth.currentUser
-                            sharedPreferences.edit().putString("UID", auth.uid).apply()
                             signIn(user)
                         } else {
                             // If sign in fails, display a message to the user.
@@ -137,6 +136,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun signIn(currentUser: FirebaseUser?, fromOnStart: Boolean = false) {
+//        sharedPreferences.edit().putString("ID", auth.uid).apply()
         if (currentUser != null) {
             serverHandler.getUserExist(currentUser.uid, object : ServerHandler.VolleyCallBack {
                 override fun onSuccess(reply: JSONObject?) {

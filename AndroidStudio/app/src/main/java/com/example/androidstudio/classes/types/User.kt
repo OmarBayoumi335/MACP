@@ -1,9 +1,8 @@
-package com.example.androidstudio.classes
+package com.example.androidstudio.classes.types
 
-class User(username: String, id: String) {
+open class User(username: String, id: String) {
     private var username: String
     private var id: String
-    constructor() : this("", "#0000000")
 
     init {
         this.username = username
@@ -11,7 +10,7 @@ class User(username: String, id: String) {
     }
 
     fun getUsername(): String {
-        return username
+        return this.username
     }
 
     fun setUsername(name: String) {
@@ -19,7 +18,7 @@ class User(username: String, id: String) {
     }
 
     fun getId(): String {
-        return id
+        return this.id
     }
 
     fun setId(surname: String){

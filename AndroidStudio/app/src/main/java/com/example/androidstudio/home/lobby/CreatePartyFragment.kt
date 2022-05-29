@@ -3,6 +3,7 @@ package com.example.androidstudio.home.lobby
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +15,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.UpdateUI
 import com.example.androidstudio.home.profile.ProfileFragment
 
 
 class CreatePartyFragment : Fragment(), View.OnClickListener {
+
+    private lateinit var lobbyId: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +31,13 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_create_party, container, false)
         val serverHandler = ServerHandler(requireContext())
+
+        lobbyId = arguments?.getString("lobbyId").toString()
+        if (lobbyId != "null"){  // room master
+
+        } else { // normal player
+
+        }
 
         // UID
         val sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", Context.MODE_PRIVATE)
@@ -75,7 +86,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     }
 
     private fun invite() {
-        InviteInPartyFragment().show(requireActivity().supportFragmentManager, "Lobby->Invite")
+        InviteInPartyFragment(lobbyId).show(requireActivity().supportFragmentManager, "Lobby->Invite")
     }
 
     private fun leave() {

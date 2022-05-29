@@ -1,21 +1,23 @@
 package com.example.androidstudio.classes.adapters
 
-import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
-import com.example.androidstudio.classes.User
+import com.example.androidstudio.classes.types.User
+import org.json.JSONObject
 
 class InviteFriendListAdapter(private val c: Context,
                               private val mUser: List<User>,
-//                              private val uid: String,
-                              private val serverHandler: ServerHandler): RecyclerView.Adapter<InviteFriendListAdapter.ViewHolder>(){
+                              private val uid: String,
+                              private val serverHandler: ServerHandler,
+                              private val lobbyId: String): RecyclerView.Adapter<InviteFriendListAdapter.ViewHolder>(){
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var tvUsername: TextView = itemView.findViewById(R.id.invite_friend_item_username_textview)
@@ -39,7 +41,20 @@ class InviteFriendListAdapter(private val c: Context,
         tvUsername.text = friend.getUsername()
         tvId.text = friend.getId()
         bPositive.setOnClickListener {
-
+            serverHandler.postSendLobbyInvite(uid, friend.getId(), lobbyId, object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+//                    val status = reply?.get("status")
+                    val message = reply?.get("message").toString()
+                    Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+//                    if (status == "invited") {
+//                        Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+//                    } else if (status == "alreadyInvited") {
+//                        bPositive.visibility = View.GONE
+//                    } else if (status == "alreadyinLobby") {
+//                        bPositive.visibility = View.GONE
+//                    }
+                }
+            })
         }
 
     }

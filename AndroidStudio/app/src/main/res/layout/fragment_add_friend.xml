@@ -27,7 +27,7 @@
         android:ems="6"
         android:hint="@string/find_friend_hint"
         android:inputType="textPersonName"
-        android:maxLength="8"
+        android:maxLength="7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

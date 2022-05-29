@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
@@ -15,12 +16,17 @@ import com.example.androidstudio.classes.ServerHandler
 class SetupGameFragment : Fragment(), View.OnClickListener {
 
     private var numberInvites: Int = 0
+    private lateinit var userid: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_setup_game, container, false)
+
+        // UID
+        val sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", Context.MODE_PRIVATE)
+        userid = sharedPreferences.getString("UID", "").toString()
 
         // Create party
         val createPartyButton = rootView.findViewById<Button>(R.id.party_creation_button)
@@ -67,7 +73,8 @@ class SetupGameFragment : Fragment(), View.OnClickListener {
         val userid = sharedPreferences.getString("UID", "").toString()
         val serverHandler = ServerHandler(requireContext())
         serverHandler.putNewLobby(userid, userid)
-        findNavController().navigate(R.id.action_setupGameFragment_to_createPartyFragment)
+        val bundle = bundleOf("lobbyId" to userid)
+        findNavController().navigate(R.id.action_setupGameFragment_to_createPartyFragment, bundle)
     }
 
     private fun back() {

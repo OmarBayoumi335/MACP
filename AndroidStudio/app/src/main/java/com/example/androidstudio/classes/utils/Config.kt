@@ -5,6 +5,7 @@ class Config {
     companion object{
         // Server
         val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
+//        val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
         val POLLING_PERIOD = 1000L
 
         // Firebase/Google

@@ -3,18 +3,22 @@ package com.example.androidstudio.classes.utils
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.ServerHandler
-import com.example.androidstudio.classes.User
+import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.adapters.InviteFriendListAdapter
+import com.example.androidstudio.classes.adapters.LobbyInvitesAdapeter
 import com.example.androidstudio.classes.adapters.LobbyTeamAdapter
+import com.example.androidstudio.classes.types.UserLobby
 import com.example.androidstudio.home.MenuActivity
 import com.example.androidstudio.home.lobby.CreatePartyFragment
 import com.example.androidstudio.home.lobby.InviteInPartyFragment
+import com.example.androidstudio.home.lobby.PartyInvitationFragment
 import com.example.androidstudio.home.profile.ProfileFragment
 import org.json.JSONObject
 
@@ -101,7 +105,8 @@ class UpdateUI {
                                     inviteInPartyFragment: InviteInPartyFragment,
                                     serverHandler: ServerHandler,
                                     userid: String,
-                                    profileFriendsRecyclerView: RecyclerView) {
+                                    profileFriendsRecyclerView: RecyclerView,
+                                    lobbyId: String) {
             serverHandler.getFriendsList(userid, object : ServerHandler.VolleyCallBack {
                 override fun onSuccess(reply: JSONObject?) {
                     var friendListView: List<User> = emptyList()
@@ -116,7 +121,7 @@ class UpdateUI {
                             friendListView += friendUser
                         }
                     }
-                    val profileFriendListAdapter = InviteFriendListAdapter(c, friendListView, serverHandler)
+                    val profileFriendListAdapter = InviteFriendListAdapter(c, friendListView, userid, serverHandler, lobbyId)
                     profileFriendsRecyclerView.adapter = profileFriendListAdapter
                     profileFriendsRecyclerView.layoutManager = LinearLayoutManager(c)
 //                    Log.i(Config.UPDATEUITAG, "Update of friends view")
@@ -127,7 +132,8 @@ class UpdateUI {
                                 inviteInPartyFragment,
                                 serverHandler,
                                 userid,
-                                profileFriendsRecyclerView
+                                profileFriendsRecyclerView,
+                                lobbyId
                             )
                         }, Config.POLLING_PERIOD)
                     }
@@ -195,6 +201,48 @@ class UpdateUI {
                                 userid,
                                 profileFriendsRecyclerView,
                                 team1
+                            )
+                        }, Config.POLLING_PERIOD)
+                    }
+                }
+            })
+        }
+
+
+
+        fun updateInviteList(c: Context,
+                             partyInvitationFragment: PartyInvitationFragment,
+                             serverHandler: ServerHandler,
+                             userid: String,
+                             profileFriendsRecyclerView: RecyclerView) {
+            serverHandler.getLobbyInvites(userid, object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+                    val lobbyId = ""
+                    var invitesListView: List<UserLobby> = emptyList()
+                    if (reply!!.get("lobbyInvites").toString() != "null") {
+                        val invites = reply.getJSONArray("lobbyInvites")
+                        val invitesNumber = invites.length()
+                        for (i in 0 until invitesNumber) {
+                            val attributes = invites[i].toString().split(",")
+                            val id = attributes[0].substring(7, attributes[0].length-1)
+                            val lobbyId = attributes[1].substring(11, attributes[1].length-1)
+                            val username = attributes[2].substring(12, attributes[2].length-2)
+                            val userLobby = UserLobby(username, id, lobbyId)
+                            invitesListView += userLobby
+                        }
+                    }
+                    val profileFriendListAdapter = LobbyInvitesAdapeter(c, invitesListView, userid, serverHandler)
+                    profileFriendsRecyclerView.adapter = profileFriendListAdapter
+                    profileFriendsRecyclerView.layoutManager = LinearLayoutManager(c)
+//                    Log.i(Config.UPDATEUITAG, "Update of friends view")
+                    if (partyInvitationFragment.context != null) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            updateInviteList(
+                                c,
+                                partyInvitationFragment,
+                                serverHandler,
+                                userid,
+                                profileFriendsRecyclerView
                             )
                         }, Config.POLLING_PERIOD)
                     }

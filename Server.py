@@ -22,6 +22,7 @@ db = firebase.database()
 GET_SEARCH_FRIEND = 0
 GET_USER_INFORMATION = 1
 GET_FRIENDS_LIST = 2
+GET_FRIENDS_LOBBY_STATUS_LIST = 19
 GET_PENDING_FRIENDS_REQUEST = 3
 GET_USER_EXIST = 9
 GET_NUM_PENDING_FRIENDS_REQUEST = 11
@@ -284,20 +285,33 @@ class EnigmaServer(Resource):
             sender = db.child("Users").child(userIdValue).get().val()
             senderName = sender["username"]
             senderId = sender["id"]
-            for user in users:
+            for user in users:     
                 if db.child("Users").child(user).get().val()["id"] == friendId:
                     receiver = user
             currentlobbyInvites = db.child("Users").child(receiver).child("lobbyInvites").get().val()
             if currentlobbyInvites == None:
                 currentlobbyInvites = []
+            # else:
+            for invite in currentlobbyInvites:
+                if invite["lobbyId"] == lobbyId:
+                    return {"message": "user already invited", "status": "alreadyInvited", "error": False}
+            lobby = db.child("Lobbies").child(lobbyId).child("lobbyUsers").get().val()
+            if lobby.get("team1") == None:
+                team1 = []
             else:
-                for invite in currentlobbyInvites:
-                    if invite["lobbyId"] == lobbyId:
-                        return {"message": "user already invited", "status": "alreadyInvited", "error": False}
+                team1 = lobby["team1"]
+            if lobby.get("team2") == None:
+                team2 = []
+            else:
+                team2 = lobby["team2"]
+            teams = team1 + team2
+            for member in teams:
+                if member["id"] == friendId:
+                    return {"message": "user already in lobby", "status": "alreadyInLobby", "error": False}    
             newLobbyInvites = currentlobbyInvites
             newLobbyInvites.append({"lobbyId": lobbyId, "id": senderId, "username": senderName})
             db.child("Users").child(receiver).update({"lobbyInvites": newLobbyInvites})
-            return {"message": "user invited to lobby", "status": "notInvited", "error": False}
+            return {"message": "user invited to lobby", "status": "invited", "error": False}
         
         #enter into lobby input(req, userId, lobbyId)
         if req == POST_ENTER_IN_LOBBY:

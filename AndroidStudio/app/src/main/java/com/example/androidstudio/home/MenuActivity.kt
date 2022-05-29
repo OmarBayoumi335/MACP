@@ -36,6 +36,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun openProfile() {
-        ProfileFragment().show(supportFragmentManager, "MenuActivity->Profile")
+        val p = ProfileFragment()
+        p.show(supportFragmentManager, "MenuActivity->Profile")
     }
 }

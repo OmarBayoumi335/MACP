@@ -103,11 +103,11 @@ class ServerHandler(context: Context) {
         queue.add(stringRequest)
     }
 
-    fun getUserExist(userId: String, callBack: VolleyCallBack) {
+    fun getUserExist(googleUserId: String, callBack: VolleyCallBack) {
         val stringRequest = StringRequest(
             Request.Method.GET, url
                     + "req=" + Config.GET_USER_EXIST
-                    + "&userId=" + userId, {
+                    + "&googleUserId=" + googleUserId, {
                     response ->
                 // Display the first 500 characters of the response string.
                 val reply = JSONObject(response.toString())
@@ -134,6 +134,42 @@ class ServerHandler(context: Context) {
             }, {
                     error: VolleyError? ->
                 Log.e(Config.API, "get num pending error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun getLobbyInvites(userId: String, callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.GET, url
+                    + "req=" + Config.GET_LOBBY_INVITES
+                    + "&userId=" + userId, {
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "get lobby invites onSuccess: $reply")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get lobby invites error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun getLobbyUsers(userId: String, callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.GET, url
+                    + "req=" + Config.GET_LOBBY_USERS
+                    + "&userId=" + userId, {
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "get lobby users onSuccess: $reply")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get lobby users error: " + error.toString())
             })
         // Add the request to the RequestQueue.
         queue.add(stringRequest)
@@ -193,11 +229,31 @@ class ServerHandler(context: Context) {
         queue.add(stringRequest)
     }
 
-    fun putNewUser(userId: String, username: String) {
+    fun postSendLobbyInvite(userId: String, friendId: String, lobbyId: String, callBack: VolleyCallBack) {
+        val stringRequest = StringRequest(
+            Request.Method.POST, url
+                    + "req=" + Config.POST_SEND_LOBBY_INVITE
+                    + "&userId=" + userId
+                    + "&friendId=" + "%23".plus(friendId.substring(1))
+                    + "&lobbyId=" + lobbyId,{
+                    response ->
+                // Display the first 500 characters of the response string.
+                val reply = JSONObject(response.toString())
+                Log.i(Config.API, "post send lobby invite onSuccess: $reply")
+                callBack.onSuccess(reply)
+            }, {
+                    error: VolleyError? ->
+                Log.e(Config.API, "get send lobby invite error: " + error.toString())
+            })
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest)
+    }
+
+    fun putNewUser(googleUserId: String, username: String) {
         val stringRequest = StringRequest(
             Request.Method.PUT, url
                     + "req=" + Config.PUT_NEW_USER
-                    + "&userId=" + userId
+                    + "&googleUserId=" + googleUserId
                     + "&username=" + username,{
                     response ->
                 // Display the first 500 characters of the response string.
