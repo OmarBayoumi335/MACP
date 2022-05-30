@@ -40,18 +40,18 @@ class ProfileFriendListAdapter(private val c: Context,
         val tvId = holder.tvId
         val bPositive = holder.bPositive
         val bNegative = holder.bNegative
-        tvUsername.text = friend.getUsername()
-        tvId.text = friend.getId()
+        tvUsername.text = friend.username
+        tvId.text = friend.userId
         if (tab == 0) {
             holder.bPositive.visibility = View.GONE
             bNegative.setOnClickListener {
                 AlertDialog.Builder(c)
                     .setTitle(R.string.remove_friend_alert_title)
-                    .setMessage(c.resources.getString(R.string.remove_friend_alert_message) + "\n" + friend.getId() + " " + friend.getUsername() + " ?")
+                    .setMessage(c.resources.getString(R.string.remove_friend_alert_message) + "\n" + friend.userId + " " + friend.username + " ?")
                     .setPositiveButton(
                         R.string.yes
                     ) { _, _ ->
-                        serverHandler.deleteFriend(uid, friend.getId())
+//                        serverHandler.deleteFriend(uid, friend.getId())
                     }
                     .setNegativeButton(R.string.no, null)
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -59,10 +59,10 @@ class ProfileFriendListAdapter(private val c: Context,
             }
         } else if (tab == 1) {
             bPositive.setOnClickListener {
-                serverHandler.postAcceptFriendRequest(uid, friend.getId())
+//                serverHandler.postAcceptFriendRequest(uid, friend.getId())
             }
             bNegative.setOnClickListener {
-                serverHandler.deleteRejectFriendRequest(uid, friend.getId())
+//                serverHandler.deleteRejectFriendRequest(uid, friend.getId())
             }
         }
     }

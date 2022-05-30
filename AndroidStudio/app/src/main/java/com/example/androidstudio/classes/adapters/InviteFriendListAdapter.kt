@@ -38,23 +38,23 @@ class InviteFriendListAdapter(private val c: Context,
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
         val bPositive = holder.bInvite
-        tvUsername.text = friend.getUsername()
-        tvId.text = friend.getId()
+        tvUsername.text = friend.username
+        tvId.text = friend.userId
         bPositive.setOnClickListener {
-            serverHandler.postSendLobbyInvite(uid, friend.getId(), lobbyId, object : ServerHandler.VolleyCallBack {
-                override fun onSuccess(reply: JSONObject?) {
-//                    val status = reply?.get("status")
-                    val message = reply?.get("message").toString()
-                    Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
-//                    if (status == "invited") {
-//                        Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
-//                    } else if (status == "alreadyInvited") {
-//                        bPositive.visibility = View.GONE
-//                    } else if (status == "alreadyinLobby") {
-//                        bPositive.visibility = View.GONE
-//                    }
-                }
-            })
+//            serverHandler.postSendLobbyInvite(uid, friend.getId(), lobbyId, object : ServerHandler.VolleyCallBack {
+//                override fun onSuccess(reply: JSONObject?) {
+////                    val status = reply?.get("status")
+//                    val message = reply?.get("message").toString()
+//                    Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+////                    if (status == "invited") {
+////                        Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+////                    } else if (status == "alreadyInvited") {
+////                        bPositive.visibility = View.GONE
+////                    } else if (status == "alreadyinLobby") {
+////                        bPositive.visibility = View.GONE
+////                    }
+//                }
+//            })
         }
 
     }

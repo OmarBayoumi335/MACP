@@ -3,8 +3,11 @@ package com.example.androidstudio.home.profile
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,30 +20,33 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.*
 import com.example.androidstudio.classes.adapters.ProfileViewPageAdapter
+import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.UpdateUI
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.json.JSONObject
 
 
-class ProfileFragment : DialogFragment(), View.OnClickListener {
+class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
+
+    private val user: User
+
+    init {
+        this.user = user
+    }
 
 //    private lateinit var profileFriendsRecyclerView: RecyclerView
 
     // Username
     private lateinit var nameEditText: EditText
-    private lateinit var username: String
 
     // Id
     private lateinit var idTextView: TextView
-    private lateinit var userid: String
 
     // Change name
     private lateinit var changeNameButton: Button
     private lateinit var newName: String
-
-//    private lateinit var rootView: View
-//    private lateinit var viewAlert: View
 
     // Utils
     private lateinit var serverHandler: ServerHandler
@@ -55,22 +61,13 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
-
-        // UID
-        sharedPreferences = requireActivity().getSharedPreferences("lastId", MODE_PRIVATE)
-        userid = sharedPreferences.getString("ID", "").toString()
+        serverHandler = ServerHandler(requireContext())
 
         // Set top part views
         nameEditText = rootView.findViewById(R.id.profile_name_edittext)
         idTextView = rootView.findViewById(R.id.profile_id)
-        serverHandler = ServerHandler(requireContext())
-        serverHandler.getUserInformation(userid, object : ServerHandler.VolleyCallBack {
-            override fun onSuccess(reply: JSONObject?) {
-                idTextView.text = resources.getString(R.string.id).plus(userid)
-                username = reply?.get("username").toString()
-                nameEditText.setText(username)
-            }
-        })
+        idTextView.text = resources.getString(R.string.id).plus(user.userId)
+        nameEditText.setText(user.username)
 
         // Set the profile tab menu
         val pager = rootView.findViewById<ViewPager2>(R.id.profile_view_pager)
@@ -94,8 +91,11 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
 
         // Number of requests
         val requestsTextView = rootView.findViewById<TextView>(R.id.profile_friend_request_notification_textView)
-        UpdateUI.updateNotificationInProfile(this, serverHandler, userid, requestsTextView)
-
+        if (user.pendingFriendRequests != null) {
+            requestsTextView.visibility = View.VISIBLE
+            requestsTextView.text = user.pendingFriendRequests!!.size.toString()
+        }
+        update(requestsTextView)
         return rootView
     }
 
@@ -112,13 +112,13 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
         viewResize.layoutParams = layoutParams
 
         // Change name logic
-        changeNameButton = view.findViewById<Button>(R.id.profile_change_name_button)
+        changeNameButton = view.findViewById(R.id.profile_change_name_button)
         changeNameButton.visibility = View.GONE
         changeNameButton.setOnClickListener(this)
         nameEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 newName = s.toString()
-                if (s.toString() == username) {
+                if (newName == user.username) {
                     changeNameButton.visibility = View.GONE
                 }
                 else {
@@ -140,8 +140,29 @@ class ProfileFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun changeName() {
-        username = newName
-        serverHandler.postChangeName(userid, username)
+        user.username = newName
+        serverHandler.apiCall(
+            Config.POST,
+            Config.POST_CHANGE_NAME,
+            userId = user.userId,
+            newName = user.username)
         changeNameButton.visibility = View.GONE
+    }
+
+    private fun update(notification: TextView) {
+        Log.i(Config.PROFILETAG, "update() ${notification.text}")
+        if (user.pendingFriendRequests != null) {
+            notification.visibility = View.VISIBLE
+            notification.text = user.pendingFriendRequests?.size.toString()
+        } else {
+            notification.visibility = View.GONE
+        }
+        notification.text = user.pendingFriendRequests?.size.toString()
+        if (this.context != null) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                update(notification)
+            },
+                Config.POLLING_PERIOD)
+        }
     }
 }

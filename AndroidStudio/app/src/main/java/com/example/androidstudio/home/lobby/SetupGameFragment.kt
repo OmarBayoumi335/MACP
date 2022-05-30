@@ -72,7 +72,7 @@ class SetupGameFragment : Fragment(), View.OnClickListener {
         val sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", Context.MODE_PRIVATE)
         val userid = sharedPreferences.getString("UID", "").toString()
         val serverHandler = ServerHandler(requireContext())
-        serverHandler.putNewLobby(userid, userid)
+//        serverHandler.putNewLobby(userid, userid)
         val bundle = bundleOf("lobbyId" to userid)
         findNavController().navigate(R.id.action_setupGameFragment_to_createPartyFragment, bundle)
     }

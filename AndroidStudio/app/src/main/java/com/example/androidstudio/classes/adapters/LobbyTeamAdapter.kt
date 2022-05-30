@@ -47,8 +47,8 @@ class LobbyTeamAdapter(private val c: Context,
         // Set item views based on your views and data model
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
-        tvUsername.text = friend.getUsername()
-        tvId.text = friend.getId()
+        tvUsername.text = friend.username
+        tvId.text = friend.userId
 
     }
 

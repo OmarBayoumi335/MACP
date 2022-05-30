@@ -36,18 +36,18 @@ class MenuFragment : Fragment(), View.OnClickListener {
             .build()
 
         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
-
+//
         val logoutButton = view.findViewById<Button>(R.id.logout_button)
         logoutButton.setOnClickListener(this)
-
-        val playButton = view.findViewById<Button>(R.id.button_play)
-        playButton.setOnClickListener(this)
+//
+//        val playButton = view.findViewById<Button>(R.id.button_play)
+//        playButton.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.logout_button  -> signOut()
-            R.id.button_play    -> openSetupGame()
+//            R.id.button_play    -> openSetupGame()
         }
     }
 

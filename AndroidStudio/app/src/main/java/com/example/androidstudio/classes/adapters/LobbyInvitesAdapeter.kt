@@ -10,10 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
 import com.example.androidstudio.classes.types.User
-import com.example.androidstudio.classes.types.UserLobby
 
 class LobbyInvitesAdapeter(private val c: Context,
-                           private val mUser: List<UserLobby>,
+                           private val mUser: List<User>,
                            private val uid: String,
                            private val serverHandler: ServerHandler): RecyclerView.Adapter<LobbyInvitesAdapeter.ViewHolder>(){
 
@@ -32,14 +31,14 @@ class LobbyInvitesAdapeter(private val c: Context,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val friend: UserLobby = mUser[position]
+        val friend: User = mUser[position]
         // Set item views based on your views and data model
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
         val bAccept = holder.bAccept
         val bDecline = holder.bDecline
-        tvUsername.text = friend.getUsername()
-        tvId.text = friend.getId()
+        tvUsername.text = friend.username
+        tvId.text = friend.userId
 
         bAccept.setOnClickListener {
 //            serverHandler.postSendLobbyInvite(uid, lobbyId)

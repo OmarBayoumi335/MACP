@@ -9,8 +9,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.MenuActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -24,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import org.json.JSONObject
 
 
@@ -47,10 +49,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         // Setting the name if you have already logged in in the past
         sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
         val lastId : String = sharedPreferences.getString("ID", "").toString()
-        usernameEditText = findViewById<EditText>(R.id.login_username_edittext)
-        serverHandler.getUserInformation(lastId, object : ServerHandler.VolleyCallBack {
-            override fun onSuccess(reply: JSONObject?) {
-                usernameEditText.setText(reply?.get("username").toString())
+        usernameEditText = findViewById(R.id.login_username_edittext)
+        serverHandler.apiCall(
+            Config.GET,
+            Config.GET_USERNAME,
+            userId = lastId,
+            callBack = object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+                    usernameEditText.setText(reply?.get("username").toString())
             }
         })
 
@@ -136,29 +142,67 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun signIn(currentUser: FirebaseUser?, fromOnStart: Boolean = false) {
-//        sharedPreferences.edit().putString("ID", auth.uid).apply()
         if (currentUser != null) {
-            serverHandler.getUserExist(currentUser.uid, object : ServerHandler.VolleyCallBack {
-                override fun onSuccess(reply: JSONObject?) {
-                    val exist: Boolean? = reply?.getBoolean("exist")
-                    if (!exist!!) {
-                        Log.i(Config.LOGINTAG, "New user created")
-                        val username =
-                            findViewById<EditText>(R.id.login_username_edittext).text.toString()
-                        serverHandler.putNewUser(currentUser.uid, username)
-                    } else if (!fromOnStart) {
-                        serverHandler.postChangeName(
-                            auth.uid.toString(),
-                            usernameEditText.text.toString()
-                        )
+            serverHandler.apiCall(
+                Config.GET,
+                Config.GET_USER_EXIST,
+                googleUserId = currentUser.uid,
+                callBack = object : ServerHandler.VolleyCallBack {
+                    override fun onSuccess(reply: JSONObject?) {
+                        val exist: Boolean? = reply?.getBoolean("exist")
+                        if (!exist!!) {  // User not exist
+                            Log.i(Config.LOGINTAG, "New user created")
+                            val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
+                            serverHandler.apiCall(
+                                Config.PUT,
+                                Config.PUT_NEW_USER,
+                                googleUserId = currentUser.uid,
+                                username = username, callBack = object : ServerHandler.VolleyCallBack{
+                                    override fun onSuccess(reply: JSONObject?) {
+                                        val userId = reply?.get("userId").toString()
+                                        sharedPreferences.edit().putString("ID", userId).apply()
+                                        launchMenu(userId)
+                                    }
+                                })
+                        } else if (!fromOnStart) {  // User exist but login
+                            sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
+                            val lastId : String = sharedPreferences.getString("ID", "").toString()
+                            val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
+                            serverHandler.apiCall(
+                                Config.POST,
+                                Config.POST_CHANGE_NAME,
+                                userId = lastId,
+                                newName = username,
+                                callBack = object : ServerHandler.VolleyCallBack{
+                                    override fun onSuccess(reply: JSONObject?) {
+                                        launchMenu(lastId)
+                                    }
+                                })
+                        } else {  // User exist and logged in automatically
+                            sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
+                            val lastId : String = sharedPreferences.getString("ID", "").toString()
+                            launchMenu(lastId)
+                        }
                     }
+            })
+        }
+    }
+
+    private fun launchMenu(userId: String) {
+        serverHandler.apiCall(
+            Config.GET,
+            Config.GET_USER,
+            userId = userId,
+            callBack = object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+                    val userJsonString = reply.toString()
                     val intent = Intent(applicationContext, MenuActivity::class.java)
+                    intent.putExtra("user", userJsonString)
                     startActivity(intent)
                     overridePendingTransition(0, 0);
                     finish()
                 }
-            })
-        }
+        })
     }
 
     override fun onStart() {
