@@ -93,9 +93,9 @@ class EnigmaServer(Resource):
         if self.req == GET_SEARCH_FRIEND:
             if self.userId == self.friendId:
                 return {"message": "you can't add yourself", "status": "yourself", "error": False}
-            pendingFriendList = db.child("Users").child(self.userId).child("friends").get().val()
+            pendingFriendList = db.child("Users").child(self.userId).child("pendingFriendRequests").get().val()
             friendList = db.child("Users").child(self.userId).child("friends").get().val()
-            pendingReceiverFriendList = db.child("Users").child(self.friendId).child("friends").get().val()
+            pendingReceiverFriendList = db.child("Users").child(self.friendId).child("pendingFriendRequests").get().val()
             if pendingFriendList == None:
                 pendingFriendList = []
             if friendList == None:
