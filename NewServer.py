@@ -31,6 +31,7 @@ PUT_NEW_USER = "put0"
 # POST
 POST_CHANGE_NAME = "post0"
 POST_ACCEPT_FRIEND_REQUEST = "post1"
+POST_SEND_FRIEND_REQUEST = "post2"
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
@@ -180,6 +181,15 @@ class EnigmaServer(Resource):
             db.child("Users").child(self.friendId).update({"friends": friendsList})
             return {"message": "friend added to friends list from pending friends requests", "error": False}
         
+        #2 send a friend request. Input(req, userId, friendId)
+        if self.req == POST_SEND_FRIEND_REQUEST:
+            pendingReceiverFriendRequestsList = db.child("Users").child(self.friendId).child("pendingFriendRequests").get().val()
+            sender = db.child("Users").child(self.userId).get().val()
+            if pendingReceiverFriendRequestsList == None:
+                pendingReceiverFriendRequestsList = []
+            pendingReceiverFriendRequestsList.append({"userId": sender["userId"], "username": sender["username"]})
+            db.child("Users").child(self.friendId).update({"pendingFriendRequests": pendingReceiverFriendRequestsList})
+            return{"message": "friend request sent and added to pending friend requests", "error": False}
         return {"message": "post request failed", "error": True}
     
     def delete(self):
