@@ -32,22 +32,6 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
         val gson = Gson()
         user = gson.fromJson(userString, User::class.java)
 
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        val navArgument =NavArgument.Builder().setDefaultValue(user).build()
-        navController.graph.addArgument("user", navArgument)
-
-
-//        val navHostFragment = R.id.menuFragment as NavHostFragment
-//        val inflater = navHostFragment.navController.navInflater
-//        val navController by lazy { findNavController(R.id.nav_host_fragment) }
-////////        val graph = inflater.inflate(R.navigation.nav_graph)
-////////        navHostFragment.navController.graph = graph
-//        val bundle = bundleOf("user" to "user")
-//        navController.setGraph(R.navigation.nav_graph, bundle)
-
-
         val requestsTextView = findViewById<TextView>(R.id.profile_notification_textView)
         if (user.pendingFriendRequests != null) {
             requestsTextView.visibility = View.VISIBLE
@@ -69,5 +53,9 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
     private fun openProfile() {
         val p = ProfileFragment(user)
         p.show(supportFragmentManager, "MenuActivity->Profile")
+    }
+
+    fun getUser(): User {
+        return user
     }
 }

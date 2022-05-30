@@ -2,11 +2,14 @@ package com.example.androidstudio.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavArgs
 import androidx.navigation.fragment.findNavController
@@ -24,6 +27,7 @@ class MenuFragment: Fragment(), View.OnClickListener {
 
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private var clientId = Config.CLIENT_ID
+    private lateinit var user: User
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +43,8 @@ class MenuFragment: Fragment(), View.OnClickListener {
             .requestEmail()
             .build()
 
+        val menuActivity: MenuActivity = requireActivity() as MenuActivity
+        user = menuActivity.getUser()
 //        val navArgumet = findNavController().graph.arguments["user"]
 //        Log.i("ASDgasdgasdg", findNavController().graph.arguments["user"]?.javaClass.toString())
 
@@ -49,13 +55,13 @@ class MenuFragment: Fragment(), View.OnClickListener {
 
         val playButton = view.findViewById<Button>(R.id.button_play)
         playButton.setOnClickListener(this)
-
+        update()
     }
 
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.logout_button  -> signOut()
-//            R.id.button_play    -> openSetupGame()
+            R.id.button_play    -> openSetupGame()
         }
     }
 
@@ -73,5 +79,14 @@ class MenuFragment: Fragment(), View.OnClickListener {
             }
     }
 
-
+    private fun update() {
+//        user.username = user.username.plus("a")
+        Log.i("Aas", user.toString())
+        if (this.context != null) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                update()
+            },
+                Config.POLLING_PERIOD)
+        }
+    }
 }

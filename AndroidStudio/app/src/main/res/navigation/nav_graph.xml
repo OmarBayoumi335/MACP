@@ -12,9 +12,6 @@
         <action
             android:id="@+id/action_menuFragment_to_setupGameFragment"
             app:destination="@id/setupGameFragment" />
-        <argument
-            android:name="user"
-            app:argType="com.example.androidstudio.classes.types.User" />
     </fragment>
     <fragment
         android:id="@+id/setupGameFragment"
