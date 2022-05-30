@@ -31,7 +31,7 @@ class ProfileViewPageAdapter(profileFragment: ProfileFragment,
         return when(position) {
             0 -> FriendsFragment(profileFragment, user)
             1 -> RequestsFragment(profileFragment, user)
-            2 -> AddFriendFragment()
+            2 -> AddFriendFragment(user)
             else -> FriendsFragment(profileFragment, user)
         }
     }

@@ -28,8 +28,7 @@ class Config {
         val GET_USER_EXIST = "get1"
         val GET_USER = "get2"
         val GET_PENDING_REQUESTS = "get3"
-
-//        val GET_SEARCH_FRIEND = 0
+        val GET_SEARCH_FRIEND = "get4"
 //        val GET_USERNAME = 1
 //        val GET_FRIENDS_LIST = 2
 //        val GET_PENDING_FRIENDS_REQUEST = 3
@@ -57,6 +56,7 @@ class Config {
         val DELETE = "delete"
         val DELETE_REMOVE_FRIEND = "delete0"
         val DELETE_REMOVE_FRIEND_REQUEST = "delete1"
+
 
 //        val DELETE_REMOVE_FRIEND = 6
 //        val DELETE_REJECT_FRIEND_REQUEST = 8
