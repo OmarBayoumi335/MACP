@@ -29,6 +29,7 @@ PUT_NEW_USER = "put0"
 
 # POST
 POST_CHANGE_NAME = "post0"
+POST_ACCEPT_FRIEND_REQUEST = "post1"
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
@@ -112,12 +113,41 @@ class EnigmaServer(Resource):
             db.child("Users").child(self.userId).update({"username": newName})
             return {"message": "post name changed", "error": False}
         
+        #1 accept friend request. Input(req, userId, friendId)
+        if self.req == POST_ACCEPT_FRIEND_REQUEST:
+            #user that accept
+            pendingFriendRequestsList = db.child("Users").child(self.userId).child("pendingFriendRequests").get().val()
+            friendsList = db.child("Users").child(self.userId).child("friends").get().val()
+            if friendsList == None:
+                friendsList = []
+            if pendingFriendRequestsList == None:
+                pendingFriendRequestsList = []
+            newPendingFriendRequestsList = []
+            for pendingFriend in pendingFriendRequestsList:
+                if pendingFriend["userId"] != self.friendId:
+                    newPendingFriendRequestsList.append(pendingFriend)
+                else:
+                    friendsList.append(pendingFriend)
+            db.child("Users").child(self.userId).update({"pendingFriendRequests": newPendingFriendRequestsList})
+            db.child("Users").child(self.userId).update({"friends": friendsList})
+            
+            #user accepted
+            friendsList = db.child("Users").child(self.friendId).child("friends").get().val()
+            user = db.child("Users").child(self.userId).get().val()
+            if friendsList == None:
+                friendsList = []
+            friendsList.append({"username": user["username"], "userId": user["userId"]})
+            db.child("Users").child(self.friendId).update({"friends": friendsList})
+            
+            return {"message": "friend added to friends list from pending friends requests", "error": False}
+        
         return {"message": "post request failed", "error": True}
     
     def delete(self):
         
         #0 delete friend. Input(req, userId, friendId)
         if self.req == DELETE_REMOVE_FRIEND:
+            #user that remove
             friendsList = db.child("Users").child(self.userId).child("friends").get().val()
             if friendsList == None:
                 friendsList = []
@@ -126,6 +156,17 @@ class EnigmaServer(Resource):
                 if friend["userId"] != self.friendId:
                     newFriendsList.append(friend)
             db.child("Users").child(self.userId).update({"friends": newFriendsList})
+            
+            #user removed
+            friendsList = db.child("Users").child(self.friendId).child("friends").get().val()
+            if friendsList == None:
+                friendsList = []
+            newFriendsList = []
+            for friend in friendsList:
+                if friend["userId"] != self.userId:
+                    newFriendsList.append(friend)
+            db.child("Users").child(self.friendId).update({"friends": newFriendsList})
+            
             return {"message": "friend removed", "error": False}
         
         return {"message": "delete request failed", "error": True}
