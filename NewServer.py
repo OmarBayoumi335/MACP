@@ -96,11 +96,11 @@ class EnigmaServer(Resource):
             pendingFriendList = db.child("Users").child(self.userId).child("friends").get().val()
             friendList = db.child("Users").child(self.userId).child("friends").get().val()
             pendingReceiverFriendList = db.child("Users").child(self.friendId).child("friends").get().val()
-            if pendingFriendList != None:
+            if pendingFriendList == None:
                 pendingFriendList = []
-            if friendList != None:
+            if friendList == None:
                 friendList = []
-            if pendingReceiverFriendList != None:
+            if pendingReceiverFriendList == None:
                 pendingReceiverFriendList = []
             for pending in pendingFriendList:
                 if pending["userId"] == self.friendId:
