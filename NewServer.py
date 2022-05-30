@@ -23,6 +23,7 @@ GET_USERNAME = "get0"
 GET_USER_EXIST = "get1"
 GET_USER = "get2"
 GET_PENDING_REQUESTS = "get3"
+GET_SEARCH_FRIEND = "get4"
 
 # PUT
 PUT_NEW_USER = "put0"
@@ -87,6 +88,32 @@ class EnigmaServer(Resource):
         if self.req == GET_PENDING_REQUESTS:
             pendingRequests = db.child("Users").child(self.userId).child("pendingFriendRequests").get().val()
             return {"requests": pendingRequests}
+        
+        #4 return if a friend request is sendable. Input(userId, friendId)
+        if self.req == GET_SEARCH_FRIEND:
+            if self.userId == self.friendId:
+                return {"message": "you can't add yourself", "status": "yourself", "error": False}
+            pendingFriendList = db.child("Users").child(self.userId).child("friends").get().val()
+            friendList = db.child("Users").child(self.userId).child("friends").get().val()
+            pendingReceiverFriendList = db.child("Users").child(self.friendId).child("friends").get().val()
+            if pendingFriendList != None:
+                pendingFriendList = []
+            if friendList != None:
+                friendList = []
+            if pendingReceiverFriendList != None:
+                pendingReceiverFriendList = []
+            for pending in pendingFriendList:
+                if pending["userId"] == self.friendId:
+                    return {"message": "user in pending list", "status": "inPending", "error": False}
+            for friend in friendList:
+                if friend["userId"] == self.friendId:
+                    return {"message": "user in friend list", "status": "alreadyAdded", "error": False}
+            for pending in pendingReceiverFriendList:
+                if pending["userId"] == self.friendId:
+                    return {"message": "user request already sent", "status": "alreadySent", "error": False}
+            if db.child("Users").child(self.friendId).get().val() == None:
+                return {"message": "friend not found", "status": "notFound", "error": False}
+            return {"message": "friend found", "status": "found", "error": False}
         
         return {"message": "get request failed", "error": True}
       
