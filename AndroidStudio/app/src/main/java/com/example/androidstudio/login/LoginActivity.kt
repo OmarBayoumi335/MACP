@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
-import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.MenuActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -25,7 +24,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import org.json.JSONObject
 
 

@@ -257,6 +257,7 @@ class UpdateUI {
                        serverHandler: ServerHandler,
                        user: User,
                        notification: TextView) {
+            Log.i(Config.UPDATEUITAG, "updateUser() $user")
             serverHandler.apiCall(
                 Config.GET,
                 Config.GET_USER,
@@ -277,7 +278,6 @@ class UpdateUI {
                         } else {
                             notification.visibility = View.GONE
                         }
-                        Log.i(Config.UPDATEUITAG, "updateUser() $user")
                         if (!menuActivity.isFinishing) {
                             Handler(Looper.getMainLooper()).postDelayed({
                                 updateUser(

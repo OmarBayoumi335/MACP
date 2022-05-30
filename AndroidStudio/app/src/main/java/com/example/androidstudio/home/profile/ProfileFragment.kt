@@ -1,13 +1,11 @@
 package com.example.androidstudio.home.profile
 
-import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,10 +20,8 @@ import com.example.androidstudio.classes.*
 import com.example.androidstudio.classes.adapters.ProfileViewPageAdapter
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
-import com.example.androidstudio.classes.utils.UpdateUI
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import org.json.JSONObject
 
 
 class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
@@ -35,8 +31,6 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
     init {
         this.user = user
     }
-
-//    private lateinit var profileFriendsRecyclerView: RecyclerView
 
     // Username
     private lateinit var nameEditText: EditText
@@ -72,7 +66,7 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
         // Set the profile tab menu
         val pager = rootView.findViewById<ViewPager2>(R.id.profile_view_pager)
         val table = rootView.findViewById<TabLayout>(R.id.profile_table)
-        pager.adapter = ProfileViewPageAdapter(this, requireActivity().supportFragmentManager, lifecycle)
+        pager.adapter = ProfileViewPageAdapter(this, requireActivity().supportFragmentManager, lifecycle, user)
         val tabTitles = arrayOf(resources.getString(R.string.profile_friends_tab),
             resources.getString(R.string.profile_friends_request_tab),
             resources.getString(R.string.profile_add_friend_tab))
@@ -150,7 +144,6 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
     }
 
     private fun update(notification: TextView) {
-        Log.i(Config.PROFILETAG, "update() ${notification.text}")
         if (user.pendingFriendRequests != null) {
             notification.visibility = View.VISIBLE
             notification.text = user.pendingFriendRequests?.size.toString()
