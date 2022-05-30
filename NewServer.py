@@ -31,7 +31,7 @@ PUT_NEW_USER = "put0"
 POST_CHANGE_NAME = "post0"
 
 # DELETE
-
+DELETE_REMOVE_FRIEND ="delete0"
 
 #get parser
 parser = reqparse.RequestParser()
@@ -116,9 +116,17 @@ class EnigmaServer(Resource):
     
     def delete(self):
         
-        #delete friend input(req, userIdValue, friendId)
-        # if req == DELETE_REMOVE_FRIEND:
-        #     return
+        #0 delete friend. Input(req, userId, friendId)
+        if self.req == DELETE_REMOVE_FRIEND:
+            friendsList = db.child("Users").child(self.userId).child("friends").get().val()
+            if friendsList == None:
+                friendsList = []
+            newFriendsList = []
+            for friend in friendsList:
+                if friend["userId"] != self.friendId:
+                    newFriendsList.append(friend)
+            db.child("Users").child(self.userId).update({"friends": newFriendsList})
+            return {"message": "friend removed", "error": False}
         
         return {"message": "delete request failed", "error": True}
 
