@@ -109,7 +109,7 @@ class EnigmaServer(Resource):
                 if friend["userId"] == self.friendId:
                     return {"message": "user in friend list", "status": "alreadyAdded", "error": False}
             for pending in pendingReceiverFriendList:
-                if pending["userId"] == self.friendId:
+                if pending["userId"] == self.userId:
                     return {"message": "user request already sent", "status": "alreadySent", "error": False}
             if db.child("Users").child(self.friendId).get().val() == None:
                 return {"message": "friend not found", "status": "notFound", "error": False}
