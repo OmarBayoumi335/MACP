@@ -75,8 +75,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         for (i in 0 until signInButton.getChildCount()) {
             val v: View = signInButton.getChildAt(i)
             if (v is TextView) {
-                val tv = v
-                tv.setText(R.string.google_button)
+                v.setText(R.string.google_button)
             }
         }
     }

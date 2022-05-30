@@ -8,16 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavArgs
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.androidstudio.Login.LoginActivity
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 
-class MenuFragment : Fragment(), View.OnClickListener {
+class MenuFragment: Fragment(), View.OnClickListener {
+
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private var clientId = Config.CLIENT_ID
 
@@ -35,13 +39,17 @@ class MenuFragment : Fragment(), View.OnClickListener {
             .requestEmail()
             .build()
 
+//        val navArgumet = findNavController().graph.arguments["user"]
+//        Log.i("ASDgasdgasdg", findNavController().graph.arguments["user"]?.javaClass.toString())
+
         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
-//
+
         val logoutButton = view.findViewById<Button>(R.id.logout_button)
         logoutButton.setOnClickListener(this)
-//
-//        val playButton = view.findViewById<Button>(R.id.button_play)
-//        playButton.setOnClickListener(this)
+
+        val playButton = view.findViewById<Button>(R.id.button_play)
+        playButton.setOnClickListener(this)
+
     }
 
     override fun onClick(v: View?) {

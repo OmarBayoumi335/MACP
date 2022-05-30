@@ -14,7 +14,7 @@
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.1" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout-w936dp/activity_login.xml" value="0.11041666666666666" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_login.xml" value="0.33" />
-        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_menu.xml" value="0.33" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_menu.xml" value="0.10393258426966293" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_splash_screen.xml" value="0.2359375" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/add_friend_alert.xml" value="0.33" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/content_main.xml" value="0.21105072463768115" />
@@ -22,6 +22,7 @@
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_blank.xml" value="0.38697916666666665" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_create_party.xml" value="0.5" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_friends.xml" value="0.24635416666666668" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_fullscreen.xml" value="0.33240740740740743" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_invite_in_party.xml" value="0.21354166666666666" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_item_list.xml" value="0.3729166666666667" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_login.xml" value="0.2015625" />
