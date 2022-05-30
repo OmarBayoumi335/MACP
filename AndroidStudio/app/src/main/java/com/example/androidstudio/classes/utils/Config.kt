@@ -48,7 +48,7 @@ class Config {
         val POST = "post"
         val POST_CHANGE_NAME = "post0"
         val POST_ACCEPT_FRIEND_REQUEST = "post1"
-//        val POST_SEND_FRIEND_REQUEST = 4
+        val POST_SEND_FRIEND_REQUEST = "post2"
 //        val POST_ACCEPT_FRIEND_REQUEST = 7
 //        val POST_SEND_LOBBY_INVITE = 13
 //        val POST_ENTER_IN_LOBBY = 15

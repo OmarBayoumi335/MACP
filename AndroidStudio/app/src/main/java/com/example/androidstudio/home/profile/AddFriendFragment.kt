@@ -62,7 +62,12 @@ class AddFriendFragment(user: User) : Fragment(){
                     if (found == "found"){
                         searchResult.text = resources.getString(R.string.friend_found)
                         searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_found))
-//                        serverHandler.postSendFriendRequest(userid, toFindFriendName)
+                        serverHandler.apiCall(
+                            Config.POST,
+                            Config.POST_SEND_FRIEND_REQUEST,
+                            userId = user.userId,
+                            friendId = toFindFriendId
+                        )
                     }
                     if (found == "alreadySent"){
                         searchResult.text = resources.getString(R.string.friend_already_sent)
