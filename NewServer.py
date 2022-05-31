@@ -33,6 +33,7 @@ PUT_NEW_LOBBY = "put1"
 POST_CHANGE_NAME = "post0"
 POST_ACCEPT_FRIEND_REQUEST = "post1"
 POST_SEND_FRIEND_REQUEST = "post2"
+POST_SEND_LOBBY_INVITE = "post3"
 #POST_ACCEPT_LOBBY_INVITE
 
 # DELETE
@@ -138,15 +139,16 @@ class EnigmaServer(Resource):
 
         #1 create new lobby. Input(req, userId, lobbyName)
         if self.req == PUT_NEW_LOBBY:
+            lobbyId = self.serverUtils.createIdLobby()
             user = db.child("Users").child(self.userId).get().val()
-            lobby = {"lobbyId": self.userId,
+            lobby = {"lobbyId": lobbyId,
                         "lobbyName": self.lobbyName,
                         "team1": [{"username": user["username"],
                                    "userId": user["userId"]}],
                         "team2": [],
                         "chat": []}
          
-            db.child("Lobbies").child(self.userId).set(lobby)
+            db.child("Lobbies").child(lobbyId).set(lobby)
             return {"message": "lobby created", "lobby": lobby, "error": False}
         return {"message": "put request failed", "error": True}
     
@@ -213,6 +215,34 @@ class EnigmaServer(Resource):
             pendingReceiverFriendRequestsList.append({"userId": sender["userId"], "username": sender["username"]})
             db.child("Users").child(self.friendId).update({"pendingFriendRequests": pendingReceiverFriendRequestsList})
             return{"message": "friend request sent and added to pending friend requests", "error": False}
+        
+        #3 send invite to lobby. Input(req, userId, username, friendId, lobbyId, lobbyName)
+        if self.req == POST_SEND_LOBBY_INVITE:
+            lobby = db.child("Lobbies").child(self.lobbyId)
+            team1 = lobby.child("team1").get().val()
+            team2 = lobby.child("team2").get().val()
+            friend = db.child("Users").child(self.friendId).get().val()
+            username = friend["username"]
+            userId = friend["userId"]
+            friendCheckInLobby = {"username": username, "userId": userId}
+            friendCheckInvited = {"username": self.username, "userId": self.userId, "lobbyId": self.lobbyId, "lobbyName": self.lobbyName}
+            friendPendingInviteRequests = db.child("Users").child(self.friendId).child("pendingInviteRequests").get().val()
+            if friendPendingInviteRequests == None:
+                friendPendingInviteRequests = []
+            if team1 == None:
+                team1 = []
+            if team2 == None:
+                team2 = []
+            if friendCheckInLobby in team1 or friendCheckInLobby in team2:
+                return {"message": "user already in lobby", "status": "inLobby", "error": False}
+            if friendCheckInvited in friendPendingInviteRequests:
+                return {"message": "user already invited", "status": "alreadyInvited", "error": False}
+            
+            friendPendingInviteRequests.append(friendCheckInvited)
+            db.child("Users").child(self.friendId).update({"pendingInviteRequests":friendPendingInviteRequests})
+            return {"message": "user invited", "status": "invited", "error": False}
+            
+            
         return {"message": "post request failed", "error": True}
     
     def delete(self):
@@ -337,6 +367,16 @@ class EnigmaServerUtils():
             for user in db.child("Users").get().val():
                 if user == output:
                     output = self.createId()
+        return output
+    
+    def createIdLobby(self):
+        output = ""
+        for i in range(7):
+            output += self.encodeId(random.randrange(0, 9+26+26))
+        if db.child("Lobbies").get().val() != None:
+            for lobby in db.child("Lobbies").get().val():
+                if lobby == output:
+                    output = self.createIdLobby()
         return output
 
     # def decodeId(self, c):
