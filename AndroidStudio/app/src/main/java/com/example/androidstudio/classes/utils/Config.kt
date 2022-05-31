@@ -48,6 +48,7 @@ class Config {
         val POST_CHANGE_NAME = "post0"
         val POST_ACCEPT_FRIEND_REQUEST = "post1"
         val POST_SEND_FRIEND_REQUEST = "post2"
+        val POST_SEND_LOBBY_INVITE = "post3"
 //        val POST_ACCEPT_FRIEND_REQUEST = 7
 //        val POST_SEND_LOBBY_INVITE = 13
 //        val POST_ENTER_IN_LOBBY = 15
@@ -55,7 +56,7 @@ class Config {
         val DELETE = "delete"
         val DELETE_REMOVE_FRIEND = "delete0"
         val DELETE_REMOVE_FRIEND_REQUEST = "delete1"
-        val DELETE_LOBBY_INVITE = "delete2"
+        val DELETE_LEAVE_LOBBY = "delete2"
 
 
 //        val DELETE_REMOVE_FRIEND = 6

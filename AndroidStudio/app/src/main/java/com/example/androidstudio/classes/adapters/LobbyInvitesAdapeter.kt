@@ -1,6 +1,5 @@
 package com.example.androidstudio.classes.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
-import com.example.androidstudio.classes.types.LobbyUser
+import com.example.androidstudio.classes.types.UserInvite
 import com.example.androidstudio.classes.types.User
-import com.example.androidstudio.classes.utils.Config
 
 class LobbyInvitesAdapeter(user: User,
                            private val serverHandler: ServerHandler): RecyclerView.Adapter<LobbyInvitesAdapeter.ViewHolder>(){
@@ -38,7 +36,7 @@ class LobbyInvitesAdapeter(user: User,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val friend: LobbyUser = user.pendingInviteRequests!![position]
+        val friend: UserInvite = user.pendingInviteRequests!![position]
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
         val tvLobbyName = holder.tvLobbyName

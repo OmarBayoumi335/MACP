@@ -10,14 +10,24 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.types.UserIdentification
+import com.example.androidstudio.classes.utils.Config
 import org.json.JSONObject
 
-class InviteFriendListAdapter(private val c: Context,
-                              private val mUser: List<User>,
-                              private val uid: String,
+class InviteFriendListAdapter(user: User,
+                              lobby: Lobby,
                               private val serverHandler: ServerHandler,
-                              private val lobbyId: String): RecyclerView.Adapter<InviteFriendListAdapter.ViewHolder>(){
+                              private val c: Context): RecyclerView.Adapter<InviteFriendListAdapter.ViewHolder>(){
+
+    private var user: User
+    private var lobby: Lobby
+
+    init {
+        this.user = user
+        this.lobby = lobby
+    }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var tvUsername: TextView = itemView.findViewById(R.id.invite_friend_item_username_textview)
@@ -33,7 +43,7 @@ class InviteFriendListAdapter(private val c: Context,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val friend: User = mUser[position]
+        val friend: UserIdentification = user.friends!![position]
         // Set item views based on your views and data model
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
@@ -41,25 +51,38 @@ class InviteFriendListAdapter(private val c: Context,
         tvUsername.text = friend.username
         tvId.text = friend.userId
         bPositive.setOnClickListener {
-//            serverHandler.postSendLobbyInvite(uid, friend.getId(), lobbyId, object : ServerHandler.VolleyCallBack {
-//                override fun onSuccess(reply: JSONObject?) {
-////                    val status = reply?.get("status")
-//                    val message = reply?.get("message").toString()
-//                    Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
-////                    if (status == "invited") {
-////                        Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
-////                    } else if (status == "alreadyInvited") {
-////                        bPositive.visibility = View.GONE
-////                    } else if (status == "alreadyinLobby") {
-////                        bPositive.visibility = View.GONE
-////                    }
-//                }
-//            })
+            serverHandler.apiCall(
+                Config.POST,
+                Config.POST_SEND_LOBBY_INVITE,
+                userId = user.userId,
+                username = user.username,
+                friendId = friend.userId,
+                lobbyId = lobby.lobbyId,
+                lobbyName = lobby.lobbyName,
+                callBack = object : ServerHandler.VolleyCallBack {
+                    override fun onSuccess(reply: JSONObject?) {
+                        val status = reply?.get("status")
+                        val message = reply?.get("message").toString()
+                        Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+                        when (status) {
+                            "invited" -> {
+                                Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+                            }
+                            "alreadyInvited" -> {
+                                bPositive.visibility = View.GONE
+                            }
+                            "inLobby" -> {
+                                bPositive.visibility = View.GONE
+                            }
+                        }
+                    }
+                })
         }
 
     }
 
     override fun getItemCount(): Int {
-        return mUser.size
+        if (user.friends != null) return user.friends!!.size
+        return 0
     }
 }

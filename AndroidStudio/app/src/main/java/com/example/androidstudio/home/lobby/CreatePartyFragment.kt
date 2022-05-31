@@ -26,6 +26,9 @@ import com.google.gson.Gson
 class CreatePartyFragment : Fragment(), View.OnClickListener {
 
     private lateinit var lobbyId: String
+    private lateinit var serverHandler: ServerHandler
+    private lateinit var lobby: Lobby
+    private lateinit var user: User
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,15 +36,15 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_create_party, container, false)
-        val serverHandler = ServerHandler(requireContext())
+        serverHandler = ServerHandler(requireContext())
 
         val menuActivity: MenuActivity = requireActivity() as MenuActivity
         menuActivity.setProfileImageButtonVisibility(View.VISIBLE)
-
+        user = menuActivity.getUser()
 
         val lobbyString = arguments?.getString("lobby").toString()
         val gson = Gson()
-        val lobby = gson.fromJson(lobbyString, Lobby::class.java)
+        lobby = gson.fromJson(lobbyString, Lobby::class.java)
 
         Log.i(Config.LOBBYTAG, lobby.toString())
 
@@ -60,7 +63,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         val leaveButton = rootView.findViewById<Button>(R.id.button_leave_lobby)
         leaveButton.setOnClickListener(this)
 
-        // Add friend button
+        // Add friend to lobby button
         val addFriendToLobby = rootView.findViewById<ImageButton>(R.id.lobby_invite_friend_image_button)
         addFriendToLobby.setOnClickListener(this)
 
@@ -94,10 +97,16 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     }
 
     private fun invite() {
-        InviteInPartyFragment(lobbyId).show(requireActivity().supportFragmentManager, "Lobby->Invite")
+        InviteInPartyFragment(lobby, user).show(requireActivity().supportFragmentManager, "Lobby->Invite")
     }
 
     private fun leave() {
+        serverHandler.apiCall(
+            Config.DELETE,
+            Config.DELETE_LEAVE_LOBBY,
+            lobbyId = lobby.lobbyId,
+            userId = user.userId
+        )
         AlertDialog.Builder(context)
             .setTitle(R.string.leave_lobby_alert)
             .setMessage(R.string.leave_lobby_alert_message)
