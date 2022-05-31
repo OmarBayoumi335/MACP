@@ -27,15 +27,18 @@ GET_SEARCH_FRIEND = "get4"
 
 # PUT
 PUT_NEW_USER = "put0"
+PUT_NEW_LOBBY = "put1"
 
 # POST
 POST_CHANGE_NAME = "post0"
 POST_ACCEPT_FRIEND_REQUEST = "post1"
 POST_SEND_FRIEND_REQUEST = "post2"
+#POST_ACCEPT_LOBBY_INVITE
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
 DELETE_REMOVE_FRIEND_REQUEST ="delete1"
+#DE
 
 #get parser
 parser = reqparse.RequestParser()
@@ -44,6 +47,7 @@ parser.add_argument('userId', type = str, required = False)
 parser.add_argument('googleUserId', type = str, required = False)
 parser.add_argument('friendId', type = str, required = False)
 parser.add_argument('lobbyId', type = str, required = False)
+parser.add_argument('lobbyName', type = str, required = False)
 parser.add_argument('newName', type = str, required = False)
 parser.add_argument('username', type = str, required = False)
 
@@ -57,9 +61,10 @@ class EnigmaServer(Resource):
         args = parser.parse_args()
         self.req = args['req']
         self.userId = args['userId']
-        self.googleUserId = args["googleUserId"]
+        self.googleUserId = args['googleUserId']
         self.friendId = args['friendId']
         self.lobbyId = args['lobbyId']
+        self.lobbyName = args['lobbyName']
         self.newName = args['newName']
         self.username = args['username']
     
@@ -129,7 +134,21 @@ class EnigmaServer(Resource):
             db.child("Users").child(userId).set({"username": username, "userId": userId})
             db.child("GoogleUserIds").update({self.googleUserId: userId})
             return {"message": "user created", "userId": userId, "error": False}
-        
+
+        #1 create new lobby. Input(req, userId, lobbyName)
+        if self.req == PUT_NEW_LOBBY:
+            user = db.child("Users").child(self.userId).get().val()
+            lobby = {"lobbyId": self.userId,
+                        "lobbyName": self.lobbyName,
+                        "team1": [{"username": user["username"],
+                                   "userId": user["userId"],
+                                   "lobbyId": user["userId"],
+                                   "lobbyName": self.lobbyName}],
+                        "team2": [],
+                        "chat": []}
+         
+            db.child("Lobbies").child(self.userId).set(lobby)
+            return {"message": "lobby created", "lobby": lobby, "error": False}
         return {"message": "put request failed", "error": True}
     
     def post(self):
