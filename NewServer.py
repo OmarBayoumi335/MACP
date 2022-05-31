@@ -34,7 +34,7 @@ POST_CHANGE_NAME = "post0"
 POST_ACCEPT_FRIEND_REQUEST = "post1"
 POST_SEND_FRIEND_REQUEST = "post2"
 POST_SEND_LOBBY_INVITE = "post3"
-#POST_ACCEPT_LOBBY_INVITE
+POST_ACCEPT_LOBBY_INVITE = "post4"
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
@@ -242,7 +242,32 @@ class EnigmaServer(Resource):
             db.child("Users").child(self.friendId).update({"pendingInviteRequests":friendPendingInviteRequests})
             return {"message": "user invited", "status": "invited", "error": False}
             
-            
+        #4 accept lobby invite and enter into it. Input(req, userId, lobbyId)
+        if self.req == POST_ACCEPT_LOBBY_INVITE:
+            pendingInviteRequests = db.child("Users").child(self.userId).child("pendingInviteRequests").get().val()
+            user = db.child("Users").child(self.userId).get().val()
+            userValue = {"username": user["username"], "userId": user["userId"]}
+            team1Members = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            team2Members = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
+            if team1Members == None:
+                team1Members = []
+            if team2Members == None:
+                team2Members = []
+            teamWithLessMembers = "team1"
+            if len(team1Members) > len(team2Members):
+                team2Members.append(userValue)
+                db.child("Lobbies").child(self.lobbyId).update({"team2": team2Members})
+            else:
+                team1Members.append(userValue)
+                db.child("Lobbies").child(self.lobbyId).update({"team1": team1Members})
+           
+            newPending = []
+            for pending in pendingInviteRequests:
+                if pending["lobbyId"] != self.lobbyId:
+                    newPending.append(pending)
+            db.child("Users").child(self.userId).update({"pendingInviteRequests": newPending})
+            lobby = db.child("Lobbies").child(self.lobbyId).get().val()
+            return {"message": "connected to lobby", "lobby":lobby, "error": False}
         return {"message": "post request failed", "error": True}
     
     def delete(self):
