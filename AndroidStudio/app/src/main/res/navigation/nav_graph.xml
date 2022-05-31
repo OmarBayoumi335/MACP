@@ -36,8 +36,8 @@
         android:label="fragment_party_invitation"
         tools:layout="@layout/fragment_party_invitation" >
         <action
-            android:id="@+id/action_partyInvitationFragment_to_createPartyFragment"
-            app:destination="@id/createPartyFragment" />
+            android:id="@+id/action_partyInvitationFragment_to_acceptInviteToLobbyLoadingFragment"
+            app:destination="@id/acceptInviteToLobbyLoadingFragment" />
     </fragment>
     <fragment
         android:id="@+id/partyCreationLoadingFragment"
@@ -46,6 +46,15 @@
         tools:layout="@layout/fragment_party_creation_loading" >
         <action
             android:id="@+id/action_partyCreationLoadingFragment_to_createPartyFragment"
+            app:destination="@id/createPartyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/acceptInviteToLobbyLoadingFragment"
+        android:name="com.example.androidstudio.loadings.AcceptInviteToLobbyLoadingFragment"
+        android:label="fragment_accept_invite_to_lobby_loading"
+        tools:layout="@layout/fragment_accept_invite_to_lobby_loading" >
+        <action
+            android:id="@+id/action_acceptInviteToLobbyLoadingFragment_to_createPartyFragment"
             app:destination="@id/createPartyFragment" />
     </fragment>
 </navigation>

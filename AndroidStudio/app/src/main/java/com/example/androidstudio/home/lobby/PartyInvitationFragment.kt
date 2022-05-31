@@ -1,6 +1,5 @@
 package com.example.androidstudio.home.lobby
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,11 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
-import com.example.androidstudio.classes.adapters.LobbyInvitesAdapeter
-import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
+import com.example.androidstudio.classes.adapters.LobbyInvitesAdapter
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
-import com.example.androidstudio.classes.utils.UpdateUI
 import com.example.androidstudio.home.MenuActivity
 
 class PartyInvitationFragment : Fragment(), View.OnClickListener {
@@ -44,7 +41,7 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
         // Recycler view for invites with update every sec
         val lobbyInviteRecyclerView = rootView.findViewById<RecyclerView>(R.id.party_invites_recycler_view)
 //        UpdateUI.updateInviteList(requireContext(), this, serverHandler, userid, lobbyInviteAdapter)
-        val lobbyInvitesAdapter = LobbyInvitesAdapeter(user, serverHandler)
+        val lobbyInvitesAdapter = LobbyInvitesAdapter(user, this)
         lobbyInviteRecyclerView.adapter = lobbyInvitesAdapter
         lobbyInviteRecyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -63,7 +60,7 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
         findNavController().popBackStack()
     }
 
-    private fun update(lobbyInvitesAdapter: LobbyInvitesAdapeter) {
+    private fun update(lobbyInvitesAdapter: LobbyInvitesAdapter) {
         lobbyInvitesAdapter.notifyDataSetChanged()
         if (this.context != null) {
             Handler(Looper.getMainLooper()).postDelayed({

@@ -5,14 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.ServerHandler
 import com.example.androidstudio.classes.types.UserInvite
 import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.home.lobby.PartyInvitationFragment
 
-class LobbyInvitesAdapeter(user: User,
-                           private val serverHandler: ServerHandler): RecyclerView.Adapter<LobbyInvitesAdapeter.ViewHolder>(){
+class LobbyInvitesAdapter(user: User, private val partyInvitationFragment: PartyInvitationFragment): RecyclerView.Adapter<LobbyInvitesAdapter.ViewHolder>(){
 
     private var user: User
 
@@ -51,12 +52,8 @@ class LobbyInvitesAdapeter(user: User,
             user.pendingInviteRequests!!.remove(user.pendingInviteRequests!![position])
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, user.pendingInviteRequests!!.size)
-//            serverHandler.apiCall(
-//                Config.POST,
-//                Config.POST_ACCEPT_LOBBY_INVITE,
-//                userId = user.userId,
-//                lobbyId = request.userId
-//            )
+            val bundle = bundleOf("lobbyId" to friend.lobbyId)
+            partyInvitationFragment.findNavController().navigate(R.id.action_partyInvitationFragment_to_acceptInviteToLobbyLoadingFragment, bundle)
         }
 
         declineButton.setOnClickListener {
@@ -74,7 +71,7 @@ class LobbyInvitesAdapeter(user: User,
     }
 
     override fun getItemCount(): Int {
-        if (user.friends != null) return user.friends!!.size
+        if (user.pendingInviteRequests != null) return user.pendingInviteRequests!!.size
         return 0
     }
 }

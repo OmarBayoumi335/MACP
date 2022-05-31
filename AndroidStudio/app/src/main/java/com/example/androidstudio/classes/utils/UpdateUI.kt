@@ -202,7 +202,7 @@ class UpdateUI {
 //                            invitesListView += userLobby
 //                        }
 //                    }
-//                    val profileFriendListAdapter = LobbyInvitesAdapeter(c, invitesListView, userid, serverHandler)
+//                    val profileFriendListAdapter = LobbyInvitesAdapter(c, invitesListView, userid, serverHandler)
 //                    profileFriendsRecyclerView.adapter = profileFriendListAdapter
 //                    profileFriendsRecyclerView.layoutManager = LinearLayoutManager(c)
 ////                    Log.i(Config.UPDATEUITAG, "Update of friends view")
