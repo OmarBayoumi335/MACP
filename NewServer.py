@@ -127,7 +127,7 @@ class EnigmaServer(Resource):
             if username == None:
                 username = ""
             db.child("Users").child(userId).set({"username": username, "userId": userId})
-            db.child("GoogleUserIds").set({self.googleUserId: userId})
+            db.child("GoogleUserIds").update({self.googleUserId: userId})
             return {"message": "user created", "userId": userId, "error": False}
         
         return {"message": "put request failed", "error": True}
