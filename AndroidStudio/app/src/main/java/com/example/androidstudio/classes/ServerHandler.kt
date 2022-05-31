@@ -20,11 +20,12 @@ class ServerHandler(context: Context) {
                 googleUserId: String = "",
                 friendId: String = "",
                 lobbyId: String = "",
+                lobbyName: String = "",
                 newName: String = "",
                 username: String = "",
                 callBack: VolleyCallBack? = null) {
         var requestMethod = 0
-        val reqParsed = reqParser(req, userId, googleUserId, friendId, lobbyId, newName, username)
+        val reqParsed = reqParser(req, userId, googleUserId, friendId, lobbyId, lobbyName, newName, username)
         if (callType == Config.GET) requestMethod = Request.Method.GET
         if (callType == Config.POST) requestMethod = Request.Method.POST
         if (callType == Config.PUT) requestMethod = Request.Method.PUT
@@ -56,6 +57,7 @@ class ServerHandler(context: Context) {
                           googleUserId: String,
                           friendId: String,
                           lobbyId: String,
+                          lobbyName: String,
                           newName: String,
                           username: String): String {
         var reqParsed = url.plus("req=$req")
@@ -63,6 +65,7 @@ class ServerHandler(context: Context) {
         if (googleUserId != "") reqParsed = reqParsed.plus("&googleUserId=$googleUserId")
         if (friendId != "") reqParsed = reqParsed.plus("&friendId=$friendId")
         if (lobbyId != "") reqParsed = reqParsed.plus("&lobbyId=$lobbyId")
+        if (lobbyName != "") reqParsed = reqParsed.plus("&lobbyName=$lobbyName")
         if (newName != "") reqParsed = reqParsed.plus("&newName=$newName")
         if (username != "") reqParsed = reqParsed.plus("&username=$username")
         return reqParsed

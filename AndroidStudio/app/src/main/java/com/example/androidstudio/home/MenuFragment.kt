@@ -45,8 +45,6 @@ class MenuFragment: Fragment(), View.OnClickListener {
 
         val menuActivity: MenuActivity = requireActivity() as MenuActivity
         user = menuActivity.getUser()
-//        val navArgumet = findNavController().graph.arguments["user"]
-//        Log.i("ASDgasdgasdg", findNavController().graph.arguments["user"]?.javaClass.toString())
 
         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
 

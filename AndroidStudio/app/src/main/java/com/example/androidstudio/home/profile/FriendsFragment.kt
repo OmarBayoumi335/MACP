@@ -42,16 +42,15 @@ class FriendsFragment(profileFragment: ProfileFragment, user: User) : Fragment()
         )
         profileFriendsRecyclerView.adapter = profileFriendListAdapter
         profileFriendsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        update(serverHandler, profileFriendListAdapter)
+        update(profileFriendListAdapter)
         return rootView
     }
 
-    private fun update(serverHandler: ServerHandler,
-                       profileFriendListAdapter: ProfileFriendListAdapter) {
+    private fun update(profileFriendListAdapter: ProfileFriendListAdapter) {
         profileFriendListAdapter.notifyDataSetChanged()
         if (this.context != null) {
             Handler(Looper.getMainLooper()).postDelayed({
-                update(serverHandler, profileFriendListAdapter)
+                update(profileFriendListAdapter)
             },
                 Config.POLLING_PERIOD)
         }

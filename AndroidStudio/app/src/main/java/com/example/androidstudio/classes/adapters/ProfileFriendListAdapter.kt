@@ -2,6 +2,7 @@ package com.example.androidstudio.classes.adapters
 
 import android.app.AlertDialog
 import android.content.Context
+import android.util.Log
 import android.view.ContentInfo
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +13,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
 import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.types.UserIdentification
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.home.profile.FriendsFragment
+import com.example.androidstudio.home.profile.RequestsFragment
 
 class ProfileFriendListAdapter(private val c: Context,
                                user: User,
                                private val tab: Int,
-                               private val serverHandler: ServerHandler
-): RecyclerView.Adapter<ProfileFriendListAdapter.ViewHolder>(){
+                               private val serverHandler: ServerHandler,
+                               private val notificationProfile: TextView? = null,
+                               private val notificationInProfile: TextView? = null
+                               ): RecyclerView.Adapter<ProfileFriendListAdapter.ViewHolder>(){
 
     private var user: User
 
@@ -55,7 +61,7 @@ class ProfileFriendListAdapter(private val c: Context,
     }
 
     private fun tabFriends(holder: ViewHolder, position: Int) {
-        val friend: User = user.friends!![position]
+        val friend: UserIdentification = user.friends!![position]
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
         val deleteButton = holder.bNegative
@@ -86,7 +92,7 @@ class ProfileFriendListAdapter(private val c: Context,
     }
 
     private fun tabRequests(holder: ViewHolder, position: Int) {
-        val request: User = user.pendingFriendRequests!![position]
+        val request: UserIdentification = user.pendingFriendRequests!![position]
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
         val acceptButton = holder.bPositive
@@ -94,9 +100,18 @@ class ProfileFriendListAdapter(private val c: Context,
         tvUsername.text = request.username
         tvId.text = request.userId
         acceptButton.setOnClickListener {
-            user.pendingFriendRequests!!.remove(user.pendingFriendRequests!![position]);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, user.pendingFriendRequests!!.size);
+            user.pendingFriendRequests!!.remove(user.pendingFriendRequests!![position])
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, user.pendingFriendRequests!!.size)
+            if (user.pendingFriendRequests == null || user.pendingFriendRequests?.size == 0){
+                notificationProfile?.visibility = View.GONE
+                notificationInProfile?.visibility = View.GONE
+            } else {
+                notificationProfile?.visibility = View.VISIBLE
+                notificationInProfile?.visibility = View.VISIBLE
+                notificationProfile?.text = user.pendingFriendRequests!!.size.toString()
+                notificationInProfile?.text = user.pendingFriendRequests!!.size.toString()
+            }
             serverHandler.apiCall(
                 Config.POST,
                 Config.POST_ACCEPT_FRIEND_REQUEST,
@@ -105,9 +120,18 @@ class ProfileFriendListAdapter(private val c: Context,
             )
         }
         rejectButton.setOnClickListener {
-            user.pendingFriendRequests!!.remove(user.pendingFriendRequests!![position]);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, user.pendingFriendRequests!!.size);
+            user.pendingFriendRequests!!.remove(user.pendingFriendRequests!![position])
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, user.pendingFriendRequests!!.size)
+            if (user.pendingFriendRequests == null || user.pendingFriendRequests?.size == 0){
+                notificationProfile?.visibility = View.GONE
+                notificationInProfile?.visibility = View.GONE
+            } else {
+                notificationProfile?.visibility = View.VISIBLE
+                notificationInProfile?.visibility = View.VISIBLE
+                notificationProfile?.text = user.pendingFriendRequests!!.size.toString()
+                notificationInProfile?.text = user.pendingFriendRequests!!.size.toString()
+            }
             serverHandler.apiCall(
                 Config.DELETE,
                 Config.DELETE_REMOVE_FRIEND_REQUEST,

@@ -1,15 +1,11 @@
 package com.example.androidstudio.classes.types
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
-
 data class User(var username: String,
                 var userId: String,
-                var friends: MutableList<User>?,
-                var pendingFriendRequests: MutableList<User>?,
-                var pendingInviteRequests: MutableList<User>?,
-                var roomMaster: Boolean){
+                var friends: MutableList<UserIdentification>?,
+                var pendingFriendRequests: MutableList<UserIdentification>?,
+                var pendingInviteRequests: MutableList<LobbyUser>?){
     override fun toString(): String {
-        return "User(username='$username', id='$userId', friends=$friends, pendingFriendRequests=$pendingFriendRequests, pendingInviteRequests=$pendingInviteRequests, roomMaster=$roomMaster)"
+        return "User(username='$username', userId='$userId', friends=$friends, pendingFriendRequests=$pendingFriendRequests, pendingInviteRequests=$pendingInviteRequests)"
     }
 }

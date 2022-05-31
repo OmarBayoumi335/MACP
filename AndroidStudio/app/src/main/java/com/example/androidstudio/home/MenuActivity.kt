@@ -23,6 +23,8 @@ import com.google.gson.Gson
 class MenuActivity : AppCompatActivity(), View.OnClickListener{
 
     private lateinit var user: User
+    private lateinit var requestsTextView: TextView
+    private lateinit var profileButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +34,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
         val gson = Gson()
         user = gson.fromJson(userString, User::class.java)
 
-        val requestsTextView = findViewById<TextView>(R.id.profile_notification_textView)
+        requestsTextView = findViewById(R.id.profile_notification_textView)
         if (user.pendingFriendRequests != null) {
             requestsTextView.visibility = View.VISIBLE
             requestsTextView.text = user.pendingFriendRequests!!.size.toString()
@@ -40,7 +42,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
         val serverHandler = ServerHandler(this)
         UpdateUI.updateUser(this, serverHandler, user, requestsTextView)
 
-        val profileButton = findViewById<ImageButton>(R.id.button_profile)
+        profileButton = findViewById<ImageButton>(R.id.button_profile)
         profileButton.setOnClickListener(this)
     }
 
@@ -57,5 +59,21 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
 
     fun getUser(): User {
         return user
+    }
+
+    fun getNotificationTextView(): TextView {
+        return requestsTextView
+    }
+
+    fun setProfileImageButtonVisibility(visibility: Int) {
+        profileButton.visibility = visibility
+        if (visibility == View.GONE) {
+            requestsTextView.visibility = visibility
+        } else {
+            if (user.pendingFriendRequests != null || user.pendingFriendRequests?.size == 0) {
+                requestsTextView.visibility = View.VISIBLE
+                requestsTextView.text = user.pendingFriendRequests!!.size.toString()
+            }
+        }
     }
 }

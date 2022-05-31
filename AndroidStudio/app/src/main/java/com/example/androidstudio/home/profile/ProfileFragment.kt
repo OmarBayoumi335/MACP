@@ -20,6 +20,7 @@ import com.example.androidstudio.classes.*
 import com.example.androidstudio.classes.adapters.ProfileViewPageAdapter
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.home.MenuActivity
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -57,6 +58,15 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
         val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
         serverHandler = ServerHandler(requireContext())
 
+        // Number of requests
+        val requestsTextView = rootView.findViewById<TextView>(R.id.profile_friend_request_notification_textView)
+        if (user.pendingFriendRequests != null) {
+            requestsTextView.visibility = View.VISIBLE
+            requestsTextView.text = user.pendingFriendRequests!!.size.toString()
+        }
+        val menuActivity: MenuActivity = requireActivity() as MenuActivity
+        val profileNotificationTextView: TextView = menuActivity.getNotificationTextView()
+
         // Set top part views
         nameEditText = rootView.findViewById(R.id.profile_name_edittext)
         idTextView = rootView.findViewById(R.id.profile_id)
@@ -66,7 +76,14 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
         // Set the profile tab menu
         val pager = rootView.findViewById<ViewPager2>(R.id.profile_view_pager)
         val table = rootView.findViewById<TabLayout>(R.id.profile_table)
-        pager.adapter = ProfileViewPageAdapter(this, requireActivity().supportFragmentManager, lifecycle, user)
+        pager.adapter = ProfileViewPageAdapter(
+            this,
+            requireActivity().supportFragmentManager,
+            lifecycle,
+            user,
+            requestsTextView,
+            profileNotificationTextView
+        )
         val tabTitles = arrayOf(resources.getString(R.string.profile_friends_tab),
             resources.getString(R.string.profile_friends_request_tab),
             resources.getString(R.string.profile_add_friend_tab))
@@ -83,12 +100,6 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
         val profileCloseButton = rootView.findViewById<Button>(R.id.profile_close_button)
         profileCloseButton.setOnClickListener(this)
 
-        // Number of requests
-        val requestsTextView = rootView.findViewById<TextView>(R.id.profile_friend_request_notification_textView)
-        if (user.pendingFriendRequests != null) {
-            requestsTextView.visibility = View.VISIBLE
-            requestsTextView.text = user.pendingFriendRequests!!.size.toString()
-        }
         update(requestsTextView)
         return rootView
     }

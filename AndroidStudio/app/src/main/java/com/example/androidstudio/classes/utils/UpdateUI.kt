@@ -271,7 +271,7 @@ class UpdateUI {
                         user.friends = userUpdate.friends
                         user.pendingFriendRequests = userUpdate.pendingFriendRequests
                         user.pendingInviteRequests = userUpdate.pendingInviteRequests
-                        user.roomMaster = userUpdate.roomMaster
+//                        user.roomMaster = userUpdate.roomMaster
                         if (user.pendingFriendRequests != null) {
                             notification.visibility = View.VISIBLE
                             notification.text = user.pendingFriendRequests?.size.toString()

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
@@ -16,14 +17,21 @@ import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
 
-class RequestsFragment(profileFragment: ProfileFragment, user: User) : Fragment() {
+class RequestsFragment(profileFragment: ProfileFragment,
+                       user: User,
+                       notificationInProfile: TextView,
+                       notificationProfile: TextView) : Fragment() {
 
     private var profileFragment: ProfileFragment
     private var user: User
+    private var notificationInProfile: TextView
+    private var notificationProfile: TextView
 
     init {
         this.profileFragment = profileFragment
         this.user = user
+        this.notificationProfile = notificationProfile
+        this.notificationInProfile = notificationInProfile
     }
 
     override fun onCreateView(
@@ -33,17 +41,15 @@ class RequestsFragment(profileFragment: ProfileFragment, user: User) : Fragment(
         val rootView = inflater.inflate(R.layout.fragment_requests, container, false)
         val serverHandler = ServerHandler(requireContext())
 
-        // UID
-        val sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", Context.MODE_PRIVATE)
-        val userid = sharedPreferences.getString("UID", "").toString()
-
         // Recycler view with update every sec
         val profileFriendsRecyclerView = rootView.findViewById<RecyclerView>(R.id.profile_requests_list_recyclerView)
         val profileFriendListAdapter = ProfileFriendListAdapter(
             requireContext(),
             user,
             1,
-            serverHandler
+            serverHandler,
+            notificationProfile,
+            notificationInProfile
         )
         profileFriendsRecyclerView.adapter = profileFriendListAdapter
         profileFriendsRecyclerView.layoutManager = LinearLayoutManager(requireContext())

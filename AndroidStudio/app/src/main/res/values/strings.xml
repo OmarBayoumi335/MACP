@@ -56,4 +56,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="invite_of">Invite of:</string>
+    <string name="lobby_name">Lobby name:</string>
+    <string name="title_select_lobby_name">Choose the lobby name</string>
+    <string name="confirm">Create lobby</string>
+    <string name="lobby_name_hint">Type the name</string>
+    <string name="default_lobby_name">Lobby of</string>
 </resources>

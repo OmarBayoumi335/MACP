@@ -22,8 +22,8 @@
             android:id="@+id/action_setupGameFragment_to_partyInvitationFragment"
             app:destination="@id/partyInvitationFragment" />
         <action
-            android:id="@+id/action_setupGameFragment_to_createPartyFragment"
-            app:destination="@id/createPartyFragment" />
+            android:id="@+id/action_setupGameFragment_to_partyCreationLoadingFragment"
+            app:destination="@id/partyCreationLoadingFragment" />
     </fragment>
     <fragment
         android:id="@+id/createPartyFragment"
@@ -37,6 +37,15 @@
         tools:layout="@layout/fragment_party_invitation" >
         <action
             android:id="@+id/action_partyInvitationFragment_to_createPartyFragment"
+            app:destination="@id/createPartyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/partyCreationLoadingFragment"
+        android:name="com.example.androidstudio.loadings.PartyCreationLoadingFragment"
+        android:label="fragment_party_creation_loading"
+        tools:layout="@layout/fragment_party_creation_loading" >
+        <action
+            android:id="@+id/action_partyCreationLoadingFragment_to_createPartyFragment"
             app:destination="@id/createPartyFragment" />
     </fragment>
 </navigation>

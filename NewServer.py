@@ -127,7 +127,7 @@ class EnigmaServer(Resource):
             if username == None:
                 username = ""
             db.child("Users").child(userId).set({"username": username, "userId": userId})
-            db.child("GoogleUserIds").set({self.googleUserId: userId})
+            db.child("GoogleUserIds").update({self.googleUserId: userId})
             return {"message": "user created", "userId": userId, "error": False}
         
         return {"message": "put request failed", "error": True}
@@ -152,6 +152,11 @@ class EnigmaServer(Resource):
                         for i in range(len(requests)):
                             if requests[i]["userId"] == self.userId:
                                 db.child("Users").child(user).child("pendingFriendRequests").child(str(i)).update({"username": newName})
+                    invites = db.child("Users").child(user).child("pendingInviteRequests").get().val()
+                    if invites != None:
+                        for i in range(len(invites)):
+                            if invites[i]["userId"] == self.userId:
+                                db.child("Users").child(user).child("pendingInviteRequests").child(str(i)).update({"username": newName})
             
             return {"message": "post name changed", "error": False}
         

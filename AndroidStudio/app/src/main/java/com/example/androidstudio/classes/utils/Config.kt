@@ -8,7 +8,8 @@ class Config {
         // Server
         val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
         //        val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
-        val POLLING_PERIOD = 1500L
+//        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
+        val POLLING_PERIOD = 4500L
 
         // Firebase/Google
         val CLIENT_ID = "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com"
@@ -41,9 +42,7 @@ class Config {
 
         val PUT = "put"
         val PUT_NEW_USER = "put0"
-
-//        val PUT_NEW_USER = 10
-//        val PUT_NEW_LOBBY = 12
+        val PUT_NEW_LOBBY = "put1"
 
         val POST = "post"
         val POST_CHANGE_NAME = "post0"
@@ -56,6 +55,7 @@ class Config {
         val DELETE = "delete"
         val DELETE_REMOVE_FRIEND = "delete0"
         val DELETE_REMOVE_FRIEND_REQUEST = "delete1"
+        val DELETE_LOBBY_INVITE = "delete2"
 
 
 //        val DELETE_REMOVE_FRIEND = 6

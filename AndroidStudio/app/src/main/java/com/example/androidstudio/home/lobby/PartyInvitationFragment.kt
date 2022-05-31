@@ -2,18 +2,28 @@ package com.example.androidstudio.home.lobby
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.adapters.LobbyInvitesAdapeter
+import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
+import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.UpdateUI
+import com.example.androidstudio.home.MenuActivity
 
 class PartyInvitationFragment : Fragment(), View.OnClickListener {
+
+    private lateinit var user: User
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,24 +33,24 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
         val rootView = inflater.inflate(R.layout.fragment_party_invitation, container, false)
         val serverHandler = ServerHandler(requireContext())
 
-        // UID
-        val sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", Context.MODE_PRIVATE)
-        val userid = sharedPreferences.getString("UID", "").toString()
+        // user
+        val menuActivity: MenuActivity = requireActivity() as MenuActivity
+        user = menuActivity.getUser()
 
         // Back button
         val backButton = rootView.findViewById<Button>(R.id.button_back_from_party_invitation)
         backButton.setOnClickListener(this)
 
         // Recycler view for invites with update every sec
-        val lobbyInviteAdapter = rootView.findViewById<RecyclerView>(R.id.party_invites_recycler_view)
-        UpdateUI.updateInviteList(requireContext(), this, serverHandler, userid, lobbyInviteAdapter)
+        val lobbyInviteRecyclerView = rootView.findViewById<RecyclerView>(R.id.party_invites_recycler_view)
+//        UpdateUI.updateInviteList(requireContext(), this, serverHandler, userid, lobbyInviteAdapter)
+        val lobbyInvitesAdapter = LobbyInvitesAdapeter(user, serverHandler)
+        lobbyInviteRecyclerView.adapter = lobbyInvitesAdapter
+        lobbyInviteRecyclerView.layoutManager = LinearLayoutManager(context)
+
+        update(lobbyInvitesAdapter)
 
         return rootView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
     }
 
     override fun onClick(v: View?) {
@@ -50,7 +60,16 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
     }
 
     private fun back() {
-//        findNavController().navigate(R.id.action_partyInvitationFragment_to_createPartyFragment)
         findNavController().popBackStack()
+    }
+
+    private fun update(lobbyInvitesAdapter: LobbyInvitesAdapeter) {
+        lobbyInvitesAdapter.notifyDataSetChanged()
+        if (this.context != null) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                update(lobbyInvitesAdapter)
+            },
+                Config.POLLING_PERIOD)
+        }
     }
 }

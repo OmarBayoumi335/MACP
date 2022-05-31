@@ -5,13 +5,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
+        android:id="@+id/text_id_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="3dp"
+        android:text="@string/invite_of"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/lobby_invite_item_username_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/lobby_invite_item_username_textview"/>
+
+    <TextView
         android:id="@+id/lobby_invite_item_id_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="5dp"
-        android:text="dsfsadfgas"
+        android:paddingRight="2dp"
+        android:text="12h5S8a"
         app:layout_constraintBottom_toBottomOf="@id/lobby_invite_item_username_textview"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_id_textview"
         app:layout_constraintTop_toTopOf="@id/lobby_invite_item_username_textview"
         app:layout_constraintVertical_bias="1.0" />
 
@@ -19,19 +31,43 @@
         android:id="@+id/lobby_invite_item_username_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Cristiano"
         android:textColor="@color/black"
-        android:text="dsafsadgsad"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/lobby_invite_item_id_textview"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/text_lobby_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lobby_name"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:paddingEnd="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lobby_invite_item_username_textview" />
+
+    <TextView
+        android:id="@+id/lobby_invite_item_lobby_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lobby of Antonio"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_lobby_name_textview"
+        app:layout_constraintTop_toBottomOf="@id/lobby_invite_item_username_textview" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="right|center_vertical"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@id/lobby_invite_item_username_textview"
+        app:layout_constraintBottom_toBottomOf="@id/lobby_invite_item_lobby_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@id/lobby_invite_item_username_textview"

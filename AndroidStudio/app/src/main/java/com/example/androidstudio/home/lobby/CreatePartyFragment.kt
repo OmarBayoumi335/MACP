@@ -3,6 +3,7 @@ package com.example.androidstudio.home.lobby
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.types.Lobby
+import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.UpdateUI
+import com.example.androidstudio.home.MenuActivity
+import com.google.gson.Gson
 
 
 class CreatePartyFragment : Fragment(), View.OnClickListener {
@@ -28,6 +34,16 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_create_party, container, false)
         val serverHandler = ServerHandler(requireContext())
+
+        val menuActivity: MenuActivity = requireActivity() as MenuActivity
+        menuActivity.setProfileImageButtonVisibility(View.VISIBLE)
+
+
+        val lobbyString = arguments?.getString("lobby").toString()
+        val gson = Gson()
+        val lobby = gson.fromJson(lobbyString, Lobby::class.java)
+
+        Log.i(Config.LOBBYTAG, lobby.toString())
 
         lobbyId = arguments?.getString("lobbyId").toString()
         if (lobbyId != "null"){  // room master
@@ -69,11 +85,6 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         return rootView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
-
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.button_leave_lobby -> leave()
@@ -93,7 +104,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             .setPositiveButton(
                 R.string.yes
             ) { _, _ ->
-                findNavController().popBackStack()
+                findNavController().popBackStack(R.id.setupGameFragment, false)
             }
             .setNegativeButton(R.string.no, null)
             .setIcon(android.R.drawable.ic_dialog_alert)
