@@ -203,7 +203,6 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
                     val lobbyJsonString = reply.toString()
                     val gson = Gson()
                     val lobbyUpdate = gson.fromJson(lobbyJsonString, Lobby::class.java)
-                    Log.i(Config.LOBBYTAG, "updateLobby() $lobbyUpdate")
                     if (lobbyUpdate.team1 == null) {
                         lobbyUpdate.team1 = mutableListOf()
                     }
