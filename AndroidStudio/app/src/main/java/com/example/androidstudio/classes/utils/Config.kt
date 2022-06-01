@@ -30,6 +30,7 @@ class Config {
         val GET_USER = "get2"
         val GET_PENDING_REQUESTS = "get3"
         val GET_SEARCH_FRIEND = "get4"
+        val GET_INVITABLE_USER = "get5"
 //        val GET_USERNAME = 1
 //        val GET_FRIENDS_LIST = 2
 //        val GET_PENDING_FRIENDS_REQUEST = 3

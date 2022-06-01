@@ -4,11 +4,14 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,8 +21,12 @@ import com.example.androidstudio.classes.adapters.InviteFriendListAdapter
 import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.types.UserInvitable
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.UpdateUI
+import com.google.gson.Gson
+import kotlinx.android.synthetic.main.fragment_invite_in_party.*
+import org.json.JSONObject
 
 class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.OnClickListener {
 
@@ -31,24 +38,63 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
         this.user = user
     }
 
+    private lateinit var serverHandler: ServerHandler
+    private lateinit var userInvitable: MutableList<UserInvitable>
+    private var inviteInPartyFragment: InviteInPartyFragment = this
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_invite_in_party, container, false)
+        serverHandler = ServerHandler(requireContext())
 
-        // Close button
+
         val closeButton = rootView.findViewById<Button>(R.id.invite_friend_close_button)
         closeButton.setOnClickListener (this)
+        serverHandler.apiCall(
+            Config.GET,
+            Config.GET_INVITABLE_USER,
+            user.userId,
+            lobbyId = lobby.lobbyId,
+            callBack = object:ServerHandler.VolleyCallBack{
+                override fun onSuccess(reply: JSONObject?) {
+                    // Close button
+                    val userInvitableJsonString = reply?.get("userInvitableList").toString()
+                    val gson = Gson()
+                    userInvitable = gson.fromJson(
+                        userInvitableJsonString,
+                        MutableList::class.java
+                    ) as MutableList<UserInvitable>
 
-        // Recycler view with update every sec
-        val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
-        val serverHandler = ServerHandler(requireContext())
-        val inviteFriendListAdapter = InviteFriendListAdapter(user, lobby, serverHandler, requireContext())
-        inviteFriendListRecyclerView.adapter = inviteFriendListAdapter
-        inviteFriendListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        update(inviteFriendListAdapter)
+                    Log.i(Config.LOBBYTAG, userInvitable.toString())
+
+                    rootView.findViewById<ProgressBar>(R.id.progressBarInvite).visibility = View.GONE
+
+                    closeButton.visibility = View.VISIBLE
+
+                    rootView.findViewById<TextView>(R.id.invite_friend_title_textview).visibility = View.VISIBLE
+
+                    // Recycler view with update every sec
+                    val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
+                    inviteFriendListRecyclerView.visibility = View.VISIBLE
+                    val inviteFriendListAdapter = InviteFriendListAdapter(user, userInvitable, lobby, serverHandler, requireContext())
+                    inviteFriendListRecyclerView.adapter = inviteFriendListAdapter
+                    inviteFriendListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                    update(inviteFriendListAdapter, inviteInPartyFragment)
+                }
+        })
+//        // Close button
+//        val closeButton = rootView.findViewById<Button>(R.id.invite_friend_close_button)
+//        closeButton.setOnClickListener (this)
+//
+//        // Recycler view with update every sec
+//        val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
+//        val inviteFriendListAdapter = InviteFriendListAdapter(user, lobby, serverHandler, requireContext())
+//        inviteFriendListRecyclerView.adapter = inviteFriendListAdapter
+//        inviteFriendListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+//        update(inviteFriendListAdapter)
         return rootView
     }
 
@@ -72,13 +118,32 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
         }
     }
 
-    private fun update(inviteFriendListAdapter: InviteFriendListAdapter) {
-        inviteFriendListAdapter.notifyDataSetChanged()
-        if (this.context != null) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                update(inviteFriendListAdapter)
-            },
-                Config.POLLING_PERIOD)
-        }
+    private fun update(
+        inviteFriendListAdapter: InviteFriendListAdapter,
+        inviteInPartyFragment: InviteInPartyFragment) {
+
+        serverHandler.apiCall(
+            Config.GET,
+            Config.GET_INVITABLE_USER,
+            user.userId,
+            callBack = object:ServerHandler.VolleyCallBack{
+                override fun onSuccess(reply: JSONObject?) {
+                    // Close button
+                    val userInvitableJsonString = reply?.get("userInvitableList").toString()
+                    val gson = Gson()
+                    userInvitable = gson.fromJson(
+                        userInvitableJsonString,
+                        MutableList::class.java
+                    ) as MutableList<UserInvitable>
+
+                    inviteFriendListAdapter.notifyDataSetChanged()
+                    if (inviteInPartyFragment.context != null) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            update(inviteFriendListAdapter, inviteInPartyFragment)
+                        },
+                            Config.POLLING_PERIOD)
+                    }
+                }
+            })
     }
 }

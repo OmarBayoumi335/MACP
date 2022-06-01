@@ -62,4 +62,5 @@
     <string name="confirm">Create lobby</string>
     <string name="lobby_name_hint">Type the name</string>
     <string name="default_lobby_name">Lobby of</string>
+    <string name="user_invited">User invited</string>
 </resources>

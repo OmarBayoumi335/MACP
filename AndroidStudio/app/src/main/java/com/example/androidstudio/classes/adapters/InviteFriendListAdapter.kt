@@ -13,20 +13,24 @@ import com.example.androidstudio.classes.ServerHandler
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.types.UserIdentification
+import com.example.androidstudio.classes.types.UserInvitable
 import com.example.androidstudio.classes.utils.Config
 import org.json.JSONObject
 
 class InviteFriendListAdapter(user: User,
+                              userList: MutableList<UserInvitable>,
                               lobby: Lobby,
                               private val serverHandler: ServerHandler,
                               private val c: Context): RecyclerView.Adapter<InviteFriendListAdapter.ViewHolder>(){
 
     private var user: User
+    private var userList: MutableList<UserInvitable>
     private var lobby: Lobby
 
     init {
         this.user = user
         this.lobby = lobby
+        this.userList = userList
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -43,46 +47,41 @@ class InviteFriendListAdapter(user: User,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val friend: UserIdentification = user.friends!![position]
+        val friend: UserInvitable = userList[position]
         // Set item views based on your views and data model
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
         val bPositive = holder.bInvite
         tvUsername.text = friend.username
         tvId.text = friend.userId
-        bPositive.setOnClickListener {
-            serverHandler.apiCall(
-                Config.POST,
-                Config.POST_SEND_LOBBY_INVITE,
-                userId = user.userId,
-                username = user.username,
-                friendId = friend.userId,
-                lobbyId = lobby.lobbyId,
-                lobbyName = lobby.lobbyName,
-                callBack = object : ServerHandler.VolleyCallBack {
-                    override fun onSuccess(reply: JSONObject?) {
-                        val status = reply?.get("status")
-                        val message = reply?.get("message").toString()
-                        Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
-                        when (status) {
-                            "invited" -> {
-                                Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
-                            }
-                            "alreadyInvited" -> {
-                                bPositive.visibility = View.GONE
-                            }
-                            "inLobby" -> {
+        if (friend.status != "invitable") {
+            bPositive.visibility = View.GONE
+        } else {
+            bPositive.setOnClickListener {
+                serverHandler.apiCall(
+                    Config.POST,
+                    Config.POST_SEND_LOBBY_INVITE,
+                    userId = user.userId,
+                    username = user.username,
+                    friendId = friend.userId,
+                    lobbyId = lobby.lobbyId,
+                    lobbyName = lobby.lobbyName,
+                    callBack = object : ServerHandler.VolleyCallBack {
+                        override fun onSuccess(reply: JSONObject?) {
+                            val status = reply?.get("status")
+                            val message = c.resources.getString(R.string.user_invited)
+                            Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+                            if (status == "invited") {
                                 bPositive.visibility = View.GONE
                             }
                         }
-                    }
-                })
+                    })
+            }
         }
 
     }
 
     override fun getItemCount(): Int {
-        if (user.friends != null) return user.friends!!.size
-        return 0
+        return userList.size
     }
 }
