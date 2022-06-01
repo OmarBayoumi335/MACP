@@ -24,7 +24,7 @@
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_create_party.xml" value="0.5" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_friends.xml" value="0.24635416666666668" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_fullscreen.xml" value="0.33240740740740743" />
-        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_invite_in_party.xml" value="0.1" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_invite_in_party.xml" value="0.21354166666666666" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_item_list.xml" value="0.3729166666666667" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_login.xml" value="0.2015625" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_login_back.xml" value="0.21041666666666667" />
@@ -52,6 +52,7 @@
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.251" />
         <entry key="..\:/Desktop/Università/macp/AndroidStudio/app/src/main/res/layout/fragment_add_friend.xml" value="0.2578125" />
         <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/activity_login.xml" value="0.21197916666666666" />
+        <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/fragment_menu.xml" value="0.1" />
       </map>
     </option>
   </component>

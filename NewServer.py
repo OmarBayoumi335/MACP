@@ -371,11 +371,10 @@ class EnigmaServer(Resource):
         
         #2 user leaves lobby and if there are no users the lobby will be removed. Input(req, userId, lobbyId)
         if self.req == DELETE_LEAVE_LOBBY:
-            lobby = db.child("Lobbies").child(self.lobbyId)
             inTeam1 = False
-            team1 = lobby.child("team1").get().val()
-            team2 = lobby.child("team2").get().val()
-            chat = lobby.child("chat").get().val()
+            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
+            chat = db.child("Lobbies").child(self.lobbyId).child("chat").get().val()
             if team1 == None:
                 team1 = []
             if team2 == None:
@@ -390,31 +389,18 @@ class EnigmaServer(Resource):
                     break 
             if not inTeam1:
                 for user in team2:
-                    if user["userId"] != self.userId:
+                    if user["userId"] == self.userId:
                         team2.remove(user)
                         break
-            
+       
             #last user leaves lobby
             if len(team1) + len(team2) == 0:
+                
                 db.child("Lobbies").child(self.lobbyId).remove()
                 return {"message": "lobby deleted", "error": False}
             
-            newLobbyId = self.lobbyId
-            roomMasterChanged = False
-            if self.userId == self.lobbyId:
-                teams = team1 + team2
-                roomMaster = random.choice(teams)
-                newLobbyId = roomMaster["userId"]
-                roomMasterChanged = True
-            newLobby = {"lobbyId": newLobbyId,
-                        "lobbyName": self.lobbyName,
-                        "team1": team1,
-                        "team2": team2,
-                        "chat": chat}
-            
-            db.child("Lobbies").update({newLobbyId: newLobby})
-            if roomMasterChanged:
-                db.child("Lobbies").child(self.lobbyId).remove()
+            db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
+            db.child("Lobbies").child(self.lobbyId).update({"team2": team2})
             return{"message": "user leave lobby", "error": False}
         
         #3 user decline a lobby invite. Input(req, userId, lobbyId)
