@@ -17,14 +17,14 @@ db = firebase.database()
 
 
 #request codes and parser arguments
+MAX_LOBBY_MEMBERS = 16
 
 # GET
 GET_USERNAME = "get0"
 GET_USER_EXIST = "get1"
 GET_USER = "get2"
-GET_PENDING_REQUESTS = "get3"
-GET_SEARCH_FRIEND = "get4"
-GET_INVITABLE_USER = "get5"
+GET_SEARCH_FRIEND = "get3"
+GET_INVITABLE_USER = "get4"
 
 # PUT
 PUT_NEW_USER = "put0"
@@ -95,12 +95,7 @@ class EnigmaServer(Resource):
         if self.req == GET_USER:
             return db.child("Users").child(self.userId).get().val()
         
-        #3 return number of pending request. Input(req, userId)
-        if self.req == GET_PENDING_REQUESTS:
-            pendingRequests = db.child("Users").child(self.userId).child("pendingFriendRequests").get().val()
-            return {"requests": pendingRequests}
-        
-        #4 return if a friend request is sendable. Input(req, userId, friendId)
+        #3 return if a friend request is sendable. Input(req, userId, friendId)
         if self.req == GET_SEARCH_FRIEND:
             if self.userId == self.friendId:
                 return {"message": "you can't add yourself", "status": "yourself", "error": False}
@@ -126,7 +121,7 @@ class EnigmaServer(Resource):
                 return {"message": "friend not found", "status": "notFound", "error": False}
             return {"message": "friend found", "status": "found", "error": False}
         
-        #5 return a list of invitable user. Input(req, userId, lobbyId) 
+        #4 return a list of invitable user. Input(req, userId, lobbyId) 
         if self.req == GET_INVITABLE_USER:
             user = db.child("Users").child(self.userId).get().val()
             friendList = db.child("Users").child(self.userId).child("friends").get().val()
@@ -150,7 +145,6 @@ class EnigmaServer(Resource):
                         checkUser = {"username": user["username"], "userId": user["userId"]}
                         if checkUser in team1 or checkUser in team2:
                             user["status"] = "inLobby"
-                        
             return {"message":"list of invitable users", "userInvitableList": {"userList": invitableUsers}, "error": False}
             
         return {"message": "get request failed", "error": True}
@@ -207,7 +201,6 @@ class EnigmaServer(Resource):
                         for i in range(len(invites)):
                             if invites[i]["userId"] == self.userId:
                                 db.child("Users").child(user).child("pendingInviteRequests").child(str(i)).update({"username": newName})
-                     
                     lobbies = db.child("Lobbies").get().val()
                     if lobbies != None:
                         for lobby in lobbies:
@@ -221,8 +214,6 @@ class EnigmaServer(Resource):
                             for i in range(len(team2)):
                                 if team2[i]["userId"] == self.userId:
                                     db.child("Lobbies").child(lobby).child("team2").child(str(i)).update({"username": newName})
-                            
-            
             return {"message": "post name changed", "error": False}
         
         #1 accept friend request. Input(req, userId, friendId)
@@ -263,6 +254,12 @@ class EnigmaServer(Resource):
         
         #3 send invite to lobby. Input(req, userId, username, friendId, lobbyId, lobbyName)
         if self.req == POST_SEND_LOBBY_INVITE:
+            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            team1 = [] if team1 == None else team1
+            team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
+            team2 = [] if team2 == None else team2
+            if len(team1) + len(team2) >= MAX_LOBBY_MEMBERS:
+                return {"message": "lobby full", "status": "lobbyFull", "error": False}
             username = self.username
             if username == None:
                 username = ""
@@ -281,11 +278,12 @@ class EnigmaServer(Resource):
             userValue = {"username": user["username"], "userId": user["userId"]}
             team1Members = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
             team2Members = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
-            if team1Members == None:
-                team1Members = []
-            if team2Members == None:
-                team2Members = []
-            teamWithLessMembers = "team1"
+            team1Members = [] if team1Members == None else team1Members
+            team2Members = [] if team2Members == None else team2Members
+            
+            if len(team1Members) + len(team2Members) >= MAX_LOBBY_MEMBERS:
+                return {"message": "lobby full", "error": False}
+            
             if len(team1Members) > len(team2Members):
                 team2Members.append(userValue)
                 db.child("Lobbies").child(self.lobbyId).update({"team2": team2Members})
@@ -406,7 +404,6 @@ class EnigmaServer(Resource):
             db.child("Lobbies").update({newLobbyId: newLobby})
             if roomMasterChanged:
                 db.child("Lobbies").child(self.lobbyId).remove()
-            
             return{"message": "user leave lobby", "error": False}
         
         #3 user decline a lobby invite. Input(req, userId, lobbyId)
