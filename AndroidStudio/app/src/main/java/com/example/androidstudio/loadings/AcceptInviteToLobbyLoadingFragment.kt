@@ -10,7 +10,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.MenuActivity
 import org.json.JSONObject

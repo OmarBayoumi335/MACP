@@ -9,7 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.types.UserInvite
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config

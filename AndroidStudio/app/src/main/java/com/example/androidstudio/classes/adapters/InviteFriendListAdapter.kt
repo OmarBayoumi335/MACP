@@ -1,7 +1,6 @@
 package com.example.androidstudio.classes.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
 import org.json.JSONObject

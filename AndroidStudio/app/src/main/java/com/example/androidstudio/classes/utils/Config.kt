@@ -15,7 +15,7 @@ class Config {
         val CLIENT_ID = "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com"
 
         // Max lobby member
-        val MAX_LOBBY_MEMBERS = 16
+        val MAX_TEAM_MEMBERS = 1
 
         // Tags
         val API = "Api request"
@@ -33,6 +33,7 @@ class Config {
         val GET_USER = "get2"
         val GET_SEARCH_FRIEND = "get3"
         val GET_INVITABLE_USER = "get4"
+        val GET_LOBBY = "get5"
 
         val PUT = "put"
         val PUT_NEW_USER = "put0"
@@ -45,18 +46,12 @@ class Config {
         val POST_SEND_LOBBY_INVITE = "post3"
         val POST_ACCEPT_LOBBY_INVITE = "post4"
         val POST_CHANGE_TEAM = "post5"
-//        val POST_SEND_LOBBY_INVITE = 13
-//        val POST_ENTER_IN_LOBBY = 15
 
         val DELETE = "delete"
         val DELETE_REMOVE_FRIEND = "delete0"
         val DELETE_REMOVE_FRIEND_REQUEST = "delete1"
         val DELETE_LEAVE_LOBBY = "delete2"
         val DELETE_LOBBY_INVITE = "delete3"
-
-
-//        val DELETE_REMOVE_FRIEND = 6
-//        val DELETE_REJECT_FRIEND_REQUEST = 8
 
 
     }

@@ -1,11 +1,8 @@
 package com.example.androidstudio.home.lobby
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,20 +13,14 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.adapters.InviteFriendListAdapter
-import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
-import com.example.androidstudio.classes.types.UserInvitable
 import com.example.androidstudio.classes.types.UserInvitableList
 import com.example.androidstudio.classes.utils.Config
-import com.example.androidstudio.classes.utils.UpdateUI
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.fragment_invite_in_party.*
 import org.json.JSONObject
-import java.lang.reflect.Type
-import kotlin.reflect.typeOf
 
 class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.OnClickListener {
 
@@ -53,7 +44,6 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
         val rootView = inflater.inflate(R.layout.fragment_invite_in_party, container, false)
         serverHandler = ServerHandler(requireContext())
 
-
         val closeButton = rootView.findViewById<Button>(R.id.invite_friend_close_button)
         inviteInPartyFragment = this
         closeButton.setOnClickListener(this)
@@ -62,7 +52,7 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
             Config.GET_INVITABLE_USER,
             user.userId,
             lobbyId = lobby.lobbyId,
-            callBack = object:ServerHandler.VolleyCallBack{
+            callBack = object: ServerHandler.VolleyCallBack{
                 override fun onSuccess(reply: JSONObject?) {
                     val userInvitableJsonString = reply?.get("userInvitableList").toString()
                     val gson = Gson()
@@ -83,16 +73,6 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
                     update(inviteFriendListAdapter, inviteInPartyFragment)
                 }
         })
-//        // Close button
-//        val closeButton = rootView.findViewById<Button>(R.id.invite_friend_close_button)
-//        closeButton.setOnClickListener (this)
-//
-//        // Recycler view with update every sec
-//        val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
-//        val inviteFriendListAdapter = InviteFriendListAdapter(user, lobby, serverHandler, requireContext())
-//        inviteFriendListRecyclerView.adapter = inviteFriendListAdapter
-//        inviteFriendListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-//        update(inviteFriendListAdapter)
         return rootView
     }
 
@@ -107,7 +87,6 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
         layoutParams?.width = w
         layoutParams?.height = h
         viewResize.layoutParams = layoutParams
-
     }
 
     override fun onClick(v: View?) {
@@ -125,7 +104,7 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
             Config.GET_INVITABLE_USER,
             user.userId,
             lobbyId = lobby.lobbyId,
-            callBack = object:ServerHandler.VolleyCallBack{
+            callBack = object: ServerHandler.VolleyCallBack{
                 override fun onSuccess(reply: JSONObject?) {
                     val userInvitableJsonString = reply?.get("userInvitableList").toString()
                     val gson = Gson()

@@ -1,7 +1,6 @@
 package com.example.androidstudio.home.lobby
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,13 +17,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.adapters.LobbyTeamAdapter
-import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
-import com.example.androidstudio.classes.utils.UpdateUI
 import com.example.androidstudio.home.MenuActivity
 import com.google.gson.Gson
 import org.json.JSONObject
@@ -65,8 +62,8 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         // Num members
         team1NumEditText = rootView.findViewById(R.id.team1_number_of_members_textview)
         team2NumEditText = rootView.findViewById(R.id.team2_number_of_members_textview)
-        team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_LOBBY_MEMBERS)
-        team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_LOBBY_MEMBERS)
+        team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
+        team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
 
         // Change Team Button
         val changeTeamImageButton = rootView.findViewById<ImageButton>(R.id.change_team_image_button)
@@ -102,6 +99,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team2MembersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // update con get lobby
+        updateLobby(this)
         return rootView
     }
 
@@ -132,28 +130,37 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
                 }
             }
         }
+        var change = false
         if (teamNumber == 1) {
-            lobby.team2.add(lobby.team1[teamIndex])
-            lobby.team1.remove(lobby.team1[teamIndex])
+            if (lobby.team2.size < Config.MAX_TEAM_MEMBERS) {
+                lobby.team2.add(lobby.team1[teamIndex])
+                lobby.team1.remove(lobby.team1[teamIndex])
+                change = true
+            }
         } else {
-            lobby.team1.add(lobby.team2[teamIndex])
-            lobby.team2.remove(lobby.team2[teamIndex])
+            if (lobby.team1.size < Config.MAX_TEAM_MEMBERS) {
+                lobby.team1.add(lobby.team2[teamIndex])
+                lobby.team2.remove(lobby.team2[teamIndex])
+                change = true
+            }
         }
         // update views
-        team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_LOBBY_MEMBERS)
-        team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_LOBBY_MEMBERS)
-        team1MembersAdapter.notifyDataSetChanged()
-        team2MembersAdapter.notifyDataSetChanged()
-        serverHandler.apiCall(
-            Config.POST,
-            Config.POST_CHANGE_TEAM,
-            userId = user.userId,
-            lobbyId = lobby.lobbyId
-        )
+        if (change) {
+            updateUI()
+            serverHandler.apiCall(
+                Config.POST,
+                Config.POST_CHANGE_TEAM,
+                userId = user.userId,
+                lobbyId = lobby.lobbyId,
+            )
+        }
     }
 
     private fun invite() {
-        InviteInPartyFragment(lobby, user).show(requireActivity().supportFragmentManager, "Lobby->Invite")
+        InviteInPartyFragment(lobby, user).show(
+            requireActivity().supportFragmentManager,
+            "Lobby->Invite"
+        )
     }
 
     private fun leave() {
@@ -176,42 +183,37 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             .show()
     }
 
-//    fun updateLobby(createPartyFragment: CreatePartyFragment,
-//                    serverHandler: ServerHandler,
-//                    user: User,
-//                    notification: TextView) {
-//        Log.i(Config.UPDATEUITAG, "updateUser() $user")
-//        serverHandler.apiCall(
-//            Config.GET,
-//            Config.GET_USER,
-//            userId = user.userId,
-//            callBack = object : ServerHandler.VolleyCallBack {
-//                override fun onSuccess(reply: JSONObject?) {
-//                    val userJsonString = reply.toString()
-//                    val gson = Gson()
-//                    val userUpdate = gson.fromJson(userJsonString, User::class.java)
-//                    user.username = userUpdate.username
-//                    user.friends = userUpdate.friends
-//                    user.pendingFriendRequests = userUpdate.pendingFriendRequests
-//                    user.pendingInviteRequests = userUpdate.pendingInviteRequests
-////                        user.roomMaster = userUpdate.roomMaster
-//                    if (user.pendingFriendRequests != null) {
-//                        notification.visibility = View.VISIBLE
-//                        notification.text = user.pendingFriendRequests?.size.toString()
-//                    } else {
-//                        notification.visibility = View.GONE
-//                    }
-//                    if (profileFragment.context != null) {
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//                            UpdateUI.updateUser(
-//                                menuActivity,
-//                                serverHandler,
-//                                user,
-//                                notification
-//                            )
-//                        }, Config.POLLING_PERIOD)
-//                    }
-//                }
-//            })
-//    }
+    private fun updateUI() {
+        team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
+        team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
+        team1MembersAdapter.notifyDataSetChanged()
+        team2MembersAdapter.notifyDataSetChanged()
+        //chatAdapter.notifyDataSetChanged()
+    }
+
+    private fun updateLobby(createPartyFragment: CreatePartyFragment) {
+        Log.i(Config.LOBBYTAG, "updateLobby() $lobby")
+        serverHandler.apiCall(
+            Config.GET,
+            Config.GET_USER,
+            lobbyId = lobby.lobbyId,
+            callBack = object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+                    val lobbyJsonString = reply.toString()
+                    val gson = Gson()
+                    val lobbyUpdate = gson.fromJson(lobbyJsonString, Lobby::class.java)
+                    lobby.team1 = lobbyUpdate.team1
+                    lobby.team2 = lobbyUpdate.team2
+                    lobby.chat = lobbyUpdate.chat
+                    updateUI()
+                    if (createPartyFragment.context != null) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            updateLobby(
+                                createPartyFragment
+                            )
+                        }, Config.POLLING_PERIOD)
+                    }
+                }
+            })
+    }
 }

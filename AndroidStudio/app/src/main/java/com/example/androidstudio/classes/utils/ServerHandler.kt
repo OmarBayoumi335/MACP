@@ -1,4 +1,4 @@
-package com.example.androidstudio.classes
+package com.example.androidstudio.classes.utils
 
 import android.content.Context
 import android.util.Log
@@ -6,7 +6,6 @@ import com.android.volley.Request
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.example.androidstudio.classes.utils.Config
 import org.json.JSONObject
 
 class ServerHandler(context: Context) {

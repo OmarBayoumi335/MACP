@@ -2,8 +2,6 @@ package com.example.androidstudio.classes.adapters
 
 import android.app.AlertDialog
 import android.content.Context
-import android.util.Log
-import android.view.ContentInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +9,10 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.types.UserIdentification
 import com.example.androidstudio.classes.utils.Config
-import com.example.androidstudio.home.profile.FriendsFragment
-import com.example.androidstudio.home.profile.RequestsFragment
 
 class ProfileFriendListAdapter(private val c: Context,
                                user: User,

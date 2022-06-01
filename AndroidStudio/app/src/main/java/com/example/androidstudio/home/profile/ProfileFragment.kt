@@ -16,10 +16,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.*
 import com.example.androidstudio.classes.adapters.ProfileViewPageAdapter
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.home.MenuActivity
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
