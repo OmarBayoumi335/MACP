@@ -155,7 +155,7 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
     }
 
     private fun update(notification: TextView) {
-        if (user.pendingFriendRequests != null) {
+        if (user.pendingFriendRequests != null && user.pendingFriendRequests?.size!! > 0) {
             notification.visibility = View.VISIBLE
             notification.text = user.pendingFriendRequests?.size.toString()
         } else {

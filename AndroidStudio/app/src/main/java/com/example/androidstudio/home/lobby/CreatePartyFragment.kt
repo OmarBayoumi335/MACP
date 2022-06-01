@@ -21,6 +21,7 @@ import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.adapters.LobbyTeamAdapter
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.types.UserIdentification
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.MenuActivity
 import com.google.gson.Gson
@@ -195,13 +196,20 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         Log.i(Config.LOBBYTAG, "updateLobby() $lobby")
         serverHandler.apiCall(
             Config.GET,
-            Config.GET_USER,
+            Config.GET_LOBBY,
             lobbyId = lobby.lobbyId,
             callBack = object : ServerHandler.VolleyCallBack {
                 override fun onSuccess(reply: JSONObject?) {
                     val lobbyJsonString = reply.toString()
                     val gson = Gson()
                     val lobbyUpdate = gson.fromJson(lobbyJsonString, Lobby::class.java)
+                    Log.i(Config.LOBBYTAG, "updateLobby() $lobbyUpdate")
+                    if (lobbyUpdate.team1 == null) {
+                        lobbyUpdate.team1 = mutableListOf()
+                    }
+                    if (lobbyUpdate.team2 == null) {
+                        lobbyUpdate.team2 = mutableListOf()
+                    }
                     lobby.team1 = lobbyUpdate.team1
                     lobby.team2 = lobbyUpdate.team2
                     lobby.chat = lobbyUpdate.chat

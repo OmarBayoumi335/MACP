@@ -49,7 +49,6 @@ class PartyCreationLoadingFragment : Fragment() {
             lobbyName = lobbyName,
             callBack = object: ServerHandler.VolleyCallBack {
                 override fun onSuccess(reply: JSONObject?) {
-                    Log.i(Config.LOBBYTAG, reply.toString())
                     val lobbyJsonString = reply?.get("lobby").toString()
                     val bundle = bundleOf("lobby" to lobbyJsonString)
                     findNavController().navigate(R.id.action_partyCreationLoadingFragment_to_createPartyFragment, bundle)
