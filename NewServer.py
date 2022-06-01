@@ -17,7 +17,7 @@ db = firebase.database()
 
 
 #request codes and parser arguments
-MAX_LOBBY_MEMBERS = 1
+MAX_LOBBY_MEMBERS = 16
 
 # GET
 GET_USERNAME = "get0"
