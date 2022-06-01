@@ -41,6 +41,7 @@ POST_ACCEPT_LOBBY_INVITE = "post4"
 DELETE_REMOVE_FRIEND ="delete0"
 DELETE_REMOVE_FRIEND_REQUEST ="delete1"
 DELETE_LEAVE_LOBBY = "delete2"
+DELETE_LOBBY_INVITE = "delete3"
 #DE
 
 #get parser
@@ -205,6 +206,21 @@ class EnigmaServer(Resource):
                         for i in range(len(invites)):
                             if invites[i]["userId"] == self.userId:
                                 db.child("Users").child(user).child("pendingInviteRequests").child(str(i)).update({"username": newName})
+                     
+                    lobbies = db.child("Lobbies").get().val()
+                    if lobbies != None:
+                        for lobby in lobbies:
+                            team1 = db.child("Lobbies").child(lobby).child("team1").get().val()
+                            team1 = [] if team1 == None else team1
+                            team2 = db.child("Lobbies").child(lobby).child("team2").get().val()
+                            team2 = [] if team2 == None else team2
+                            for i in range(len(team1)):
+                                if team1[i]["userId"] == self.userId:
+                                    db.child("Lobbies").child(lobby).child("team1").child(str(i)).update({"username": newName})
+                            for i in range(len(team2)):
+                                if team2[i]["userId"] == self.userId:
+                                    db.child("Lobbies").child(lobby).child("team2").child(str(i)).update({"username": newName})
+                            
             
             return {"message": "post name changed", "error": False}
         
@@ -246,28 +262,13 @@ class EnigmaServer(Resource):
         
         #3 send invite to lobby. Input(req, userId, username, friendId, lobbyId, lobbyName)
         if self.req == POST_SEND_LOBBY_INVITE:
-            lobby = db.child("Lobbies").child(self.lobbyId)
-            team1 = lobby.child("team1").get().val()
-            team2 = lobby.child("team2").get().val()
-            friend = db.child("Users").child(self.friendId).get().val()
-            username = friend["username"]
+            username = self.username
             if username == None:
                 username = ""
-            userId = friend["userId"]
-            friendCheckInLobby = {"username": username, "userId": userId}
-            friendCheckInvited = {"username": self.username, "userId": self.userId, "lobbyId": self.lobbyId, "lobbyName": self.lobbyName}
+            friendCheckInvited = {"username": username, "userId": self.userId, "lobbyId": self.lobbyId, "lobbyName": self.lobbyName}
             friendPendingInviteRequests = db.child("Users").child(self.friendId).child("pendingInviteRequests").get().val()
             if friendPendingInviteRequests == None:
                 friendPendingInviteRequests = []
-            if team1 == None:
-                team1 = []
-            if team2 == None:
-                team2 = []
-            if friendCheckInLobby in team1 or friendCheckInLobby in team2:
-                return {"message": "user already in lobby", "status": "inLobby", "error": False}
-            if friendCheckInvited in friendPendingInviteRequests:
-                return {"message": "user already invited", "status": "alreadyInvited", "error": False}
-            
             friendPendingInviteRequests.append(friendCheckInvited)
             db.child("Users").child(self.friendId).update({"pendingInviteRequests":friendPendingInviteRequests})
             return {"message": "user invited", "status": "invited", "error": False}
@@ -384,6 +385,17 @@ class EnigmaServer(Resource):
                 db.child("Lobbies").child(self.lobbyId).remove()
             
             return{"message": "user leave lobby", "error": False}
+        
+        #3 user decline a lobby invite. Input(req, userId, lobbyId)
+        if self.req == DELETE_LOBBY_INVITE:
+            pendingInviteRequests = db.child("Users").child(self.userId).child("pendingInviteRequests").get().val()
+            pendingInviteRequests = [] if pendingInviteRequests == None else pendingInviteRequests
+            newPendingInviteRequests = []
+            for pending in pendingInviteRequests:
+                if pending["lobbyId"] != self.lobbyId:
+                    newPendingInviteRequests.append(pending)
+            db.child("Users").child(self.userId).update({"pendingInviteRequests":newPendingInviteRequests})
+            return{"message": "invites removed", "error": False}
         return {"message": "delete request failed", "error": True}
 
 
