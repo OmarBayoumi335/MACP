@@ -36,15 +36,16 @@ POST_ACCEPT_FRIEND_REQUEST = "post1"
 POST_SEND_FRIEND_REQUEST = "post2"
 POST_SEND_LOBBY_INVITE = "post3"
 POST_ACCEPT_LOBBY_INVITE = "post4"
+POST_CHANGE_TEAM = "post5"
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
 DELETE_REMOVE_FRIEND_REQUEST ="delete1"
 DELETE_LEAVE_LOBBY = "delete2"
 DELETE_LOBBY_INVITE = "delete3"
-#DE
 
-#get parser
+
+# parser
 parser = reqparse.RequestParser()
 parser.add_argument('req', type = str, required = True)
 parser.add_argument('userId', type = str, required = False)
@@ -299,6 +300,28 @@ class EnigmaServer(Resource):
             db.child("Users").child(self.userId).update({"pendingInviteRequests": newPending})
             lobby = db.child("Lobbies").child(self.lobbyId).get().val()
             return {"message": "connected to lobby", "lobby":lobby, "error": False}
+        
+        #5 change team. Input(req, userId, lobbyId)
+        if self.req == POST_CHANGE_TEAM:
+            user = db.child("Users").child(self.userId).get().val()
+            
+            username = "" if user["username"] == None else user["username"]
+            
+            userFields = {"username": user["username"], "userId": user["userId"]}
+            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            team1 = [] if team1 == None else team1
+            team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
+            team2 = [] if team2 == None else team2
+            if userFields in team1:
+                team1.remove(userFields)
+                team2.append(userFields)
+            else:
+                team1.append(userFields)
+                team2.remove(userFields)
+            db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
+            db.child("Lobbies").child(self.lobbyId).update({"team2": team2})
+            return{"message": "team changed", "error": False}
+            
         return {"message": "post request failed", "error": True}
     
     def delete(self):
