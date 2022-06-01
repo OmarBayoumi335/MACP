@@ -24,6 +24,7 @@ GET_USER_EXIST = "get1"
 GET_USER = "get2"
 GET_PENDING_REQUESTS = "get3"
 GET_SEARCH_FRIEND = "get4"
+GET_INVITABLE_USER = "get5"
 
 # PUT
 PUT_NEW_USER = "put0"
@@ -97,7 +98,7 @@ class EnigmaServer(Resource):
             pendingRequests = db.child("Users").child(self.userId).child("pendingFriendRequests").get().val()
             return {"requests": pendingRequests}
         
-        #4 return if a friend request is sendable. Input(userId, friendId)
+        #4 return if a friend request is sendable. Input(req, userId, friendId)
         if self.req == GET_SEARCH_FRIEND:
             if self.userId == self.friendId:
                 return {"message": "you can't add yourself", "status": "yourself", "error": False}
@@ -123,6 +124,33 @@ class EnigmaServer(Resource):
                 return {"message": "friend not found", "status": "notFound", "error": False}
             return {"message": "friend found", "status": "found", "error": False}
         
+        #5 return a list of invitable user. Input(req, userId, lobbyId) 
+        if self.req == GET_INVITABLE_USER:
+            user = db.child("Users").child(self.userId).get().val()
+            friendList = db.child("Users").child(self.userId).child("friends").get().val()
+            lobby = db.child("Lobbies").child(self.lobbyId).get().val()
+            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
+            team1 = [] if team1 == None else team1
+            team2 = [] if team2 == None else team2 
+            userFields = {"username": user["username"], "userId": user["userId"], "lobbyId": lobby["lobbyId"], "lobbyName": lobby["lobbyName"]}
+            invitableUsers = []
+            if friendList != None:
+                for friend in friendList:
+                    friendPendingRequestList = db.child("Users").child(friend["userId"]).child("pendingInviteRequests").get().val()
+                    friendPendingRequestList = [] if friendPendingRequestList == None else friendPendingRequestList
+                    if userFields not in friendPendingRequestList:
+                        invitableUsers.append({"username":friend["username"], "userId": friend["userId"], "status": "invitable"})
+                    else:
+                        invitableUsers.append({"username":friend["username"], "userId": friend["userId"], "status": "alreadyInvited"})
+                for user in invitableUsers:
+                    if user["status"] == "invitable":
+                        checkUser = {"username": user["username"], "userId": user["userId"]}
+                        if checkUser in team1 or checkUser in team2:
+                            user["status"] = "inLobby"
+                        
+            return {"message":"list of invitable users", "userInvitableList": invitableUsers, "error": False}
+            
         return {"message": "get request failed", "error": True}
       
     def put(self):
@@ -223,6 +251,8 @@ class EnigmaServer(Resource):
             team2 = lobby.child("team2").get().val()
             friend = db.child("Users").child(self.friendId).get().val()
             username = friend["username"]
+            if username == None:
+                username = ""
             userId = friend["userId"]
             friendCheckInLobby = {"username": username, "userId": userId}
             friendCheckInvited = {"username": self.username, "userId": self.userId, "lobbyId": self.lobbyId, "lobbyName": self.lobbyName}
