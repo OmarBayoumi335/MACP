@@ -25,7 +25,6 @@ import com.google.gson.Gson
 
 class CreatePartyFragment : Fragment(), View.OnClickListener {
 
-    private lateinit var lobbyId: String
     private lateinit var serverHandler: ServerHandler
     private lateinit var lobby: Lobby
     private lateinit var user: User
@@ -48,16 +47,9 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
 
         Log.i(Config.LOBBYTAG, lobby.toString())
 
-        lobbyId = arguments?.getString("lobbyId").toString()
-        if (lobbyId != "null"){  // room master
-
-        } else { // normal player
-
-        }
-
-        // UID
-        val sharedPreferences = requireActivity().getSharedPreferences("lastGoogleId", Context.MODE_PRIVATE)
-        val userid = sharedPreferences.getString("UID", "").toString()
+        // Change Team Button
+        val changeTeamImageButton = rootView.findViewById<ImageButton>(R.id.change_team_image_button)
+        changeTeamImageButton.setOnClickListener(this)
 
         // Leave button
         val leaveButton = rootView.findViewById<Button>(R.id.button_leave_lobby)
@@ -79,11 +71,11 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
 
         // Recycler view for team 1 with update every sec
         val inviteFriendListAdapter1 = rootView.findViewById<RecyclerView>(R.id.team1_members_recycler)
-        UpdateUI.updateTeamList(requireContext(), this, serverHandler, userid, inviteFriendListAdapter1, true)
+//        UpdateUI.updateTeamList(requireContext(), this, serverHandler, userid, inviteFriendListAdapter1, true)
 
         // Recycler view for team 2 with update every sec
         val inviteFriendListAdapter2 = rootView.findViewById<RecyclerView>(R.id.team2_members_recycler)
-        UpdateUI.updateTeamList(requireContext(), this, serverHandler, userid, inviteFriendListAdapter2, false)
+//        UpdateUI.updateTeamList(requireContext(), this, serverHandler, userid, inviteFriendListAdapter2, false)
 
         return rootView
     }
@@ -92,8 +84,46 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         when(v?.id) {
             R.id.button_leave_lobby -> leave()
             R.id.lobby_invite_friend_image_button -> invite()
+            R.id.change_team_image_button -> changeTeam()
         }
 
+    }
+
+    private fun changeTeam() {
+        var teamNumber = 2
+        var teamIndex = 0
+        for (i in 0 until lobby.team1.size-1) {
+            if (lobby.team1[i].userId == user.userId) {
+                teamNumber = 1
+                teamIndex = i
+                break
+            }
+        }
+        if (teamNumber == 2) {
+            for (i in 0 until lobby.team1.size-1) {
+                if (lobby.team1[i].userId == user.userId) {
+                    teamIndex = i
+                    break
+                }
+            }
+        }
+        if (teamNumber == 1) {
+            lobby.team2.add(lobby.team1[teamIndex])
+            lobby.team1.remove(lobby.team1[teamIndex])
+        } else {
+            lobby.team1.add(lobby.team2[teamIndex])
+            lobby.team2.remove(lobby.team2[teamIndex])
+        }
+        //update the adapters
+//        lobbyInvitesAdapter.notifyDataSetChanged()
+//        lobbyInvitesAdapter.notifyDataSetChanged()
+
+        serverHandler.apiCall(
+            Config.POST,
+            Config.POST_CHANGE_TEAM,
+            userId = user.userId,
+            lobbyId = lobby.lobbyId
+        )
     }
 
     private fun invite() {

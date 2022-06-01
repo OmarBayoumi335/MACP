@@ -63,15 +63,26 @@ class LobbyInvitesAdapter(
         }
 
         declineButton.setOnClickListener {
-            user.pendingInviteRequests!!.remove(user.pendingInviteRequests!![position])
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, user.pendingInviteRequests!!.size)
+            val numItem = itemCount - 1
+            declineRequests(friend.lobbyId)
             serverHandler.apiCall(
                 Config.DELETE,
                 Config.DELETE_LOBBY_INVITE,
                 userId = user.userId,
                 lobbyId = friend.lobbyId
             )
+        }
+    }
+
+    private fun declineRequests(lobbyId: String) {
+        for (i in 0 until itemCount) {
+            if (user.pendingInviteRequests!![i].lobbyId == lobbyId) {
+                user.pendingInviteRequests!!.remove(user.pendingInviteRequests!![i])
+                notifyItemRemoved(i)
+                notifyItemRangeChanged(i, user.pendingInviteRequests!!.size)
+                declineRequests(lobbyId)
+                return
+            }
         }
     }
 
