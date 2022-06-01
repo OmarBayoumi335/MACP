@@ -14,6 +14,9 @@ class Config {
         // Firebase/Google
         val CLIENT_ID = "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com"
 
+        // Max lobby member
+        val MAX_LOBBY_MEMBERS = 16
+
         // Tags
         val API = "Api request"
         val LOGINTAG = "Login"
@@ -28,18 +31,8 @@ class Config {
         val GET_USERNAME = "get0"
         val GET_USER_EXIST = "get1"
         val GET_USER = "get2"
-        val GET_PENDING_REQUESTS = "get3"
-        val GET_SEARCH_FRIEND = "get4"
-        val GET_INVITABLE_USER = "get5"
-//        val GET_USERNAME = 1
-//        val GET_FRIENDS_LIST = 2
-//        val GET_PENDING_FRIENDS_REQUEST = 3
-//        val GET_USER_EXIST = 9
-//        val GET_NUM_PENDING_FRIENDS_REQUEST = 11
-//        val GET_LOBBY_INVITES = 16
-//        val GET_NUM_LOBBY_INVITES = 17
-//        val GET_LOBBY_USERS = 18
-//        val GET_ID = 20
+        val GET_SEARCH_FRIEND = "get3"
+        val GET_INVITABLE_USER = "get4"
 
         val PUT = "put"
         val PUT_NEW_USER = "put0"

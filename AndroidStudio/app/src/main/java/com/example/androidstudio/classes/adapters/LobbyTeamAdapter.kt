@@ -1,25 +1,26 @@
 package com.example.androidstudio.classes.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.ServerHandler
-import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.types.Lobby
+import com.example.androidstudio.classes.types.UserIdentification
 
-class LobbyTeamAdapter(private val c: Context,
-                       private val mUser: List<User>,
-//                              private val uid: String,
-                       private val serverHandler: ServerHandler,
+class LobbyTeamAdapter(lobby: Lobby,
                        private val team1: Boolean): RecyclerView.Adapter<LobbyTeamAdapter.ViewHolder>(){
 
-    inner class ViewHolder(itemView: View, team1: Boolean) : RecyclerView.ViewHolder(itemView) {
-        lateinit var tvUsername: TextView
-        lateinit var tvId: TextView
+    private var lobby: Lobby
 
+    init {
+        this.lobby = lobby
+    }
+
+    inner class ViewHolder(itemView: View, team1: Boolean) : RecyclerView.ViewHolder(itemView) {
+        var tvUsername: TextView
+        var tvId: TextView
         init {
             if (team1) {
                 tvUsername = itemView.findViewById(R.id.team1_member_username_textview)
@@ -34,7 +35,7 @@ class LobbyTeamAdapter(private val c: Context,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
-        var contactView: View = if (team1) {
+        val contactView: View = if (team1) {
             inflater.inflate(R.layout.item_team1_member, parent, false)
         } else {
             inflater.inflate(R.layout.item_team2_member, parent, false)
@@ -43,7 +44,11 @@ class LobbyTeamAdapter(private val c: Context,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val friend: User = mUser[position]
+        val friend: UserIdentification = if (team1) {
+            lobby.team1[position]
+        } else {
+            lobby.team2[position]
+        }
         // Set item views based on your views and data model
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
@@ -53,6 +58,7 @@ class LobbyTeamAdapter(private val c: Context,
     }
 
     override fun getItemCount(): Int {
-        return mUser.size
+        return if (team1) lobby.team1.size
+        else lobby.team2.size
     }
 }

@@ -78,8 +78,6 @@ class MenuFragment: Fragment(), View.OnClickListener {
     }
 
     private fun update() {
-//        user.username = user.username.plus("a")
-        Log.i("Aas", user.toString())
         if (this.context != null) {
             Handler(Looper.getMainLooper()).postDelayed({
                 update()

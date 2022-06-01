@@ -3,24 +3,31 @@ package com.example.androidstudio.home.lobby
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
+import com.example.androidstudio.classes.adapters.LobbyTeamAdapter
+import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.UpdateUI
 import com.example.androidstudio.home.MenuActivity
 import com.google.gson.Gson
+import org.json.JSONObject
 
 
 class CreatePartyFragment : Fragment(), View.OnClickListener {
@@ -28,6 +35,10 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var serverHandler: ServerHandler
     private lateinit var lobby: Lobby
     private lateinit var user: User
+    private lateinit var team1NumEditText: TextView
+    private lateinit var team2NumEditText: TextView
+    private lateinit var team1MembersAdapter: LobbyTeamAdapter
+    private lateinit var team2MembersAdapter: LobbyTeamAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +57,16 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         lobby = gson.fromJson(lobbyString, Lobby::class.java)
 
         Log.i(Config.LOBBYTAG, lobby.toString())
+
+        // Title
+        val lobbyNameTextView = rootView.findViewById<TextView>(R.id.lobby_title_name_textview)
+        lobbyNameTextView.text = lobby.lobbyName
+
+        // Num members
+        team1NumEditText = rootView.findViewById(R.id.team1_number_of_members_textview)
+        team2NumEditText = rootView.findViewById(R.id.team2_number_of_members_textview)
+        team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_LOBBY_MEMBERS)
+        team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_LOBBY_MEMBERS)
 
         // Change Team Button
         val changeTeamImageButton = rootView.findViewById<ImageButton>(R.id.change_team_image_button)
@@ -68,15 +89,19 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-
         // Recycler view for team 1 with update every sec
-        val inviteFriendListAdapter1 = rootView.findViewById<RecyclerView>(R.id.team1_members_recycler)
-//        UpdateUI.updateTeamList(requireContext(), this, serverHandler, userid, inviteFriendListAdapter1, true)
+        val team1MembersRecyclerView = rootView.findViewById<RecyclerView>(R.id.team1_members_recycler)
+        team1MembersAdapter = LobbyTeamAdapter(lobby, true)
+        team1MembersRecyclerView.adapter = team1MembersAdapter
+        team1MembersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Recycler view for team 2 with update every sec
-        val inviteFriendListAdapter2 = rootView.findViewById<RecyclerView>(R.id.team2_members_recycler)
-//        UpdateUI.updateTeamList(requireContext(), this, serverHandler, userid, inviteFriendListAdapter2, false)
+        val team2MembersRecyclerView = rootView.findViewById<RecyclerView>(R.id.team2_members_recycler)
+        team2MembersAdapter = LobbyTeamAdapter(lobby, false)
+        team2MembersRecyclerView.adapter = team2MembersAdapter
+        team2MembersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // update con get lobby
         return rootView
     }
 
@@ -92,7 +117,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private fun changeTeam() {
         var teamNumber = 2
         var teamIndex = 0
-        for (i in 0 until lobby.team1.size-1) {
+        for (i in 0 until lobby.team1.size) {
             if (lobby.team1[i].userId == user.userId) {
                 teamNumber = 1
                 teamIndex = i
@@ -100,7 +125,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             }
         }
         if (teamNumber == 2) {
-            for (i in 0 until lobby.team1.size-1) {
+            for (i in 0 until lobby.team1.size) {
                 if (lobby.team1[i].userId == user.userId) {
                     teamIndex = i
                     break
@@ -114,10 +139,11 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             lobby.team1.add(lobby.team2[teamIndex])
             lobby.team2.remove(lobby.team2[teamIndex])
         }
-        //update the adapters
-//        lobbyInvitesAdapter.notifyDataSetChanged()
-//        lobbyInvitesAdapter.notifyDataSetChanged()
-
+        // update views
+        team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_LOBBY_MEMBERS)
+        team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_LOBBY_MEMBERS)
+        team1MembersAdapter.notifyDataSetChanged()
+        team2MembersAdapter.notifyDataSetChanged()
         serverHandler.apiCall(
             Config.POST,
             Config.POST_CHANGE_TEAM,
@@ -149,4 +175,43 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             .setIcon(android.R.drawable.ic_dialog_alert)
             .show()
     }
+
+//    fun updateLobby(createPartyFragment: CreatePartyFragment,
+//                    serverHandler: ServerHandler,
+//                    user: User,
+//                    notification: TextView) {
+//        Log.i(Config.UPDATEUITAG, "updateUser() $user")
+//        serverHandler.apiCall(
+//            Config.GET,
+//            Config.GET_USER,
+//            userId = user.userId,
+//            callBack = object : ServerHandler.VolleyCallBack {
+//                override fun onSuccess(reply: JSONObject?) {
+//                    val userJsonString = reply.toString()
+//                    val gson = Gson()
+//                    val userUpdate = gson.fromJson(userJsonString, User::class.java)
+//                    user.username = userUpdate.username
+//                    user.friends = userUpdate.friends
+//                    user.pendingFriendRequests = userUpdate.pendingFriendRequests
+//                    user.pendingInviteRequests = userUpdate.pendingInviteRequests
+////                        user.roomMaster = userUpdate.roomMaster
+//                    if (user.pendingFriendRequests != null) {
+//                        notification.visibility = View.VISIBLE
+//                        notification.text = user.pendingFriendRequests?.size.toString()
+//                    } else {
+//                        notification.visibility = View.GONE
+//                    }
+//                    if (profileFragment.context != null) {
+//                        Handler(Looper.getMainLooper()).postDelayed({
+//                            UpdateUI.updateUser(
+//                                menuActivity,
+//                                serverHandler,
+//                                user,
+//                                notification
+//                            )
+//                        }, Config.POLLING_PERIOD)
+//                    }
+//                }
+//            })
+//    }
 }

@@ -25,6 +25,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/lobby_title_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lobby_title_textview" />
+
     <Space
         android:id="@+id/team_center"
         android:layout_width="wrap_content"
@@ -89,7 +98,7 @@
         android:src="@drawable/ic_add_friend"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lobby_title_textview" />
+        app:layout_constraintTop_toBottomOf="@id/lobby_title_name_textview" />
 
     <ImageButton
         android:id="@+id/change_team_image_button"

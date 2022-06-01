@@ -1,6 +1,9 @@
 package com.example.androidstudio.home
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -15,9 +18,11 @@ import androidx.navigation.navArgs
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
 import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.UpdateUI
 import com.example.androidstudio.home.profile.ProfileFragment
 import com.google.gson.Gson
+import org.json.JSONObject
 
 
 class MenuActivity : AppCompatActivity(), View.OnClickListener{
@@ -40,7 +45,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
             requestsTextView.text = user.pendingFriendRequests!!.size.toString()
         }
         val serverHandler = ServerHandler(this)
-        UpdateUI.updateUser(this, serverHandler, user, requestsTextView)
+        updateUser(this, serverHandler, user, requestsTextView)
 
         profileButton = findViewById<ImageButton>(R.id.button_profile)
         profileButton.setOnClickListener(this)
@@ -55,6 +60,44 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
     private fun openProfile() {
         val p = ProfileFragment(user)
         p.show(supportFragmentManager, "MenuActivity->Profile")
+    }
+
+    private fun updateUser(menuActivity: MenuActivity,
+                           serverHandler: ServerHandler,
+                           user: User,
+                           notification: TextView) {
+        serverHandler.apiCall(
+            Config.GET,
+            Config.GET_USER,
+            userId = user.userId,
+            callBack = object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+                    val userJsonString = reply.toString()
+                    val gson = Gson()
+                    val userUpdate = gson.fromJson(userJsonString, User::class.java)
+                    user.username = userUpdate.username
+                    user.friends = userUpdate.friends
+                    user.pendingFriendRequests = userUpdate.pendingFriendRequests
+                    user.pendingInviteRequests = userUpdate.pendingInviteRequests
+//                        user.roomMaster = userUpdate.roomMaster
+                    if (user.pendingFriendRequests != null) {
+                        notification.visibility = View.VISIBLE
+                        notification.text = user.pendingFriendRequests?.size.toString()
+                    } else {
+                        notification.visibility = View.GONE
+                    }
+                    if (!menuActivity.isFinishing) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            updateUser(
+                                menuActivity,
+                                serverHandler,
+                                user,
+                                notification
+                            )
+                        }, Config.POLLING_PERIOD)
+                    }
+                }
+            })
     }
 
     fun getUser(): User {
