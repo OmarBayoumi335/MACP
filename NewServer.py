@@ -149,7 +149,7 @@ class EnigmaServer(Resource):
                         if checkUser in team1 or checkUser in team2:
                             user["status"] = "inLobby"
                         
-            return {"message":"list of invitable users", "userInvitableList": invitableUsers, "error": False}
+            return {"message":"list of invitable users", "userInvitableList": {"userList": invitableUsers}, "error": False}
             
         return {"message": "get request failed", "error": True}
       

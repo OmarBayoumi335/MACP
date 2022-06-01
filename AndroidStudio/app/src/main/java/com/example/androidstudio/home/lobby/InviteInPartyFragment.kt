@@ -22,11 +22,14 @@ import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.types.UserInvitable
+import com.example.androidstudio.classes.types.UserInvitableList
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.UpdateUI
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_invite_in_party.*
 import org.json.JSONObject
+import java.lang.reflect.Type
+import kotlin.reflect.typeOf
 
 class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.OnClickListener {
 
@@ -39,8 +42,8 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
     }
 
     private lateinit var serverHandler: ServerHandler
-    private lateinit var userInvitable: MutableList<UserInvitable>
-    private var inviteInPartyFragment: InviteInPartyFragment = this
+    private lateinit var userInvitableList: UserInvitableList
+    private lateinit var inviteInPartyFragment: InviteInPartyFragment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +55,8 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
 
 
         val closeButton = rootView.findViewById<Button>(R.id.invite_friend_close_button)
-        closeButton.setOnClickListener (this)
+        inviteInPartyFragment = this
+        closeButton.setOnClickListener(this)
         serverHandler.apiCall(
             Config.GET,
             Config.GET_INVITABLE_USER,
@@ -60,26 +64,20 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
             lobbyId = lobby.lobbyId,
             callBack = object:ServerHandler.VolleyCallBack{
                 override fun onSuccess(reply: JSONObject?) {
-                    // Close button
                     val userInvitableJsonString = reply?.get("userInvitableList").toString()
                     val gson = Gson()
-                    userInvitable = gson.fromJson(
+                    userInvitableList = gson.fromJson(
                         userInvitableJsonString,
-                        MutableList::class.java
-                    ) as MutableList<UserInvitable>
-
-                    Log.i(Config.LOBBYTAG, userInvitable.toString())
-
+                        UserInvitableList::class.java
+                    )
                     rootView.findViewById<ProgressBar>(R.id.progressBarInvite).visibility = View.GONE
-
                     closeButton.visibility = View.VISIBLE
-
                     rootView.findViewById<TextView>(R.id.invite_friend_title_textview).visibility = View.VISIBLE
 
                     // Recycler view with update every sec
                     val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
                     inviteFriendListRecyclerView.visibility = View.VISIBLE
-                    val inviteFriendListAdapter = InviteFriendListAdapter(user, userInvitable, lobby, serverHandler, requireContext())
+                    val inviteFriendListAdapter = InviteFriendListAdapter(user, userInvitableList, lobby, serverHandler, requireContext())
                     inviteFriendListRecyclerView.adapter = inviteFriendListAdapter
                     inviteFriendListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
                     update(inviteFriendListAdapter, inviteInPartyFragment)
@@ -120,22 +118,22 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
 
     private fun update(
         inviteFriendListAdapter: InviteFriendListAdapter,
-        inviteInPartyFragment: InviteInPartyFragment) {
-
+        inviteInPartyFragment: InviteInPartyFragment
+    ) {
         serverHandler.apiCall(
             Config.GET,
             Config.GET_INVITABLE_USER,
             user.userId,
+            lobbyId = lobby.lobbyId,
             callBack = object:ServerHandler.VolleyCallBack{
                 override fun onSuccess(reply: JSONObject?) {
-                    // Close button
                     val userInvitableJsonString = reply?.get("userInvitableList").toString()
                     val gson = Gson()
-                    userInvitable = gson.fromJson(
+                    val userInvitableListNew = gson.fromJson(
                         userInvitableJsonString,
-                        MutableList::class.java
-                    ) as MutableList<UserInvitable>
-
+                        UserInvitableList::class.java
+                    )
+                    userInvitableList.userList = userInvitableListNew.userList
                     inviteFriendListAdapter.notifyDataSetChanged()
                     if (inviteInPartyFragment.context != null) {
                         Handler(Looper.getMainLooper()).postDelayed({

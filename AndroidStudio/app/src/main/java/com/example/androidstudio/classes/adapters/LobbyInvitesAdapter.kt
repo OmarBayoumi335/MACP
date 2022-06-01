@@ -9,11 +9,17 @@ import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.ServerHandler
 import com.example.androidstudio.classes.types.UserInvite
 import com.example.androidstudio.classes.types.User
+import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.lobby.PartyInvitationFragment
 
-class LobbyInvitesAdapter(user: User, private val partyInvitationFragment: PartyInvitationFragment): RecyclerView.Adapter<LobbyInvitesAdapter.ViewHolder>(){
+class LobbyInvitesAdapter(
+    user: User,
+    private val partyInvitationFragment: PartyInvitationFragment,
+    private val serverHandler: ServerHandler
+    ): RecyclerView.Adapter<LobbyInvitesAdapter.ViewHolder>(){
 
     private var user: User
 
@@ -57,16 +63,15 @@ class LobbyInvitesAdapter(user: User, private val partyInvitationFragment: Party
         }
 
         declineButton.setOnClickListener {
-//            serverHandler.postSendLobbyInvite(uid, lobbyId)
             user.pendingInviteRequests!!.remove(user.pendingInviteRequests!![position])
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, user.pendingInviteRequests!!.size)
-//            serverHandler.apiCall(
-//                Config.DELETE,
-//                Config.DELETE_LOBBY_INVITE,
-//                userId = user.userId,
-//                friendId = friend.userId
-//            )
+            serverHandler.apiCall(
+                Config.DELETE,
+                Config.DELETE_LOBBY_INVITE,
+                userId = user.userId,
+                lobbyId = friend.lobbyId
+            )
         }
     }
 

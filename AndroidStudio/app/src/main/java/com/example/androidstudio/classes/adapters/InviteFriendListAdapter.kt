@@ -1,6 +1,7 @@
 package com.example.androidstudio.classes.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,21 +11,18 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.ServerHandler
-import com.example.androidstudio.classes.types.Lobby
-import com.example.androidstudio.classes.types.User
-import com.example.androidstudio.classes.types.UserIdentification
-import com.example.androidstudio.classes.types.UserInvitable
+import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
 import org.json.JSONObject
 
 class InviteFriendListAdapter(user: User,
-                              userList: MutableList<UserInvitable>,
+                              userList: UserInvitableList,
                               lobby: Lobby,
                               private val serverHandler: ServerHandler,
                               private val c: Context): RecyclerView.Adapter<InviteFriendListAdapter.ViewHolder>(){
 
     private var user: User
-    private var userList: MutableList<UserInvitable>
+    private var userList: UserInvitableList
     private var lobby: Lobby
 
     init {
@@ -47,7 +45,7 @@ class InviteFriendListAdapter(user: User,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val friend: UserInvitable = userList[position]
+        val friend: UserInvitable = userList.userList[position]
         // Set item views based on your views and data model
         val tvUsername = holder.tvUsername
         val tvId = holder.tvId
@@ -57,6 +55,7 @@ class InviteFriendListAdapter(user: User,
         if (friend.status != "invitable") {
             bPositive.visibility = View.GONE
         } else {
+            bPositive.visibility = View.VISIBLE
             bPositive.setOnClickListener {
                 serverHandler.apiCall(
                     Config.POST,
@@ -82,6 +81,6 @@ class InviteFriendListAdapter(user: User,
     }
 
     override fun getItemCount(): Int {
-        return userList.size
+        return userList.userList.size
     }
 }
