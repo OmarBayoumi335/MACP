@@ -17,7 +17,7 @@ db = firebase.database()
 
 
 #request codes and parser arguments
-MAX_LOBBY_MEMBERS = 16
+MAX_LOBBY_MEMBERS = 4
 
 # GET
 GET_USERNAME = "get0"
@@ -25,6 +25,7 @@ GET_USER_EXIST = "get1"
 GET_USER = "get2"
 GET_SEARCH_FRIEND = "get3"
 GET_INVITABLE_USER = "get4"
+GET_LOBBY = "get5"
 
 # PUT
 PUT_NEW_USER = "put0"
@@ -91,7 +92,7 @@ class EnigmaServer(Resource):
                         return {"message": "user already exist", "exist": True, "error": False}
             return {"message": "user not exist", "exist": False, "error": False}
         
-        #2 return al the user information. Input(req, userId)
+        #2 return all user information. Input(req, userId)
         if self.req == GET_USER:
             return db.child("Users").child(self.userId).get().val()
         
@@ -146,7 +147,14 @@ class EnigmaServer(Resource):
                         if checkUser in team1 or checkUser in team2:
                             user["status"] = "inLobby"            
             return {"message":"list of invitable users", "userInvitableList": invitableUsers, "error": False}
-            
+        
+        #5 return all lobby information. Input(req, lobbyId)
+        if self.req == GET_LOBBY:
+            lobby = db.child("Lobbies").child(self.lobbyId).get().val()
+            chat = db.child("Lobbies").child(self.lobbyId).child("chat").get().val()
+            chat = [] if chat == None else chat
+            lobby["chat"] = chat
+            return lobby
         return {"message": "get request failed", "error": True}
       
     def put(self):
@@ -297,28 +305,31 @@ class EnigmaServer(Resource):
                     newPending.append(pending)
             db.child("Users").child(self.userId).update({"pendingInviteRequests": newPending})
             lobby = db.child("Lobbies").child(self.lobbyId).get().val()
+            chat = db.child("Lobbies").child(self.lobbyId).child("chat").get().val()
+            chat = [] if chat == None else chat
+            lobby["chat"] = chat
             return {"message": "connected to lobby", "lobby":lobby, "error": False}
         
         #5 change team. Input(req, userId, lobbyId)
         if self.req == POST_CHANGE_TEAM:
             user = db.child("Users").child(self.userId).get().val()
-            
             username = "" if user["username"] == None else user["username"]
-            
             userFields = {"username": user["username"], "userId": user["userId"]}
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
             team1 = [] if team1 == None else team1
             team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
             team2 = [] if team2 == None else team2
-            if userFields in team1:
+            if userFields in team1 and len(team2) < MAX_LOBBY_MEMBERS/2:
                 team1.remove(userFields)
                 team2.append(userFields)
-            else:
+            elif userFields in team2 and len(team1) < MAX_LOBBY_MEMBERS/2:
                 team1.append(userFields)
                 team2.remove(userFields)
+            else:
+                return{"message": "the other team is full", "status": "fullTeam", "error": False}
             db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
             db.child("Lobbies").child(self.lobbyId).update({"team2": team2})
-            return{"message": "team changed", "error": False}
+            return{"message": "team changed", "status": "notFullTeam", "error": False}
             
         return {"message": "post request failed", "error": True}
     
