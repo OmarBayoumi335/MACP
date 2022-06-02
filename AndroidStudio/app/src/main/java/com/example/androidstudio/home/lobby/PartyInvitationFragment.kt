@@ -17,9 +17,14 @@ import com.example.androidstudio.classes.adapters.LobbyInvitesAdapter
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.MenuActivity
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class PartyInvitationFragment : Fragment(), View.OnClickListener {
 
+    private val dataBase = FirebaseDatabase.getInstance().reference
     private lateinit var user: User
 
     override fun onCreateView(
@@ -61,12 +66,21 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
     }
 
     private fun update(lobbyInvitesAdapter: LobbyInvitesAdapter) {
-        lobbyInvitesAdapter.notifyDataSetChanged()
-        if (this.context != null) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                update(lobbyInvitesAdapter)
-            },
-                Config.POLLING_PERIOD)
-        }
+        dataBase.child("Users").child(user.userId).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                lobbyInvitesAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+//        if (this.context != null) {
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                update(lobbyInvitesAdapter)
+//            },
+//                Config.POLLING_PERIOD)
+//        }
     }
 }

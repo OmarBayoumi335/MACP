@@ -15,11 +15,18 @@ import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class RequestsFragment(profileFragment: ProfileFragment,
                        user: User,
                        notificationInProfile: TextView,
                        notificationProfile: TextView) : Fragment() {
+
+
+    private val dataBase = FirebaseDatabase.getInstance().reference
 
     private var profileFragment: ProfileFragment
     private var user: User
@@ -52,20 +59,28 @@ class RequestsFragment(profileFragment: ProfileFragment,
         )
         profileFriendsRecyclerView.adapter = profileFriendListAdapter
         profileFriendsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        update(serverHandler, profileFriendListAdapter)
+        update(profileFriendListAdapter)
 
         return rootView
     }
 
-    private fun update(serverHandler: ServerHandler,
-                       profileFriendListAdapter: ProfileFriendListAdapter) {
-        profileFriendListAdapter.notifyDataSetChanged()
-        if (this.context != null) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                update(serverHandler, profileFriendListAdapter)
-            },
-                Config.POLLING_PERIOD)
-        }
+    private fun update(profileFriendListAdapter: ProfileFriendListAdapter) {
+        dataBase.child("Users").child(user.userId).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                profileFriendListAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+//        if (this.context != null) {
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                update(serverHandler, profileFriendListAdapter)
+//            },
+//                Config.POLLING_PERIOD)
+//        }
     }
 
 }

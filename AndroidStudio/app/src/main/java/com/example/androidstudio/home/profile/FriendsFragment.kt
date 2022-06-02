@@ -3,6 +3,7 @@ package com.example.androidstudio.home.profile
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +15,14 @@ import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.adapters.ProfileFriendListAdapter
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class FriendsFragment(profileFragment: ProfileFragment, user: User) : Fragment() {
+
+    private val dataBase = FirebaseDatabase.getInstance().reference
 
     private var profileFragment: ProfileFragment
     private var user: User
@@ -47,12 +54,21 @@ class FriendsFragment(profileFragment: ProfileFragment, user: User) : Fragment()
     }
 
     private fun update(profileFriendListAdapter: ProfileFriendListAdapter) {
-        profileFriendListAdapter.notifyDataSetChanged()
-        if (this.context != null) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                update(profileFriendListAdapter)
-            },
-                Config.POLLING_PERIOD)
-        }
+        dataBase.child("Users").child(user.userId).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                profileFriendListAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+//        if (this.context != null) {
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                update(profileFriendListAdapter)
+//            },
+//                Config.POLLING_PERIOD)
+//        }
     }
 }

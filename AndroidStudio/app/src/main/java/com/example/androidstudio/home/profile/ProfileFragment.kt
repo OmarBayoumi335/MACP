@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,10 @@ import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.home.MenuActivity
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
@@ -32,6 +37,8 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
     init {
         this.user = user
     }
+
+    private val dataBase = FirebaseDatabase.getInstance().reference
 
     // Username
     private lateinit var nameEditText: EditText
@@ -155,18 +162,33 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
     }
 
     private fun update(notification: TextView) {
-        if (user.pendingFriendRequests != null && user.pendingFriendRequests?.size!! > 0) {
-            notification.visibility = View.VISIBLE
-            notification.text = user.pendingFriendRequests?.size.toString()
-        } else {
-            notification.visibility = View.GONE
-        }
-        notification.text = user.pendingFriendRequests?.size.toString()
-        if (this.context != null) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                update(notification)
-            },
-                Config.POLLING_PERIOD)
-        }
+
+        dataBase.child("Users").child(user.userId).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userUpdate = snapshot.getValue(User::class.java)
+                if (userUpdate != null) {
+                    if (user.pendingFriendRequests != null && user.pendingFriendRequests?.size!! > 0) {
+                        notification.visibility = View.VISIBLE
+                        notification.text = user.pendingFriendRequests?.size.toString()
+                    } else {
+                        notification.visibility = View.GONE
+                    }
+                    Log.i(Config.PROFILETAG, "update() $user")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+
+
+//        if (this.context != null) {
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                update(notification)
+//            },
+//                Config.POLLING_PERIOD)
+//        }
     }
 }

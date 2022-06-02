@@ -16,8 +16,14 @@ import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.MenuActivity
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class SetupGameFragment : Fragment(), View.OnClickListener {
+
+    private val dataBase = FirebaseDatabase.getInstance().reference
 
     private lateinit var user: User
     private lateinit var rootView: View
@@ -79,18 +85,27 @@ class SetupGameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun update(invitationsNotification: TextView) {
-        if (user.pendingInviteRequests == null || user.pendingInviteRequests?.size == 0) {
-            invitationsNotification.visibility = View.GONE
-        } else {
-            invitationsNotification.visibility = View.VISIBLE
-            invitationsNotification.text = user.pendingInviteRequests!!.size.toString()
-        }
-        if (this.context != null) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                update(invitationsNotification)
-            },
-                Config.POLLING_PERIOD)
-        }
+        dataBase.child("Users").child(user.userId).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (user.pendingInviteRequests == null || user.pendingInviteRequests?.size == 0) {
+                    invitationsNotification.visibility = View.GONE
+                } else {
+                    invitationsNotification.visibility = View.VISIBLE
+                    invitationsNotification.text = user.pendingInviteRequests!!.size.toString()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+//        if (this.context != null) {
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                update(invitationsNotification)
+//            },
+//                Config.POLLING_PERIOD)
+//        }
     }
 
     override fun onResume() {

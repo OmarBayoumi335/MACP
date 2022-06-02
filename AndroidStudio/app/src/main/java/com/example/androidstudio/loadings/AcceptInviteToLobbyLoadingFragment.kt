@@ -23,7 +23,7 @@ class AcceptInviteToLobbyLoadingFragment : Fragment() {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_accept_invite_to_lobby_loading, container, false)
 
-        val serverHandler: ServerHandler = ServerHandler(requireContext())
+        val serverHandler = ServerHandler(requireContext())
 
         val menuActivity: MenuActivity = requireActivity() as MenuActivity
         menuActivity.setProfileImageButtonVisibility(View.GONE)

@@ -24,11 +24,18 @@ import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.types.UserIdentification
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.MenuActivity
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import org.json.JSONObject
 
 
 class CreatePartyFragment : Fragment(), View.OnClickListener {
+
+    private val dataBase = FirebaseDatabase.getInstance().reference
 
     private lateinit var serverHandler: ServerHandler
     private lateinit var lobby: Lobby
@@ -37,6 +44,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var team2NumEditText: TextView
     private lateinit var team1MembersAdapter: LobbyTeamAdapter
     private lateinit var team2MembersAdapter: LobbyTeamAdapter
+    private lateinit var changeTeamImageButton: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,12 +75,16 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
 
         // Change Team Button
-        val changeTeamImageButton = rootView.findViewById<ImageButton>(R.id.change_team_image_button)
+        changeTeamImageButton = rootView.findViewById<ImageButton>(R.id.change_team_image_button)
         changeTeamImageButton.setOnClickListener(this)
+        changeTeamImageButton.isClickable = false
 
         // Leave button
         val leaveButton = rootView.findViewById<Button>(R.id.button_leave_lobby)
         leaveButton.setOnClickListener(this)
+
+        // Ready button
+        val readyButton = rootView.findViewById<Button>(R.id.lobby_ready_button)
 
         // Add friend to lobby button
         val addFriendToLobby = rootView.findViewById<ImageButton>(R.id.lobby_invite_friend_image_button)
@@ -100,7 +112,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team2MembersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // update con get lobby
-        updateLobby(this)
+        updateLobby()
         return rootView
     }
 
@@ -109,52 +121,19 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             R.id.button_leave_lobby -> leave()
             R.id.lobby_invite_friend_image_button -> invite()
             R.id.change_team_image_button -> changeTeam()
+//            R.id.change_team_image_button -> sendMessage()
         }
 
     }
 
     private fun changeTeam() {
-        var teamNumber = 2
-        var teamIndex = 0
-        for (i in 0 until lobby.team1.size) {
-            if (lobby.team1[i].userId == user.userId) {
-                teamNumber = 1
-                teamIndex = i
-                break
-            }
-        }
-        if (teamNumber == 2) {
-            for (i in 0 until lobby.team1.size) {
-                if (lobby.team1[i].userId == user.userId) {
-                    teamIndex = i
-                    break
-                }
-            }
-        }
-        var change = false
-        if (teamNumber == 1) {
-            if (lobby.team2.size < Config.MAX_TEAM_MEMBERS) {
-                lobby.team2.add(lobby.team1[teamIndex])
-                lobby.team1.remove(lobby.team1[teamIndex])
-                change = true
-            }
-        } else {
-            if (lobby.team1.size < Config.MAX_TEAM_MEMBERS) {
-                lobby.team1.add(lobby.team2[teamIndex])
-                lobby.team2.remove(lobby.team2[teamIndex])
-                change = true
-            }
-        }
-        // update views
-        if (change) {
-            updateUI()
-            serverHandler.apiCall(
-                Config.POST,
-                Config.POST_CHANGE_TEAM,
-                userId = user.userId,
-                lobbyId = lobby.lobbyId,
-            )
-        }
+        changeTeamImageButton.isClickable = false
+        serverHandler.apiCall(
+            Config.POST,
+            Config.POST_CHANGE_TEAM,
+            userId = user.userId,
+            lobbyId = lobby.lobbyId,
+        )
     }
 
     private fun invite() {
@@ -189,38 +168,55 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
         team1MembersAdapter.notifyDataSetChanged()
         team2MembersAdapter.notifyDataSetChanged()
+        changeTeamImageButton.isClickable = true
         //chatAdapter.notifyDataSetChanged()
     }
 
-    private fun updateLobby(createPartyFragment: CreatePartyFragment) {
-        Log.i(Config.LOBBYTAG, "updateLobby() $lobby")
-        serverHandler.apiCall(
-            Config.GET,
-            Config.GET_LOBBY,
-            lobbyId = lobby.lobbyId,
-            callBack = object : ServerHandler.VolleyCallBack {
-                override fun onSuccess(reply: JSONObject?) {
-                    val lobbyJsonString = reply.toString()
-                    val gson = Gson()
-                    val lobbyUpdate = gson.fromJson(lobbyJsonString, Lobby::class.java)
-                    if (lobbyUpdate.team1 == null) {
-                        lobbyUpdate.team1 = mutableListOf()
-                    }
-                    if (lobbyUpdate.team2 == null) {
-                        lobbyUpdate.team2 = mutableListOf()
-                    }
-                    lobby.team1 = lobbyUpdate.team1
-                    lobby.team2 = lobbyUpdate.team2
-                    lobby.chat = lobbyUpdate.chat
+    private fun updateLobby() {
+        dataBase.child("Lobbies").child(lobby.lobbyId).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val newLobby = snapshot.getValue(Lobby::class.java)
+                if (newLobby != null) {
+                    lobby.team1 = newLobby.team1
+                    lobby.team2 = newLobby.team2
+                    lobby.chat = newLobby.chat
                     updateUI()
-                    if (createPartyFragment.context != null) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            updateLobby(
-                                createPartyFragment
-                            )
-                        }, Config.POLLING_PERIOD)
-                    }
+                    Log.i(Config.LOBBYTAG, "updateLobby() $lobby")
                 }
-            })
+//                Log.i(Config.LOBBYTAG, ""+newLobby)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+//        serverHandler.apiCall(
+//            Config.GET,
+//            Config.GET_LOBBY,
+//            lobbyId = lobby.lobbyId,
+//            callBack = object : ServerHandler.VolleyCallBack {
+//                override fun onSuccess(reply: JSONObject?) {
+//                    val lobbyJsonString = reply.toString()
+//                    val gson = Gson()
+//                    val lobbyUpdate = gson.fromJson(lobbyJsonString, Lobby::class.java)
+//                    if (lobbyUpdate.team1 == null) {
+//                        lobbyUpdate.team1 = mutableListOf()
+//                    }
+//                    if (lobbyUpdate.team2 == null) {
+//                        lobbyUpdate.team2 = mutableListOf()
+//                    }
+//                    lobby.team1 = lobbyUpdate.team1
+//                    lobby.team2 = lobbyUpdate.team2
+//                    lobby.chat = lobbyUpdate.chat
+//                    updateUI()
+//                    if (createPartyFragment.context != null) {
+//                        Handler(Looper.getMainLooper()).postDelayed({
+//                            updateLobby(
+//                                createPartyFragment
+//                            )
+//                        }, Config.POLLING_PERIOD)
+//                    }
+//                }
+//            })
     }
 }

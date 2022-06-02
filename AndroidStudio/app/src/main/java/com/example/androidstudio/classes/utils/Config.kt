@@ -9,13 +9,13 @@ class Config {
         val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
         //        val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
 //        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
-        val POLLING_PERIOD = 4500L
+        val POLLING_PERIOD = 2000L
 
         // Firebase/Google
         val CLIENT_ID = "8984037607-diqinm17j00uucdgkt14jb71seu6qlm1.apps.googleusercontent.com"
 
         // Max lobby member
-        val MAX_TEAM_MEMBERS = 1
+        val MAX_TEAM_MEMBERS = 16
 
         // Tags
         val API = "Api request"
@@ -25,6 +25,7 @@ class Config {
         val PERMISSIONTAG = "Permission"
         val UPDATEUITAG = "UpdateUI"
         val LOBBYTAG = "Lobby"
+        val USERTAG = "User"
 
         // Api names
         val GET = "get"
