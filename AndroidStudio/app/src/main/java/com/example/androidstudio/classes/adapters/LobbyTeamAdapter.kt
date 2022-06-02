@@ -57,6 +57,8 @@ class LobbyTeamAdapter(lobby: Lobby,
 
     }
 
+//    override
+
     override fun getItemCount(): Int {
         return if (team1) lobby.team1.size
         else lobby.team2.size

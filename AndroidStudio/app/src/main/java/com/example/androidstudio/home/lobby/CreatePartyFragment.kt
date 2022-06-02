@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -18,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.adapters.ChatAdapter
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.adapters.LobbyTeamAdapter
 import com.example.androidstudio.classes.types.Lobby
@@ -45,8 +47,10 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var team2NumEditText: TextView
     private lateinit var team1MembersAdapter: LobbyTeamAdapter
     private lateinit var team2MembersAdapter: LobbyTeamAdapter
+    private lateinit var chatAdapter: ChatAdapter
     private lateinit var changeTeamImageButton: ImageButton
     private lateinit var chatEditText: EditText
+    private lateinit var chatRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -115,11 +119,18 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team2MembersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Chat
-        val chatRecyclerView = rootView.findViewById<RecyclerView>(R.id.chat_lobby)
+        chatRecyclerView = rootView.findViewById<RecyclerView>(R.id.chat_lobby)
+        chatAdapter = ChatAdapter(lobby, user)
+        chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
+        chatAdapter.notifyDataSetChanged()
+        chatRecyclerView.adapter = chatAdapter
+        chatRecyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
+            stackFromEnd = true
+            reverseLayout = false
+        }
         val chatImageButton = rootView.findViewById<ImageButton>(R.id.lobby_chat_send_button)
         chatImageButton.setOnClickListener(this)
         chatEditText = rootView.findViewById(R.id.lobby_chat_edit_text)
-
 
         // update con get lobby
         updateLobby()
@@ -146,18 +157,17 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
                 break
             }
         }
-        if (allSpace) {
-            textToSend = ""
+        if (!allSpace) {
+            serverHandler.apiCall(
+                Config.POST,
+                Config.POST_SEND_MESSAGE,
+                userId = user.userId,
+                username = user.username,
+                lobbyId = lobby.lobbyId,
+                chatText = textToSend
+            )
         }
         Log.i(Config.LOBBYTAG, "message: ->$textToSend<-")
-        serverHandler.apiCall(
-            Config.POST,
-            Config.POST_SEND_MESSAGE,
-            userId = user.userId,
-            username = user.username,
-            lobbyId = lobby.lobbyId,
-            chatText = textToSend
-        )
         chatEditText.text.clear()
     }
 
@@ -198,13 +208,17 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             .show()
     }
 
-    private fun updateUI() {
+    private fun updateUI(newLobby: Lobby) {
+        lobby.team1 = newLobby.team1
+        lobby.team2 = newLobby.team2
+        lobby.chat = newLobby.chat
+        chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount)
+        chatAdapter.notifyDataSetChanged()
         team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
         team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
         team1MembersAdapter.notifyDataSetChanged()
         team2MembersAdapter.notifyDataSetChanged()
         changeTeamImageButton.isClickable = true
-        //chatAdapter.notifyDataSetChanged()
     }
 
     private fun updateLobby() {
@@ -212,10 +226,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val newLobby = snapshot.getValue(Lobby::class.java)
                 if (newLobby != null) {
-                    lobby.team1 = newLobby.team1
-                    lobby.team2 = newLobby.team2
-                    lobby.chat = newLobby.chat
-                    updateUI()
+                    updateUI(newLobby)
                     Log.i(Config.LOBBYTAG, "updateLobby() $lobby")
                 }
             }

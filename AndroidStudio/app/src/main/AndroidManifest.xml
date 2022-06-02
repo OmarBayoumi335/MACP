@@ -18,7 +18,8 @@
         <service android:name=".classes.utils.EnigmaService" />
         <activity
             android:name=".home.MenuActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".Login.LoginActivity"
             android:exported="false" />
