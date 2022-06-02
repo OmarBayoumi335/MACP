@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -45,6 +46,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var team1MembersAdapter: LobbyTeamAdapter
     private lateinit var team2MembersAdapter: LobbyTeamAdapter
     private lateinit var changeTeamImageButton: ImageButton
+    private lateinit var chatEditText: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,13 +56,14 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         val rootView = inflater.inflate(R.layout.fragment_create_party, container, false)
         serverHandler = ServerHandler(requireContext())
 
-        val menuActivity: MenuActivity = requireActivity() as MenuActivity
-        menuActivity.setProfileImageButtonVisibility(View.VISIBLE)
-        user = menuActivity.getUser()
-
         val lobbyString = arguments?.getString("lobby").toString()
         val gson = Gson()
         lobby = gson.fromJson(lobbyString, Lobby::class.java)
+
+        val menuActivity: MenuActivity = requireActivity() as MenuActivity
+        menuActivity.setProfileImageButtonVisibility(View.VISIBLE)
+        menuActivity.setLobby(lobby)
+        user = menuActivity.getUser()
 
         Log.i(Config.LOBBYTAG, lobby.toString())
 
@@ -111,6 +114,13 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team2MembersRecyclerView.adapter = team2MembersAdapter
         team2MembersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // Chat
+        val chatRecyclerView = rootView.findViewById<RecyclerView>(R.id.chat_lobby)
+        val chatImageButton = rootView.findViewById<ImageButton>(R.id.lobby_chat_send_button)
+        chatImageButton.setOnClickListener(this)
+        chatEditText = rootView.findViewById(R.id.lobby_chat_edit_text)
+
+
         // update con get lobby
         updateLobby()
         return rootView
@@ -121,9 +131,34 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             R.id.button_leave_lobby -> leave()
             R.id.lobby_invite_friend_image_button -> invite()
             R.id.change_team_image_button -> changeTeam()
-//            R.id.change_team_image_button -> sendMessage()
+            R.id.lobby_chat_send_button -> sendMessage()
         }
 
+    }
+
+    private fun sendMessage() {
+        var textToSend = chatEditText.text.toString()
+        var allSpace = true
+        for (i in textToSend.indices) {
+            if (textToSend[i] != ' ') {
+                textToSend = textToSend.substring(i)
+                allSpace = false
+                break
+            }
+        }
+        if (allSpace) {
+            textToSend = ""
+        }
+        Log.i(Config.LOBBYTAG, "message: ->$textToSend<-")
+        serverHandler.apiCall(
+            Config.POST,
+            Config.POST_SEND_MESSAGE,
+            userId = user.userId,
+            username = user.username,
+            lobbyId = lobby.lobbyId,
+            chatText = textToSend
+        )
+        chatEditText.text.clear()
     }
 
     private fun changeTeam() {
@@ -144,18 +179,18 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     }
 
     private fun leave() {
-        serverHandler.apiCall(
-            Config.DELETE,
-            Config.DELETE_LEAVE_LOBBY,
-            lobbyId = lobby.lobbyId,
-            userId = user.userId
-        )
         AlertDialog.Builder(context)
             .setTitle(R.string.leave_lobby_alert)
             .setMessage(R.string.leave_lobby_alert_message)
             .setPositiveButton(
                 R.string.yes
             ) { _, _ ->
+                serverHandler.apiCall(
+                    Config.DELETE,
+                    Config.DELETE_LEAVE_LOBBY,
+                    lobbyId = lobby.lobbyId,
+                    userId = user.userId
+                )
                 findNavController().popBackStack(R.id.setupGameFragment, false)
             }
             .setNegativeButton(R.string.no, null)
@@ -183,40 +218,11 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
                     updateUI()
                     Log.i(Config.LOBBYTAG, "updateLobby() $lobby")
                 }
-//                Log.i(Config.LOBBYTAG, ""+newLobby)
             }
 
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
         })
-//        serverHandler.apiCall(
-//            Config.GET,
-//            Config.GET_LOBBY,
-//            lobbyId = lobby.lobbyId,
-//            callBack = object : ServerHandler.VolleyCallBack {
-//                override fun onSuccess(reply: JSONObject?) {
-//                    val lobbyJsonString = reply.toString()
-//                    val gson = Gson()
-//                    val lobbyUpdate = gson.fromJson(lobbyJsonString, Lobby::class.java)
-//                    if (lobbyUpdate.team1 == null) {
-//                        lobbyUpdate.team1 = mutableListOf()
-//                    }
-//                    if (lobbyUpdate.team2 == null) {
-//                        lobbyUpdate.team2 = mutableListOf()
-//                    }
-//                    lobby.team1 = lobbyUpdate.team1
-//                    lobby.team2 = lobbyUpdate.team2
-//                    lobby.chat = lobbyUpdate.chat
-//                    updateUI()
-//                    if (createPartyFragment.context != null) {
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//                            updateLobby(
-//                                createPartyFragment
-//                            )
-//                        }, Config.POLLING_PERIOD)
-//                    }
-//                }
-//            })
     }
 }
