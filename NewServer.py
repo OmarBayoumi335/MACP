@@ -17,7 +17,7 @@ db = firebase.database()
 
 
 #request codes and parser arguments
-MAX_LOBBY_MEMBERS = 4
+MAX_LOBBY_MEMBERS = 16
 
 # GET
 GET_USERNAME = "get0"
@@ -38,6 +38,7 @@ POST_SEND_FRIEND_REQUEST = "post2"
 POST_SEND_LOBBY_INVITE = "post3"
 POST_ACCEPT_LOBBY_INVITE = "post4"
 POST_CHANGE_TEAM = "post5"
+POST_SEND_MESSAGE = "post6"
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
@@ -56,6 +57,7 @@ parser.add_argument('lobbyId', type = str, required = False)
 parser.add_argument('lobbyName', type = str, required = False)
 parser.add_argument('newName', type = str, required = False)
 parser.add_argument('username', type = str, required = False)
+parser.add_argument('chatText', type = str, required = False)
 
 # Api call handler
 class EnigmaServer(Resource):
@@ -73,6 +75,7 @@ class EnigmaServer(Resource):
         self.lobbyName = args['lobbyName']
         self.newName = args['newName']
         self.username = args['username']
+        self.chatText = args['chatText']
     
     def get(self):       
          
@@ -155,7 +158,9 @@ class EnigmaServer(Resource):
             chat = [] if chat == None else chat
             lobby["chat"] = chat
             return lobby
+        
         return {"message": "get request failed", "error": True}
+        
       
     def put(self):
         
@@ -330,7 +335,17 @@ class EnigmaServer(Resource):
             db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
             db.child("Lobbies").child(self.lobbyId).update({"team2": team2})
             return{"message": "team changed", "status": "notFullTeam", "error": False}
-            
+        
+        #6 send message to display in the chat. Input(req, userId, lobbyId, username, chatText)
+        if self.req == POST_SEND_MESSAGE:
+            username = "" if self.username == None else self.username
+            chat = db.child("Lobbies").child(self.lobbyId).child("chat").get().val()
+            chat = [] if chat == None else chat
+            message = {"user":{"userId": self.userId, "username": username}, "text": self.chatText}
+            chat.append(message)
+            db.child("Lobbies").child(self.lobbyId).update({"chat": chat})
+            return {"message": "message sent", "error": False}
+        
         return {"message": "post request failed", "error": True}
     
     def delete(self):
