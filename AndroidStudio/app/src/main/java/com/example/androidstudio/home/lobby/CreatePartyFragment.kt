@@ -57,6 +57,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var chatEditText: EditText
     private lateinit var chatRecyclerView: RecyclerView
     private lateinit var readyButton: Button
+    private var gameCanStart: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -251,8 +252,9 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val newLobby = snapshot.getValue(Lobby::class.java)
                 if (newLobby != null) {
-                    if (newLobby.start) {
-                        val intent = Intent(requireActivity, GameActivity::class.java)
+                    if (newLobby.start && gameCanStart) {
+                        gameCanStart = false
+                        val intent = Intent(context, GameActivity::class.java)
 //                        intent.putExtra("user", userJsonString)
                         startActivity(intent)
                         requireActivity.overridePendingTransition(0, 0);
