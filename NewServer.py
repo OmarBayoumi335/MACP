@@ -39,6 +39,7 @@ POST_SEND_LOBBY_INVITE = "post3"
 POST_ACCEPT_LOBBY_INVITE = "post4"
 POST_CHANGE_TEAM = "post5"
 POST_SEND_MESSAGE = "post6"
+POST_PROVA = "prova"
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
@@ -346,6 +347,13 @@ class EnigmaServer(Resource):
             db.child("Lobbies").child(self.lobbyId).update({"chat": chat})
             return {"message": "message sent", "error": False}
         
+        if self.req == POST_PROVA:
+            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            for i in range(7):
+                obj = {"userId":self.userId + str(i), "username": self.username + str(i)}
+                team1.append(obj)
+            db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
+            return "ok"
         return {"message": "post request failed", "error": True}
     
     def delete(self):
