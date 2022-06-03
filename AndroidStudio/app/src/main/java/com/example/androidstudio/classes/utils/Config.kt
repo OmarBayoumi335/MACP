@@ -48,6 +48,7 @@ class Config {
         val POST_ACCEPT_LOBBY_INVITE = "post4"
         val POST_CHANGE_TEAM = "post5"
         val POST_SEND_MESSAGE = "post6"
+        val POST_CHANGE_READY_STATUS = "post7"
 
         val DELETE = "delete"
         val DELETE_REMOVE_FRIEND = "delete0"

@@ -52,6 +52,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var chatImageButton: ImageButton
     private lateinit var chatEditText: EditText
     private lateinit var chatRecyclerView: RecyclerView
+    private lateinit var readyButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,7 +93,8 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         leaveButton.setOnClickListener(this)
 
         // Ready button
-        val readyButton = rootView.findViewById<Button>(R.id.lobby_ready_button)
+        readyButton = rootView.findViewById(R.id.lobby_ready_button)
+        readyButton.setOnClickListener(this)
 
         // Add friend to lobby button
         val addFriendToLobby = rootView.findViewById<ImageButton>(R.id.lobby_invite_friend_image_button)
@@ -120,7 +122,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team2MembersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Chat
-        chatRecyclerView = rootView.findViewById<RecyclerView>(R.id.chat_lobby)
+        chatRecyclerView = rootView.findViewById(R.id.chat_lobby)
         chatAdapter = ChatAdapter(lobby, user)
         chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
         chatAdapter.notifyDataSetChanged()
@@ -129,7 +131,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             stackFromEnd = true
             reverseLayout = false
         }
-        chatImageButton = rootView.findViewById<ImageButton>(R.id.lobby_chat_send_button)
+        chatImageButton = rootView.findViewById(R.id.lobby_chat_send_button)
         chatImageButton.setOnClickListener(this)
         chatEditText = rootView.findViewById(R.id.lobby_chat_edit_text)
 
@@ -144,8 +146,23 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             R.id.lobby_invite_friend_image_button -> invite()
             R.id.change_team_image_button -> changeTeam()
             R.id.lobby_chat_send_button -> sendMessage()
+            R.id.lobby_ready_button -> ready()
         }
 
+    }
+
+    private fun ready() {
+        readyButton.isClickable = false
+        if (readyButton.text == resources.getString(R.string.lobby_cancel)) {
+            readyButton.text = resources.getString(R.string.lobby_ready)
+        } else {
+            readyButton.text = resources.getString(R.string.lobby_cancel)
+        }
+        serverHandler.apiCall(
+            Config.POST,
+            Config.POST_CHANGE_READY_STATUS,
+            userId = user.userId,
+            lobbyId = lobby.lobbyId)
     }
 
     private fun sendMessage() {
@@ -222,6 +239,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team2MembersAdapter.notifyDataSetChanged()
         changeTeamImageButton.isClickable = true
         chatImageButton.isClickable = true
+        readyButton.isClickable = true
     }
 
     private fun updateLobby() {
