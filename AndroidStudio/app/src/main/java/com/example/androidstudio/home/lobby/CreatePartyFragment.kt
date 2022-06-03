@@ -49,6 +49,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var team2MembersAdapter: LobbyTeamAdapter
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var changeTeamImageButton: ImageButton
+    private lateinit var chatImageButton: ImageButton
     private lateinit var chatEditText: EditText
     private lateinit var chatRecyclerView: RecyclerView
 
@@ -128,7 +129,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             stackFromEnd = true
             reverseLayout = false
         }
-        val chatImageButton = rootView.findViewById<ImageButton>(R.id.lobby_chat_send_button)
+        chatImageButton = rootView.findViewById<ImageButton>(R.id.lobby_chat_send_button)
         chatImageButton.setOnClickListener(this)
         chatEditText = rootView.findViewById(R.id.lobby_chat_edit_text)
 
@@ -158,6 +159,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             }
         }
         if (!allSpace) {
+            chatImageButton.isClickable = false
             serverHandler.apiCall(
                 Config.POST,
                 Config.POST_SEND_MESSAGE,
@@ -219,6 +221,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         team1MembersAdapter.notifyDataSetChanged()
         team2MembersAdapter.notifyDataSetChanged()
         changeTeamImageButton.isClickable = true
+        chatImageButton.isClickable = true
     }
 
     private fun updateLobby() {

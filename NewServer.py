@@ -81,19 +81,18 @@ class EnigmaServer(Resource):
          
         #0 return the username given the user id. Input(req, userId)
         if self.req == GET_USERNAME:
+            userId = "" if self.userId == None else self.userId
             username = ""
-            if db.child("Users").child(self.userId).get().val() != None:
-                username = db.child("Users").child(self.userId).get().val()["username"]
+            if db.child("Users").child(userId).get().val() != None:
+                username = db.child("Users").child(userId).get().val()["username"]
             return {"message": "get username", "username": username, "error": False}
         
         #1 return true if the user already exist, false otherwise. Input(req, googleUserId)
         if self.req == GET_USER_EXIST:
-            googleUsersIds = db.child("GoogleUserIds").get().val()
-            if googleUsersIds != None:
-                for googleUserId in googleUsersIds:
-                    if googleUserId == self.googleUserId:
-                        return {"message": "user already exist", "exist": True, "error": False}
-            return {"message": "user not exist", "exist": False, "error": False}
+            userId = db.child("GoogleUserIds").child(self.googleUserId).get().val()
+            if userId != None:
+                return {"message": "user already exist", "exist": True, "userId": userId, "error": False}
+            return {"message": "user not exist", "exist": False, "userId": "", "error": False}
         
         #2 return all user information. Input(req, userId)
         if self.req == GET_USER:
