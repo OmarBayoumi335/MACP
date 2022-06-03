@@ -63,4 +63,5 @@
     <string name="lobby_name_hint">Type the name</string>
     <string name="default_lobby_name">New lobby</string>
     <string name="user_invited">User invited</string>
+    <string name="message">Message</string>
 </resources>

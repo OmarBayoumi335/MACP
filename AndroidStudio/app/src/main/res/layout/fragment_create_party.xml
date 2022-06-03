@@ -51,8 +51,6 @@
         android:text="@string/team1"
         app:layout_constraintBottom_toBottomOf="@id/lobby_invite_friend_image_button"
         app:layout_constraintTop_toTopOf="@id/lobby_invite_friend_image_button"
-        app:layout_constraintEnd_toEndOf="@id/team1_members_recycler"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/team1_members_recycler" />
 
     <TextView
@@ -74,8 +72,6 @@
         android:text="@string/team2"
         app:layout_constraintBottom_toBottomOf="@id/lobby_invite_friend_image_button"
         app:layout_constraintEnd_toEndOf="@id/team2_members_recycler"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@id/team2_members_recycler"
         app:layout_constraintTop_toTopOf="@id/lobby_invite_friend_image_button" />
 
     <TextView
@@ -100,15 +96,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lobby_title_name_textview" />
 
+
     <ImageButton
-        android:id="@+id/change_team_image_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_media_ff"
-        app:layout_constraintBottom_toTopOf="@id/chat_lobby"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button" />
+            android:id="@+id/change_team_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_media_ff"
+            app:layout_constraintBottom_toTopOf="@id/chat_lobby"
+            app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button"
+            app:layout_constraintEnd_toStartOf="@id/team2_members_recycler"
+            app:layout_constraintStart_toEndOf="@id/team1_members_recycler" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/team1_members_recycler"
@@ -118,7 +115,9 @@
         app:layout_constraintBottom_toTopOf="@id/chat_lobby"
         app:layout_constraintEnd_toStartOf="@id/change_team_image_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button" />
+        app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button"
+        app:layout_constraintVertical_bias="0.0"
+        tools:itemCount="8" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/team2_members_recycler"
@@ -128,18 +127,38 @@
         app:layout_constraintBottom_toTopOf="@id/chat_lobby"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/change_team_image_button"
-        app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button" />
-
+        app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_lobby"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/grey"
-        app:layout_constraintBottom_toTopOf="@id/lobby_ready_button"
+        app:layout_constraintBottom_toTopOf="@id/lobby_chat_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/team_center" />
+        app:layout_constraintTop_toBottomOf="@id/team1_members_recycler" />
+
+    <EditText
+        android:id="@+id/lobby_chat_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="@string/message"
+        app:layout_constraintBottom_toTopOf="@id/lobby_ready_button"
+        app:layout_constraintEnd_toStartOf="@id/lobby_chat_send_button"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/lobby_chat_send_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_send"
+        app:layout_constraintBottom_toTopOf="@id/lobby_ready_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chat_lobby" />
 
     <Button
         android:id="@+id/lobby_ready_button"

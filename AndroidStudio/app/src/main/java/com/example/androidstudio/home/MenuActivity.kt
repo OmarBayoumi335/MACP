@@ -1,8 +1,7 @@
 package com.example.androidstudio.home
 
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.content.Intent
+import android.os.*
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
@@ -10,16 +9,16 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.Lobby
-import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.classes.utils.EnigmaService
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.home.profile.ProfileFragment
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
-import org.json.JSONObject
 
 
 class MenuActivity : AppCompatActivity(), View.OnClickListener{
@@ -27,8 +26,11 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
     private val dataBase = FirebaseDatabase.getInstance().reference
 
     private lateinit var user: User
+    private var myLobby: Lobby = Lobby("", "", mutableListOf(), mutableListOf(), mutableListOf())
     private lateinit var requestsTextView: TextView
     private lateinit var profileButton: ImageButton
+    private lateinit var intentService: Intent
+    private lateinit var exampleService: EnigmaService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +39,17 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
         val userString = intent.extras?.getString("user")
         val gson = Gson()
         user = gson.fromJson(userString, User::class.java)
-//        Log.i(Config.USERTAG, "$user")
 
         requestsTextView = findViewById(R.id.profile_notification_textView)
-        val serverHandler = ServerHandler(this)
         updateUser(requestsTextView)
 
         profileButton = findViewById(R.id.button_profile)
         profileButton.setOnClickListener(this)
+
+        val serverHandler = ServerHandler(applicationContext)
+        exampleService = EnigmaService(myLobby, serverHandler)
+        intentService = Intent(this, exampleService::class.java)
+        startService(intentService);
     }
 
     override fun onClick(v: View?) {
@@ -82,36 +87,6 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
                 TODO("Not yet implemented")
             }
         })
-//        serverHandler.apiCall(
-//            Config.GET,
-//            Config.GET_USER,
-//            userId = user.userId,
-//            callBack = object : ServerHandler.VolleyCallBack {
-//                override fun onSuccess(reply: JSONObject?) {
-//                    val userJsonString = reply.toString()
-//                    val gson = Gson()
-//                    val userUpdate = gson.fromJson(userJsonString, User::class.java)
-//                    user.username = userUpdate.username
-//                    user.friends = userUpdate.friends
-//                    user.pendingFriendRequests = userUpdate.pendingFriendRequests
-//                    user.pendingInviteRequests = userUpdate.pendingInviteRequests
-//                    if (user.pendingFriendRequests != null) {
-//                        notification.visibility = View.VISIBLE
-//                        notification.text = user.pendingFriendRequests?.size.toString()
-//                    } else {
-//                        notification.visibility = View.GONE
-//                    }
-//                    if (!menuActivity.isFinishing) {
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//                            updateUser(
-//                                menuActivity,
-//                                serverHandler,
-//                                notification
-//                            )
-//                        }, Config.POLLING_PERIOD)
-//                    }
-//                }
-//            })
     }
 
     fun getUser(): User {
@@ -132,5 +107,17 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
                 requestsTextView.text = user.pendingFriendRequests!!.size.toString()
             }
         }
+    }
+
+    fun setLobby(lobby: Lobby) {
+        myLobby = lobby
+        exampleService.setLobby(lobby)
+    }
+
+    override fun onDestroy() {
+        val intentOnUnbind = Intent()
+        intentOnUnbind.putExtra("userId", user.userId)
+        exampleService.onUnbind(intentOnUnbind)
+        super.onDestroy()
     }
 }

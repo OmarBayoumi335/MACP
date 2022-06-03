@@ -47,6 +47,4 @@ class ProfileViewPageAdapter(profileFragment: ProfileFragment,
             else -> FriendsFragment(profileFragment, user)
         }
     }
-
-
 }

@@ -147,6 +147,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                 callBack = object : ServerHandler.VolleyCallBack {
                     override fun onSuccess(reply: JSONObject?) {
                         val exist: Boolean? = reply?.getBoolean("exist")
+                        val userId: String = reply?.get("userId").toString()
                         if (!exist!!) {  // User not exist
                             Log.i(Config.LOGINTAG, "New user created")
                             val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
@@ -154,30 +155,29 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                                 Config.PUT,
                                 Config.PUT_NEW_USER,
                                 googleUserId = currentUser.uid,
-                                username = username, callBack = object : ServerHandler.VolleyCallBack{
+                                username = username,
+                                callBack = object : ServerHandler.VolleyCallBack{
                                     override fun onSuccess(reply: JSONObject?) {
-                                        val userId = reply?.get("userId").toString()
-                                        sharedPreferences.edit().putString("ID", userId).apply()
-                                        launchMenu(userId)
+                                        val newUserId = reply?.get("userId").toString()
+                                        sharedPreferences.edit().putString("ID", newUserId).apply()
+                                        launchMenu(newUserId)
                                     }
                                 })
                         } else if (!fromOnStart) {  // User exist but login
-                            sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
-                            val lastId : String = sharedPreferences.getString("ID", "").toString()
+                            sharedPreferences.edit().putString("ID", userId).apply()
                             val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
                             serverHandler.apiCall(
                                 Config.POST,
                                 Config.POST_CHANGE_NAME,
-                                userId = lastId,
+                                userId = userId,
                                 newName = username,
                                 callBack = object : ServerHandler.VolleyCallBack{
                                     override fun onSuccess(reply: JSONObject?) {
-                                        launchMenu(lastId)
+                                        launchMenu(userId)
                                     }
                                 })
                         } else {  // User exist and logged in automatically
-                            sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
-                            val lastId : String = sharedPreferences.getString("ID", "").toString()
+                            val lastId = sharedPreferences.getString("ID", "").toString()
                             launchMenu(lastId)
                         }
                     }
@@ -215,5 +215,5 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         }
     }
 
-    // TODO connection and server check
+    // TODO connection and server check and if already connected
 }
