@@ -1,6 +1,8 @@
 package com.example.androidstudio.home.lobby
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +17,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +29,7 @@ import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.types.UserIdentification
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.game.GameActivity
 import com.example.androidstudio.home.MenuActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -136,7 +140,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         chatEditText = rootView.findViewById(R.id.lobby_chat_edit_text)
 
         // update con get lobby
-        updateLobby()
+        updateLobby(requireActivity())
         return rootView
     }
 
@@ -242,11 +246,18 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         readyButton.isClickable = true
     }
 
-    private fun updateLobby() {
+    private fun updateLobby(requireActivity: FragmentActivity) {
         dataBase.child("Lobbies").child(lobby.lobbyId).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val newLobby = snapshot.getValue(Lobby::class.java)
                 if (newLobby != null) {
+                    if (newLobby.start) {
+                        val intent = Intent(requireActivity, GameActivity::class.java)
+//                        intent.putExtra("user", userJsonString)
+                        startActivity(intent)
+                        requireActivity.overridePendingTransition(0, 0);
+                        requireActivity.finish()
+                    }
                     updateUI(newLobby)
                     Log.i(Config.LOBBYTAG, "updateLobby() $lobby")
                 }

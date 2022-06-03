@@ -4,3 +4,5 @@ ricerca per invitare con recycler che si aggiorna
 Notifiche firebase per richieste di amicizia e richieste di partita
 estica messagio
 estetica generale
+liste su firebase sono rotte
+stessa cosa per teams (anche peggio) se si spamma
