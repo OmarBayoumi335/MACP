@@ -39,6 +39,8 @@ POST_SEND_LOBBY_INVITE = "post3"
 POST_ACCEPT_LOBBY_INVITE = "post4"
 POST_CHANGE_TEAM = "post5"
 POST_SEND_MESSAGE = "post6"
+POST_CHANGE_READY_STATUS = "post7"
+POST_PROVA = "prova"
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
@@ -180,9 +182,11 @@ class EnigmaServer(Resource):
             lobby = {"lobbyId": lobbyId,
                         "lobbyName": self.lobbyName,
                         "team1": [{"username": user["username"],
-                                   "userId": user["userId"]}],
+                                   "userId": user["userId"],
+                                   "ready": False}],
                         "team2": [],
-                        "chat": []}
+                        "chat": [],
+                        "start": False}
          
             db.child("Lobbies").child(lobbyId).set(lobby)
             return {"message": "lobby created", "lobby": lobby, "error": False}
@@ -287,7 +291,7 @@ class EnigmaServer(Resource):
         if self.req == POST_ACCEPT_LOBBY_INVITE:
             pendingInviteRequests = db.child("Users").child(self.userId).child("pendingInviteRequests").get().val()
             user = db.child("Users").child(self.userId).get().val()
-            userValue = {"username": user["username"], "userId": user["userId"]}
+            userValue = {"username": user["username"], "userId": user["userId"], "ready": False}
             team1Members = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
             team2Members = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
             team1Members = [] if team1Members == None else team1Members
@@ -318,19 +322,29 @@ class EnigmaServer(Resource):
         if self.req == POST_CHANGE_TEAM:
             user = db.child("Users").child(self.userId).get().val()
             username = "" if user["username"] == None else user["username"]
-            userFields = {"username": user["username"], "userId": user["userId"]}
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
             team1 = [] if team1 == None else team1
             team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
             team2 = [] if team2 == None else team2
-            if userFields in team1 and len(team2) < MAX_LOBBY_MEMBERS/2:
-                team1.remove(userFields)
-                team2.append(userFields)
-            elif userFields in team2 and len(team1) < MAX_LOBBY_MEMBERS/2:
-                team1.append(userFields)
-                team2.remove(userFields)
-            else:
-                return{"message": "the other team is full", "status": "fullTeam", "error": False}
+            inTeam1 = False
+            for member in team1:
+                if member["userId"] == self.userId:
+                    if len(team2) < MAX_LOBBY_MEMBERS/2:
+                        team1.remove(member)
+                        team2.append(member)
+                        inTeam1 = True
+                        break
+                    else:
+                        return{"message": "the other team is full", "status": "fullTeam", "error": False}
+            if not inTeam1:
+                for member in team2:
+                    if member["userId"] == self.userId:
+                        if len(team1) < MAX_LOBBY_MEMBERS/2:
+                            team2.remove(member)
+                            team1.append(member)
+                            break
+                        else:
+                            return{"message": "the other team is full", "status": "fullTeam", "error": False}
             db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
             db.child("Lobbies").child(self.lobbyId).update({"team2": team2})
             return{"message": "team changed", "status": "notFullTeam", "error": False}
@@ -345,8 +359,46 @@ class EnigmaServer(Resource):
             db.child("Lobbies").child(self.lobbyId).update({"chat": chat})
             return {"message": "message sent", "error": False}
         
+        #7 change the ready status of a user. Input(req, userId, lobbyId)
+        if self.req == POST_CHANGE_READY_STATUS:
+            user = db.child("Users").child(self.userId).get().val()
+            username = "" if user["username"] == None else user["username"]
+            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            team1 = [] if team1 == None else team1
+            team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
+            team2 = [] if team2 == None else team2
+            inTeam1 = False
+            for i in range(len(team1)):
+                if team1[i]["userId"] == self.userId:
+                    inTeam1 = True
+                    db.child("Lobbies").child(self.lobbyId).child("team1").child(str(i)).update({"ready": not team1[i]["ready"]})
+                    break
+            if not inTeam1:
+                for i in range(len(team2)):
+                    if team2[i]["userId"] == self.userId:
+                        db.child("Lobbies").child(self.lobbyId).child("team2").child(str(i)).update({"ready": not team2[i]["ready"]})
+                        break
+            teams = team1 + team2
+            for member in teams:
+                if member["ready"] == False:
+                    return {"message": "ready status changed", "error": False}
+            if len(teams) >= 4:
+                db.child("Lobbies").child(self.lobbyId).update({"start": True})
+                return {"message": "all are ready", "error": False}
+            return {"message": "all are ready but not enough users", "error": False}
+            
+        
+        if self.req == POST_PROVA:
+            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            for i in range(7):
+                obj = {"userId":self.userId + str(i), "username": self.username + str(i)}
+                team1.append(obj)
+            db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
+            return "ok"
         return {"message": "post request failed", "error": True}
     
+        
+            
     def delete(self):
         
         #0 delete friend. Input(req, userId, friendId)
