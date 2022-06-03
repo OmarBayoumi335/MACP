@@ -26,7 +26,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
     private val dataBase = FirebaseDatabase.getInstance().reference
 
     private lateinit var user: User
-    private var myLobby: Lobby = Lobby("", "", mutableListOf(), mutableListOf(), mutableListOf())
+    private var myLobby: Lobby = Lobby("", "", mutableListOf(), mutableListOf(), mutableListOf(), false)
     private lateinit var requestsTextView: TextView
     private lateinit var profileButton: ImageButton
     private lateinit var intentService: Intent
