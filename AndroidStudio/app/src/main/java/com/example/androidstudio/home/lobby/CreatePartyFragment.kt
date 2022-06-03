@@ -38,6 +38,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import org.json.JSONObject
+import java.util.*
 
 
 class CreatePartyFragment : Fragment(), View.OnClickListener {
@@ -167,7 +168,12 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
             Config.POST,
             Config.POST_CHANGE_READY_STATUS,
             userId = user.userId,
-            lobbyId = lobby.lobbyId)
+            lobbyId = lobby.lobbyId,
+            callBack = object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+
+                }
+            })
     }
 
     private fun sendMessage() {
