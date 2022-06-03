@@ -371,18 +371,20 @@ class EnigmaServer(Resource):
             for i in range(len(team1)):
                 if team1[i]["userId"] == self.userId:
                     inTeam1 = True
-                    db.child("Lobbies").child(self.lobbyId).child("team1").child(str(i)).update({"ready": not team1[i]["ready"]})
+                    team1[i]["ready"] = not team1[i]["ready"]
+                    db.child("Lobbies").child(self.lobbyId).child("team1").child(str(i)).update({"ready": team1[i]["ready"]})
                     break
             if not inTeam1:
                 for i in range(len(team2)):
                     if team2[i]["userId"] == self.userId:
-                        db.child("Lobbies").child(self.lobbyId).child("team2").child(str(i)).update({"ready": not team2[i]["ready"]})
+                        team2[i]["ready"] = not team2[i]["ready"]
+                        db.child("Lobbies").child(self.lobbyId).child("team2").child(str(i)).update({"ready": team2[i]["ready"]})
                         break
             teams = team1 + team2
             for member in teams:
-                if member["ready"] == False:
+                if not member["ready"]:
                     return {"message": "ready status changed", "error": False}
-            if len(teams) >= 4:
+            if len(team1) >= 2 and len(team2) >= 2:
                 db.child("Lobbies").child(self.lobbyId).update({"start": True})
                 return {"message": "all are ready", "error": False}
             return {"message": "all are ready but not enough users", "error": False}
