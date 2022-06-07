@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_game_activity"
+    app:startDestination="@id/gameFragmentLoading">
+
+    <fragment
+        android:id="@+id/gameFragmentLoading"
+        android:name="com.example.androidstudio.loadings.GameFragmentLoading"
+        android:label="fragment_game_loading"
+        tools:layout="@layout/fragment_game_loading" >
+        <action
+            android:id="@+id/action_gameFragmentLoading_to_gameFragment"
+            app:destination="@id/gameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="com.example.androidstudio.game.GameFragment"
+        android:label="fragment_game" />
+</navigation>

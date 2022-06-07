@@ -105,23 +105,23 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.i(Config.LOGINTAG, "signInWithCredential: success")
+                            Log.i(Config.LOGIN_TAG, "signInWithCredential: success")
                             val user = auth.currentUser
                             signIn(user)
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.e(Config.LOGINTAG, "signInWithCredential: failure ", task.exception)
+                            Log.e(Config.LOGIN_TAG, "signInWithCredential: failure ", task.exception)
                         }
                     }
             } else {
                 // Shouldn't happen.
-                Log.e(Config.LOGINTAG, "No ID token!")
+                Log.e(Config.LOGIN_TAG, "No ID token!")
             }
-            Log.i(Config.LOGINTAG, "Success Login")
+            Log.i(Config.LOGIN_TAG, "Success Login")
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.e(Config.LOGINTAG, "signInResult:failed code = " + e.statusCode)
+            Log.e(Config.LOGIN_TAG, "signInResult:failed code = " + e.statusCode)
         }
     }
 
@@ -149,7 +149,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                         val exist: Boolean? = reply?.getBoolean("exist")
                         val userId: String = reply?.get("userId").toString()
                         if (!exist!!) {  // User not exist
-                            Log.i(Config.LOGINTAG, "New user created")
+                            Log.i(Config.LOGIN_TAG, "New user created")
                             val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
                             serverHandler.apiCall(
                                 Config.PUT,
@@ -206,12 +206,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         super.onStart()
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null){
-            Log.i(Config.LOGINTAG, "OnStart logged in")
+            Log.i(Config.LOGIN_TAG, "OnStart logged in")
             val currentUser = auth.currentUser
             signIn(currentUser, true)
         }
         else {
-            Log.w(Config.LOGINTAG, "OnStart account not found")
+            Log.w(Config.LOGIN_TAG, "OnStart account not found")
         }
     }
 

@@ -2,8 +2,6 @@ package com.example.androidstudio.home.profile
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -174,7 +172,7 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
                     } else {
                         notification.visibility = View.GONE
                     }
-                    Log.i(Config.PROFILETAG, "update() $user")
+                    Log.i(Config.PROFILE_TAG, "update() $user")
                 }
             }
 
@@ -182,13 +180,5 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
                 TODO("Not yet implemented")
             }
         })
-
-
-//        if (this.context != null) {
-//            Handler(Looper.getMainLooper()).postDelayed({
-//                update(notification)
-//            },
-//                Config.POLLING_PERIOD)
-//        }
     }
 }

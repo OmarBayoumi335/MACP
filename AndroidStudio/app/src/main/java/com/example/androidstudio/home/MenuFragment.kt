@@ -9,11 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavArgs
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.androidstudio.Login.LoginActivity
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.User
@@ -53,7 +50,6 @@ class MenuFragment: Fragment(), View.OnClickListener {
 
         val playButton = view.findViewById<Button>(R.id.button_play)
         playButton.setOnClickListener(this)
-        update()
     }
 
     override fun onClick(v: View?) {
@@ -70,19 +66,10 @@ class MenuFragment: Fragment(), View.OnClickListener {
     private fun signOut() {
         mGoogleSignInClient.signOut()
             .addOnCompleteListener(requireActivity()) {
-                Log.i(Config.LOGINTAG, "Logged out")
+                Log.i(Config.LOGIN_TAG, "Logged out")
                 val intent = Intent(context, LoginActivity::class.java)
                 startActivity(intent)
                 requireActivity().finish()
             }
-    }
-
-    private fun update() {
-        if (this.context != null) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                update()
-            },
-                Config.POLLING_PERIOD)
-        }
     }
 }

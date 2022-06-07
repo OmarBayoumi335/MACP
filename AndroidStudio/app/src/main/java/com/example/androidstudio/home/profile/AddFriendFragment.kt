@@ -58,7 +58,7 @@ class AddFriendFragment(user: User) : Fragment(){
                 override fun onSuccess(reply: JSONObject?) {
                     val searchResult = rootView.findViewById<TextView>(R.id.add_friend_result_textview)
                     val found = reply?.get("status").toString()
-                    Log.i(Config.ADDFRIENDTAG, reply?.get("message").toString())
+                    Log.i(Config.ADD_FRIEND_TAG, reply?.get("message").toString())
                     if (found == "found"){
                         searchResult.text = resources.getString(R.string.friend_found)
                         searchResult.setTextColor(ContextCompat.getColor(requireContext(), R.color.friend_found))

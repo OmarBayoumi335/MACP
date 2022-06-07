@@ -79,7 +79,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
                     } else {
                         notification.visibility = View.GONE
                     }
-                    Log.i(Config.USERTAG, "updateUser() $user")
+                    Log.i(Config.USER_TAG, "updateUser() $user")
                 }
             }
 

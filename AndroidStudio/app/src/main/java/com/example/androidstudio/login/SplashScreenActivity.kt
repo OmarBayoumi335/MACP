@@ -9,6 +9,7 @@ import com.example.androidstudio.Login.LoginActivity
 import com.example.androidstudio.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashScreenActivity : AppCompatActivity() {

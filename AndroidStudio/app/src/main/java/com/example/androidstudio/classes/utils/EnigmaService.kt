@@ -12,7 +12,7 @@ class EnigmaService(myLobby: Lobby, serverHandler: ServerHandler) : Service() {
     private var startMode: Int = 0             // indicates how to behave if the service is killed
     private var binder: IBinder? = null        // interface for clients that bind
     private var allowRebind: Boolean = false   // indicates whether onRebind should be used
-    private val myLobby: Lobby
+    private var myLobby: Lobby
     private val serverHandler: ServerHandler
 
     constructor(): this(Lobby(), ServerHandler())
@@ -23,7 +23,7 @@ class EnigmaService(myLobby: Lobby, serverHandler: ServerHandler) : Service() {
     }
 
     fun setLobby(newLobby: Lobby) {
-        this.myLobby.lobbyId = newLobby.lobbyId
+        this.myLobby = newLobby
     }
 
     override fun onCreate() {
@@ -44,7 +44,7 @@ class EnigmaService(myLobby: Lobby, serverHandler: ServerHandler) : Service() {
         // All clients have unbound with unbindService()
         val userId = intent.getStringExtra("userId")
         if (myLobby.lobbyId != "") {
-            if (userId != null) {
+            if (userId != null && !myLobby.start) {
                 serverHandler.apiCall(
                     Config.DELETE,
                     Config.DELETE_LEAVE_LOBBY,

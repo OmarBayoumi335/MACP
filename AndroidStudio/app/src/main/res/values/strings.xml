@@ -1,6 +1,4 @@
 <resources>
-
-
     <!--Profile-->
     <string name="id">Id: </string>
     <string name="profile_name_textview">Name:</string>
@@ -52,8 +50,6 @@
     <string name="leave_lobby_alert_message">Are you sure you want to leave the lobby?</string>
 
     <string name="app_name">Enigma</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="invite_of">Invite of:</string>
@@ -65,4 +61,9 @@
     <string name="user_invited">User invited</string>
     <string name="message">Message</string>
     <string name="lobby_cancel">Cancel</string>
+    <string name="team">Team</string>
+    <string name="turn">turn</string>
+    <string name="team_chat">Chat team</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

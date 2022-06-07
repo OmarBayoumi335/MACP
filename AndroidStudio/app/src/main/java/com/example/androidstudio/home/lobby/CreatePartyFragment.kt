@@ -1,16 +1,12 @@
 package com.example.androidstudio.home.lobby
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -27,7 +23,6 @@ import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.adapters.LobbyTeamAdapter
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
-import com.example.androidstudio.classes.types.UserIdentification
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.game.GameActivity
 import com.example.androidstudio.home.MenuActivity
@@ -35,10 +30,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import org.json.JSONObject
-import java.util.*
 
 
 class CreatePartyFragment : Fragment(), View.OnClickListener {
@@ -48,6 +41,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var serverHandler: ServerHandler
     private lateinit var lobby: Lobby
     private lateinit var user: User
+    private lateinit var menuActivity: MenuActivity
     private lateinit var team1NumEditText: TextView
     private lateinit var team2NumEditText: TextView
     private lateinit var team1MembersAdapter: LobbyTeamAdapter
@@ -72,12 +66,12 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         val gson = Gson()
         lobby = gson.fromJson(lobbyString, Lobby::class.java)
 
-        val menuActivity: MenuActivity = requireActivity() as MenuActivity
+        menuActivity = requireActivity() as MenuActivity
         menuActivity.setProfileImageButtonVisibility(View.VISIBLE)
         menuActivity.setLobby(lobby)
         user = menuActivity.getUser()
 
-        Log.i(Config.LOBBYTAG, lobby.toString())
+        Log.i(Config.LOBBY_TAG, lobby.toString())
 
         // Title
         val lobbyNameTextView = rootView.findViewById<TextView>(R.id.lobby_title_name_textview)
@@ -157,23 +151,62 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private fun ready() {
-        readyButton.isClickable = false
-        if (readyButton.text == resources.getString(R.string.lobby_cancel)) {
-            readyButton.text = resources.getString(R.string.lobby_ready)
-        } else {
-            readyButton.text = resources.getString(R.string.lobby_cancel)
-        }
+    private fun leave() {
+        AlertDialog.Builder(context)
+            .setTitle(R.string.leave_lobby_alert)
+            .setMessage(R.string.leave_lobby_alert_message)
+            .setPositiveButton(
+                R.string.yes
+            ) { _, _ ->
+                serverHandler.apiCall(
+                    Config.DELETE,
+                    Config.DELETE_LEAVE_LOBBY,
+                    lobbyId = lobby.lobbyId,
+                    userId = user.userId
+                )
+                findNavController().popBackStack(R.id.setupGameFragment, false)
+            }
+            .setNegativeButton(R.string.no, null)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
+    }
+
+    private fun invite() {
+        InviteInPartyFragment(lobby, user).show(
+            requireActivity().supportFragmentManager,
+            "Lobby->Invite"
+        )
+    }
+
+    private fun changeTeam() {
+        changeTeamImageButton.isClickable = false
+        gameCanStart = false
         serverHandler.apiCall(
             Config.POST,
-            Config.POST_CHANGE_READY_STATUS,
+            Config.POST_CHANGE_TEAM,
             userId = user.userId,
             lobbyId = lobby.lobbyId,
-            callBack = object : ServerHandler.VolleyCallBack {
+            callBack = object : ServerHandler.VolleyCallBack{
                 override fun onSuccess(reply: JSONObject?) {
-
+                    val status = reply?.get("status")
+                    if (status == "notFullTeam") {
+                        val start: Boolean = reply.getBoolean("start")
+                        if (start && !gameCanStart) {
+                            val intent = intentToGame(true)
+                            lobby.start = start
+                            menuActivity.setLobby(lobby)
+                            startActivity(intent)
+                            requireActivity().overridePendingTransition(0, 0);
+                            requireActivity().finish()
+                        } else {
+                            gameCanStart = true
+                        }
+                    } else {
+                        gameCanStart = true
+                    }
                 }
-            })
+            }
+        )
     }
 
     private fun sendMessage() {
@@ -197,45 +230,69 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
                 chatText = textToSend
             )
         }
-        Log.i(Config.LOBBYTAG, "message: ->$textToSend<-")
+        Log.i(Config.LOBBY_TAG, "message: ->$textToSend<-")
         chatEditText.text.clear()
     }
 
-    private fun changeTeam() {
-        changeTeamImageButton.isClickable = false
+    private fun ready() {
+        readyButton.isClickable = false
+        if (readyButton.text == resources.getString(R.string.lobby_cancel)) {
+            readyButton.text = resources.getString(R.string.lobby_ready)
+        } else {
+            readyButton.text = resources.getString(R.string.lobby_cancel)
+        }
+        gameCanStart = false
         serverHandler.apiCall(
             Config.POST,
-            Config.POST_CHANGE_TEAM,
+            Config.POST_CHANGE_READY_STATUS,
             userId = user.userId,
             lobbyId = lobby.lobbyId,
-        )
+            callBack = object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+                    val start: Boolean? = reply?.getBoolean("start")
+                    if (start!! && !gameCanStart) {
+                        val intent = intentToGame(true)
+                        lobby.start = start
+                        menuActivity.setLobby(lobby)
+                        startActivity(intent)
+                        requireActivity().overridePendingTransition(0, 0);
+                        requireActivity().finish()
+                    } else {
+                        gameCanStart = true
+                    }
+                }
+            })
     }
 
-    private fun invite() {
-        InviteInPartyFragment(lobby, user).show(
-            requireActivity().supportFragmentManager,
-            "Lobby->Invite"
-        )
+    private fun intentToGame(starter: Boolean): Intent? {
+        val intent = Intent(context, GameActivity::class.java)
+        intent.putExtra("starter", starter)
+        intent.putExtra("gameLobbyId", generateGameLobbyId())
+        intent.putExtra("userId", user.userId)
+        intent.putExtra("lobbyId", lobby.lobbyId)
+        intent.putExtra("lobbyGameMembers", lobby.team1.size + lobby.team2.size)
+        intent.putExtra("team", getTeam())
+        return intent
     }
 
-    private fun leave() {
-        AlertDialog.Builder(context)
-            .setTitle(R.string.leave_lobby_alert)
-            .setMessage(R.string.leave_lobby_alert_message)
-            .setPositiveButton(
-                R.string.yes
-            ) { _, _ ->
-                serverHandler.apiCall(
-                    Config.DELETE,
-                    Config.DELETE_LEAVE_LOBBY,
-                    lobbyId = lobby.lobbyId,
-                    userId = user.userId
-                )
-                findNavController().popBackStack(R.id.setupGameFragment, false)
+    private fun getTeam(): String? {
+        for (member in lobby.team1) {
+            if (member.userId == user.userId) {
+                return "team1"
             }
-            .setNegativeButton(R.string.no, null)
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .show()
+        }
+        return "team2"
+    }
+
+    private fun generateGameLobbyId(): String? {
+        var gameLobbyId = ""
+        for (member in lobby.team1) {
+            gameLobbyId = gameLobbyId.plus("-" + member.userId)
+        }
+        for (member in lobby.team2) {
+            gameLobbyId = gameLobbyId.plus("-" + member.userId)
+        }
+        return gameLobbyId.substring(1)
     }
 
     private fun updateUI(newLobby: Lobby) {
@@ -260,14 +317,14 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
                 if (newLobby != null) {
                     if (newLobby.start && gameCanStart) {
                         gameCanStart = false
-                        val intent = Intent(context, GameActivity::class.java)
-//                        intent.putExtra("user", userJsonString)
+                        val intent = intentToGame(false)
+                        menuActivity.setLobby(newLobby)
                         startActivity(intent)
                         requireActivity.overridePendingTransition(0, 0);
                         requireActivity.finish()
                     }
                     updateUI(newLobby)
-                    Log.i(Config.LOBBYTAG, "updateLobby() $lobby")
+                    Log.i(Config.LOBBY_TAG, "updateLobby() $lobby")
                 }
             }
 
