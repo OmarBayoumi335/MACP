@@ -17,6 +17,7 @@ import androidx.core.graphics.withMatrix
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.Card
 import com.example.androidstudio.classes.utils.Config
+import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
 class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
@@ -36,6 +37,11 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             this,
             sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL
         )
+        sensorManager.registerListener(
+            this,
+            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL
+        )
+
     }
 
     private val linePaint = Paint().apply {
@@ -93,7 +99,8 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
 
         compass = ResourcesCompat.getDrawable(resources, R.drawable.ic_compass1, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
         val rotation = Matrix()
-        rotation.setRotate(-yaw*360/Math.PI.toFloat(), leftCenterX, centerY)
+        //rotation.postRotate(-yaw*180/Math.PI.toFloat(), leftCenterX, centerY)
+        rotation.postRotate(Math.toDegrees(yaw.toDouble()).toFloat(), leftCenterX, centerY)
         canvas?.withMatrix(rotation) {
             drawBitmap(compass, leftCenterX - compassDiameter/2f, centerY - compassDiameter/2f, null)
         }
@@ -146,15 +153,7 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         )
 
         SensorManager.getOrientation(compassRotationMatrix, orientation)
-        Log.i(Config.GAME_VIEW_TAG,
-            orientation[0].toString() + " " +
-                    orientation[1].toString() + " " +
-                    orientation[2].toString() + " "+
-                    compassRotationMatrix[0].toString() + " " +
-                    compassRotationMatrix[1].toString() + " " +
-                    compassRotationMatrix[2].toString()
-        )
-        yaw = orientation[0]
+        yaw = -orientation[0]
         invalidate()
     }
 
