@@ -11,6 +11,7 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -42,11 +43,11 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         val sensorManager = context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensorManager.registerListener(
             this,
-            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL
+            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME
         )
         sensorManager.registerListener(
             this,
-            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL
+            sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME
         )
     }
 
@@ -111,13 +112,18 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         compass = ResourcesCompat.getDrawable(resources, R.drawable.ic_compass1, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
         val rotation = Matrix()
         var roundYaw = (90 - Math.toDegrees(yaw.toDouble())).toInt()
-        roundYaw = (roundYaw/5) * 5
-//        val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
-//        if (Build.VERSION.SDK_INT >= 26) {
-//            vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-//        } else {
-//            vibrator.vibrate(200)
-//        }
+//        roundYaw = (roundYaw/5) * 5
+        if (roundYaw == 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = context?.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                val vib =vibratorManager.defaultVibrator
+                vib.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                val vib =context?.getSystemService(VIBRATOR_SERVICE) as Vibrator
+                vib.vibrate(200)
+            }
+        }
 
 
         rotation.postRotate(roundYaw.toFloat(), leftCenterX, centerY)
