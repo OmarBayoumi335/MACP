@@ -29,6 +29,7 @@ class Config {
         val LOADING_GAME_TAG = "Loading"
         val GAME_TAG = "game"
         val GAME_VIEW_TAG = "view_game"
+        val ERROR_TAG = "error"
 
         // Api names
         val GET = "get"
