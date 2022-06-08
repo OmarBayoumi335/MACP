@@ -106,7 +106,7 @@ class GameView: View, View.OnTouchListener {
         // right part
         endRightPartX = width.toFloat() * (98f/100f)
         turnChatY = (topGridY + upY)/2f
-        chatTextY = (downY + bottomGridY)/2f
+        chatTextY = downY*(2f/3f) + bottomGridY*(1f/3f)
 
         // bottom part
         bottomPartY = height.toFloat() * (98f/100f)

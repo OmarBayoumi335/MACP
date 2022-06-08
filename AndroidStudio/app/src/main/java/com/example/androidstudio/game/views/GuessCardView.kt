@@ -63,13 +63,24 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
     private val trianglePaint = Paint().apply {
         color = Color.RED
     }
+    private val titleTextPaint = Paint().apply {
+        color = Color.BLACK
+        textSize = 40f * resources.displayMetrics.density
+        isFakeBoldText = true
+    }
+    private val descriptionTextPaint = Paint().apply {
+        color = Color.BLACK
+        textSize = 25f * resources.displayMetrics.density
+    }
+    private val buttonTextPaint = Paint().apply {
+        color = Color.RED
+    }
 
     private var divisionX by Delegates.notNull<Float>()
     private var centerY by Delegates.notNull<Float>()
     private var leftCenterX by Delegates.notNull<Float>()
     private var compassDiameter by Delegates.notNull<Float>()
-    private var centerBallY by Delegates.notNull<Float>()
-    private var centerBallX by Delegates.notNull<Float>()
+    private var centerRightX by Delegates.notNull<Float>()
 
     lateinit var card: Card
     private val padding = 7f * resources.displayMetrics.density
@@ -78,32 +89,28 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
     private var lastMagnetic = FloatArray(3)
     private var orientation = FloatArray(3)
     private var compassRotationMatrix = FloatArray(9)
-    private var yaw = 0f
+    private var yaw = (Math.PI/4f).toFloat()
+    private var startVibration = false
+    private var vibrationOn = 0L
+    private var vibrationOff = 0L
 
     private fun setKeyPoints(canvas: Canvas?) {
         divisionX = width.toFloat() * 0.50f
         centerY = height.toFloat() * 0.50f
         leftCenterX = divisionX * 0.50f
-        centerBallY = height.toFloat() * 0.50f
-        centerBallX = divisionX * 0.50f
         compassDiameter = if (divisionX < height) {
             divisionX * 0.70f
         } else {
             height * 0.70f
         }
+        centerRightX = (width.toFloat() + divisionX) * 0.50f
     }
 
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        vibrationOff = System.currentTimeMillis()
         setKeyPoints(canvas)
-
-
-        // I will delete these lines
-        canvas?.drawLine(divisionX, 0f, divisionX, height.toFloat(), linePaint)
-        canvas?.drawLine(0f, centerY, divisionX, centerY, linePaint)
-        canvas?.drawLine(leftCenterX, 0f, leftCenterX, height.toFloat(), linePaint)
-        canvas?.drawLine(0f, centerY - compassDiameter/2f, width.toFloat(), centerY - compassDiameter/2f, linePaint)
 
 //        val compass = BitmapFactory.decodeStream(context.assets.open("compass.png"))
 //        circlePaint.shader = BitmapShader(compass, Shader.TileMode.MIRROR, Shader.TileMode.MIRROR)
@@ -111,17 +118,41 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
 
         compass = ResourcesCompat.getDrawable(resources, R.drawable.ic_compass1, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
         val rotation = Matrix()
-        var roundYaw = (90 - Math.toDegrees(yaw.toDouble())).toInt()
-//        roundYaw = (roundYaw/5) * 5
-        if (roundYaw == 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = context?.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                val vib =vibratorManager.defaultVibrator
-                vib.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                @Suppress("DEPRECATION")
-                val vib =context?.getSystemService(VIBRATOR_SERVICE) as Vibrator
-                vib.vibrate(200)
+
+        var roundYaw: Int = if (yaw < -Math.PI + 0.05 || yaw > Math.PI - 0.05) {
+            -90
+        } else {
+            (90 - Math.toDegrees(yaw.toDouble())).toInt()
+        }
+        roundYaw = (roundYaw/5) * 5
+        if (!startVibration && roundYaw == 90) {
+            roundYaw = 50
+            startVibration = true
+        }
+//        Log.i(Config.GAME_VIEW_TAG, roundYaw.toString())
+        if (startVibration) {
+            if ((card.word.direction == resources.getString(R.string.north) && roundYaw == 0)
+                || (card.word.direction == resources.getString(R.string.west) && roundYaw == 90)
+                || (card.word.direction == resources.getString(R.string.east) && roundYaw == -90)
+                || (card.word.direction == resources.getString(R.string.south) && roundYaw == 180)) {
+                if ((vibrationOff - vibrationOn) >= 250L) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        vibrationOn = System.currentTimeMillis()
+                        val vibratorManager =
+                            context?.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                        val vib = vibratorManager.defaultVibrator
+                        vib.vibrate(
+                            VibrationEffect.createOneShot(
+                                200,
+                                VibrationEffect.DEFAULT_AMPLITUDE
+                            )
+                        )
+                    } else {
+                        @Suppress("DEPRECATION")
+                        val vib = context?.getSystemService(VIBRATOR_SERVICE) as Vibrator
+                        vib.vibrate(200)
+                    }
+                }
             }
         }
 
@@ -144,6 +175,42 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         canvas?.withMatrix(s){
             drawPath(path, trianglePaint)
         }
+
+        var textBound = Rect()
+        titleTextPaint.getTextBounds(
+            card.word.text,
+            0,
+            card.word.text.length,
+            textBound
+        )
+        var textX = centerRightX - textBound.exactCenterX()
+        var textY = centerY - compassDiameter/2f
+        // draw the text
+        canvas?.drawText(
+            card.word.text,
+            textX,
+            textY,
+            titleTextPaint
+        )
+
+        textBound = Rect()
+        descriptionTextPaint.getTextBounds(
+            resources.getString(R.string.vote_text),
+            0,
+            resources.getString(R.string.vote_text).length,
+            textBound
+        )
+        textX = centerRightX - textBound.exactCenterX()
+        textY = centerY - textBound.exactCenterY()
+        // draw the text
+        canvas?.drawText(
+            resources.getString(R.string.vote_text),
+            textX,
+            textY,
+            descriptionTextPaint
+        )
+
+        
 
 //        circlePaint.shader = RadialGradient(
 //            leftCenterX, centerY,
@@ -204,6 +271,13 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
 //            compassDiameter * (1f/18f),
 //            circlePaint
 //        )
+
+        // I will delete these lines
+        canvas?.drawLine(divisionX, 0f, divisionX, height.toFloat(), linePaint)
+        canvas?.drawLine(0f, centerY, divisionX, centerY, linePaint)
+        canvas?.drawLine(leftCenterX, 0f, leftCenterX, height.toFloat(), linePaint)
+        canvas?.drawLine(0f, centerY - compassDiameter/2f, width.toFloat(), centerY - compassDiameter/2f, linePaint)
+        canvas?.drawLine(centerRightX, 0f, centerRightX, height.toFloat(), linePaint)
     }
 
     override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
@@ -226,7 +300,7 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
 
         SensorManager.getOrientation(compassRotationMatrix, orientation)
         yaw = -orientation[0]
-        postInvalidateDelayed(1000/60)
+        invalidate()
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
