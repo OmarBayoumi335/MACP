@@ -60,22 +60,22 @@ class GameFragment : Fragment() {
 
 
         val words = mutableListOf(
-            Word("importer", "green", "SUD"),
-            Word("esok", "gray", "NORD"),
-            Word("morbidity", "green", "EST"),
-            Word("kitsch", "red", "OVEST"),
-            Word("tune", "green", "SUD"),
-            Word("haddock", "red", "SUD"),
-            Word("zookeeper", "green", "OVEST"),
-            Word("ecologist", "gray", "NORD"),
-            Word("fruitbat", "green", "SUD"),
-            Word("hen", "red", "NORD"),
-            Word("salamander", "red", "EST"),
-            Word("apatosaur", "gray", "SUD"),
-            Word("kerosene", "green", "SUD"),
-            Word("glowworm", "red", "NORD"),
-            Word("factotum", "red", "SUD"),
-            Word("city", "black", "SUD")
+            Word("importer", "green", "SOUTH"),
+            Word("esok", "gray", "NORTH"),
+            Word("morbidity", "green", "EAST"),
+            Word("kitsch", "red", "WEST"),
+            Word("tune", "green", "SOUTH"),
+            Word("haddock", "red", "SOUTH"),
+            Word("zookeeper", "green", "WEST"),
+            Word("ecologist", "gray", "NORTH"),
+            Word("fruitbat", "green", "SOUTH"),
+            Word("hen", "red", "NORTH"),
+            Word("salamander", "red", "EAST"),
+            Word("apatosaur", "gray", "SOUTH"),
+            Word("kerosene", "green", "SOUTH"),
+            Word("glowworm", "red", "NORTH"),
+            Word("factotum", "red", "SOUTH"),
+            Word("city", "black", "SOUTH")
         )
         gameView.gameLobby = GameLobby()
         gameView.gameLobby.words = words

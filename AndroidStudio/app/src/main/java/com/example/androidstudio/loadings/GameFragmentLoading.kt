@@ -90,7 +90,11 @@ class GameFragmentLoading : Fragment() {
 
         val allWords: MutableList<String> = Gson().fromJson(jsonString, listOfWords)
 
-        val directions = mutableListOf("NORD", "SUD", "EST", "OVEST")
+        val directions = mutableListOf(
+            resources.getString(R.string.north),
+            resources.getString(R.string.south),
+            resources.getString(R.string.east),
+            resources.getString(R.string.west))
 
         val selectedWords = mutableListOf<String>()
         var i = 0
