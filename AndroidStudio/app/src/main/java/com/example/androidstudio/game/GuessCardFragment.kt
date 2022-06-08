@@ -22,6 +22,7 @@ class GuessCardFragment(private val card: Card) : DialogFragment() {
         // Inflate the layout for this fragment
         guessCardView = GuessCardView(requireContext())
         guessCardView.card = card
+        guessCardView.guessCardFragment = this
 
         return guessCardView
     }

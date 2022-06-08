@@ -81,7 +81,7 @@ class GameFragment : Fragment() {
         gameView.gameLobby.words = words
         gameView.gameLobby.turn = mutableListOf("red", "green").random()
         gameView.userGame = UserGame()
-        gameView.userGame.captain = true
+        gameView.userGame.captain = false
         gameView.userGame.team = mutableListOf("red", "green").random()
 
         val turn = requireActivity().findViewById<TextView>(R.id.game_turn_team_textview)

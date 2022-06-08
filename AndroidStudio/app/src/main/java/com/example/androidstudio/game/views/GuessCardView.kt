@@ -25,6 +25,7 @@ import androidx.core.graphics.withMatrix
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.Card
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.game.GuessCardFragment
 import kotlin.properties.Delegates
 
 
@@ -63,8 +64,12 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
     private val trianglePaint = Paint().apply {
         color = Color.RED
     }
+    private val titleBackgroundPaint = Paint().apply {
+        color = Color.LTGRAY
+        style = Paint.Style.FILL
+    }
     private val titleTextPaint = Paint().apply {
-        color = Color.BLACK
+        color = Color.DKGRAY
         textSize = 40f * resources.displayMetrics.density
         isFakeBoldText = true
     }
@@ -72,8 +77,18 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         color = Color.BLACK
         textSize = 25f * resources.displayMetrics.density
     }
+    private val buttonBackgroundPaint = Paint().apply {
+        color = Color.DKGRAY
+        style = Paint.Style.FILL
+    }
+    private val buttonBorderPaint = Paint().apply {
+        color = Color.LTGRAY
+        style = Paint.Style.STROKE
+        strokeWidth = 4f * resources.displayMetrics.density
+    }
     private val buttonTextPaint = Paint().apply {
-        color = Color.RED
+        color = Color.LTGRAY
+        textSize = 28f * resources.displayMetrics.density
     }
 
     private var divisionX by Delegates.notNull<Float>()
@@ -81,8 +96,11 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
     private var leftCenterX by Delegates.notNull<Float>()
     private var compassDiameter by Delegates.notNull<Float>()
     private var centerRightX by Delegates.notNull<Float>()
+    private var oneQuarterRightX by Delegates.notNull<Float>()
+    private var threeQuarterRightX by Delegates.notNull<Float>()
 
     lateinit var card: Card
+    lateinit var guessCardFragment: GuessCardFragment
     private val padding = 7f * resources.displayMetrics.density
     private lateinit var compass: Bitmap
     private var lastAcceleration = FloatArray(3)
@@ -93,6 +111,8 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
     private var startVibration = false
     private var vibrationOn = 0L
     private var vibrationOff = 0L
+    private var cancelButtonRect = RectF()
+    private var voteButtonRect = RectF()
 
     private fun setKeyPoints(canvas: Canvas?) {
         divisionX = width.toFloat() * 0.50f
@@ -104,6 +124,8 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             height * 0.70f
         }
         centerRightX = (width.toFloat() + divisionX) * 0.50f
+        threeQuarterRightX = (width.toFloat() + centerRightX) * 0.50f
+        oneQuarterRightX = (divisionX + centerRightX) * 0.50f
     }
 
     @SuppressLint("DrawAllocation")
@@ -116,6 +138,7 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
 //        circlePaint.shader = BitmapShader(compass, Shader.TileMode.MIRROR, Shader.TileMode.MIRROR)
 //        canvas?.drawCircle(leftCenterX, centerY, compassRadius, circlePaint)
 
+        // compass image
         compass = ResourcesCompat.getDrawable(resources, R.drawable.ic_compass1, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
         val rotation = Matrix()
 
@@ -129,6 +152,8 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             roundYaw = 50
             startVibration = true
         }
+
+        // vibration
 //        Log.i(Config.GAME_VIEW_TAG, roundYaw.toString())
         if (startVibration) {
             if ((card.word.direction == resources.getString(R.string.north) && roundYaw == 0)
@@ -156,19 +181,19 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             }
         }
 
-
+        // rotate compass
         rotation.postRotate(roundYaw.toFloat(), leftCenterX, centerY)
         canvas?.withMatrix(rotation) {
             drawBitmap(compass, leftCenterX - compassDiameter/2f, centerY - compassDiameter/2f, null)
         }
 
+        // triangle indicator
         val path = Path()
         path.moveTo(-1f, 0f)
         path.lineTo(1f, 0f)
         path.lineTo(0f,  1f)
         path.lineTo(-1f, 0f)
         path.close()
-
         val s = Matrix()
         s.setScale(leftCenterX * (1f/10f), (height - centerY - compassDiameter/2f) * 0.5f)
         s.postTranslate(leftCenterX, 1.5f*centerY - 0.5f*compassDiameter/2f - 0.5f*height)
@@ -176,6 +201,7 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             drawPath(path, trianglePaint)
         }
 
+        // title
         var textBound = Rect()
         titleTextPaint.getTextBounds(
             card.word.text,
@@ -183,8 +209,17 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             card.word.text.length,
             textBound
         )
+        canvas?.drawRoundRect(
+            centerRightX - textBound.exactCenterX() - padding*2,
+            centerY/2f + textBound.top - padding*2,
+            centerRightX + textBound.exactCenterX() + padding*2,
+            centerY/2f + textBound.bottom + padding*2,
+            10f * resources.displayMetrics.density,
+            10f * resources.displayMetrics.density,
+            titleBackgroundPaint
+        )
         var textX = centerRightX - textBound.exactCenterX()
-        var textY = centerY - compassDiameter/2f
+        var textY = centerY/2f
         // draw the text
         canvas?.drawText(
             card.word.text,
@@ -193,24 +228,122 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             titleTextPaint
         )
 
+        // text of the request part 1
         textBound = Rect()
         descriptionTextPaint.getTextBounds(
-            resources.getString(R.string.vote_text),
+            resources.getString(R.string.vote_text1),
             0,
-            resources.getString(R.string.vote_text).length,
+            resources.getString(R.string.vote_text1).length,
             textBound
         )
         textX = centerRightX - textBound.exactCenterX()
-        textY = centerY - textBound.exactCenterY()
+        textY = centerY + textBound.exactCenterY() - 3f * resources.displayMetrics.density
         // draw the text
         canvas?.drawText(
-            resources.getString(R.string.vote_text),
+            resources.getString(R.string.vote_text1),
             textX,
             textY,
             descriptionTextPaint
         )
 
-        
+        // text of the request part 2
+        textBound = Rect()
+        descriptionTextPaint.getTextBounds(
+            resources.getString(R.string.vote_text2),
+            0,
+            resources.getString(R.string.vote_text2).length,
+            textBound
+        )
+        textX = centerRightX - textBound.exactCenterX()
+        textY = centerY - textBound.top + 3f * resources.displayMetrics.density
+        // draw the text
+        canvas?.drawText(
+            resources.getString(R.string.vote_text2),
+            textX,
+            textY,
+            descriptionTextPaint
+        )
+
+        // cancel button
+        textBound = Rect()
+        buttonTextPaint.getTextBounds(
+            resources.getString(R.string.lobby_cancel),
+            0,
+            resources.getString(R.string.lobby_cancel).length,
+            textBound
+        )
+        cancelButtonRect.left = oneQuarterRightX - textBound.exactCenterX() - padding*2
+        cancelButtonRect.top = centerY * (3f/2f) + textBound.top - padding*2
+        cancelButtonRect.right = oneQuarterRightX + textBound.exactCenterX() + padding*2
+        cancelButtonRect.bottom = centerY * (3f/2f) + textBound.bottom + padding*2
+        canvas?.drawRoundRect(
+            oneQuarterRightX - textBound.exactCenterX() - padding*2,
+            centerY * (3f/2f) + textBound.top - padding*2,
+            oneQuarterRightX + textBound.exactCenterX() + padding*2,
+            centerY * (3f/2f) + textBound.bottom + padding*2,
+            10f * resources.displayMetrics.density,
+            10f * resources.displayMetrics.density,
+            buttonBackgroundPaint
+        )
+        canvas?.drawRoundRect(
+            oneQuarterRightX - textBound.exactCenterX() - padding*2,
+            centerY * (3f/2f) + textBound.top - padding*2,
+            oneQuarterRightX + textBound.exactCenterX() + padding*2,
+            centerY * (3f/2f) + textBound.bottom + padding*2,
+            10f * resources.displayMetrics.density,
+            10f * resources.displayMetrics.density,
+            buttonBorderPaint
+        )
+        textX = oneQuarterRightX - textBound.exactCenterX()
+        textY = centerY * (3f/2f)
+        // draw the text
+        canvas?.drawText(
+            resources.getString(R.string.lobby_cancel),
+            textX,
+            textY,
+            buttonTextPaint
+        )
+
+        // vote button
+        val textBound1 = Rect()
+        buttonTextPaint.getTextBounds(
+            resources.getString(R.string.vote),
+            0,
+            resources.getString(R.string.vote).length,
+            textBound1
+        )
+        voteButtonRect.left = threeQuarterRightX - textBound.exactCenterX() - padding*2
+        voteButtonRect.top = centerY * (3f/2f) + textBound.top - padding*2
+        voteButtonRect.right = threeQuarterRightX + textBound.exactCenterX() + padding*2
+        voteButtonRect.bottom = centerY * (3f/2f) + textBound.bottom + padding*2
+        canvas?.drawRoundRect(
+            threeQuarterRightX - textBound.exactCenterX() - padding*2,
+            centerY * (3f/2f) + textBound.top - padding*2,
+            threeQuarterRightX + textBound.exactCenterX() + padding*2,
+            centerY * (3f/2f) + textBound.bottom + padding*2,
+            10f * resources.displayMetrics.density,
+            10f * resources.displayMetrics.density,
+            buttonBackgroundPaint
+        )
+        canvas?.drawRoundRect(
+            threeQuarterRightX - textBound.exactCenterX() - padding*2,
+            centerY * (3f/2f) + textBound.top - padding*2,
+            threeQuarterRightX + textBound.exactCenterX() + padding*2,
+            centerY * (3f/2f) + textBound.bottom + padding*2,
+            10f * resources.displayMetrics.density,
+            10f * resources.displayMetrics.density,
+            buttonBorderPaint
+        )
+        textX = threeQuarterRightX - textBound1.exactCenterX()
+        textY = centerY * (3f/2f)
+        // draw the text
+        canvas?.drawText(
+            resources.getString(R.string.vote),
+            textX,
+            textY,
+            buttonTextPaint
+        )
+
 
 //        circlePaint.shader = RadialGradient(
 //            leftCenterX, centerY,
@@ -273,14 +406,35 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
 //        )
 
         // I will delete these lines
-        canvas?.drawLine(divisionX, 0f, divisionX, height.toFloat(), linePaint)
-        canvas?.drawLine(0f, centerY, divisionX, centerY, linePaint)
-        canvas?.drawLine(leftCenterX, 0f, leftCenterX, height.toFloat(), linePaint)
-        canvas?.drawLine(0f, centerY - compassDiameter/2f, width.toFloat(), centerY - compassDiameter/2f, linePaint)
-        canvas?.drawLine(centerRightX, 0f, centerRightX, height.toFloat(), linePaint)
+//        canvas?.drawLine(divisionX, 0f, divisionX, height.toFloat(), linePaint)
+//        canvas?.drawLine(0f, centerY, width.toFloat(), centerY, linePaint)
+//        canvas?.drawLine(leftCenterX, 0f, leftCenterX, height.toFloat(), linePaint)
+//        canvas?.drawLine(0f, centerY - compassDiameter/2f, width.toFloat(), centerY - compassDiameter/2f, linePaint)
+//        canvas?.drawLine(0f, centerY + compassDiameter/2f, width.toFloat(), centerY + compassDiameter/2f, linePaint)
+//        canvas?.drawLine(centerRightX, 0f, centerRightX, height.toFloat(), linePaint)
+//        canvas?.drawLine(oneQuarterRightX, 0f, oneQuarterRightX, height.toFloat(), linePaint)
+//        canvas?.drawLine(threeQuarterRightX, 0f, threeQuarterRightX, height.toFloat(), linePaint)
     }
 
-    override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when (event?.action){
+            MotionEvent.ACTION_DOWN -> {
+                if (event.x >= cancelButtonRect.left
+                    && event.x <= cancelButtonRect.right
+                    && event.y >= cancelButtonRect.top
+                    && event.y <= cancelButtonRect.bottom
+                ) {
+                    guessCardFragment.dismiss()
+                }
+                if (event.x >= voteButtonRect.left
+                    && event.x <= voteButtonRect.right
+                    && event.y >= voteButtonRect.top
+                    && event.y <= voteButtonRect.bottom
+                ) {
+                    guessCardFragment.dismiss()
+                }
+            }
+        }
         return true
     }
 
