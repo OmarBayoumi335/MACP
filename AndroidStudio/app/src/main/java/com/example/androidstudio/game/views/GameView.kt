@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.example.androidstudio.R
@@ -15,6 +16,7 @@ import com.example.androidstudio.classes.types.Card
 import com.example.androidstudio.classes.types.GameLobby
 import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.game.ChooseDirectionFragment
 import com.example.androidstudio.game.GuessCardFragment
 import com.example.androidstudio.home.profile.ProfileFragment
 import kotlin.properties.Delegates

@@ -7,9 +7,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.GameLobby
 import com.example.androidstudio.classes.types.UserGame
@@ -19,13 +21,22 @@ import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.views.GameView
 import com.google.gson.Gson
 
-class GameFragment : Fragment() {
+class GameFragment : Fragment(), View.OnClickListener{
 
     private lateinit var serverHandler: ServerHandler
     private lateinit var gameLobby: GameLobby
     private lateinit var userGame: UserGame
     private lateinit var gameView: GameView
-
+    private lateinit var buttonDirection: Button
+    private lateinit var buttonNumberHint: Button
+    private lateinit var selectNumberHintLayout: ConstraintLayout
+    private lateinit var button_Value_1: Button
+    private lateinit var button_Value_2: Button
+    private lateinit var button_Value_3: Button
+    private lateinit var button_Value_4: Button
+    private lateinit var button_Value_5: Button
+    private lateinit var button_Value_6: Button
+    private lateinit var gameActivity: GameActivity
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -94,8 +105,64 @@ class GameFragment : Fragment() {
             gameView.invalidate()
         }
 
+        gameActivity = requireActivity() as GameActivity
 
+        buttonDirection = gameActivity.findViewById(R.id.game_direction_hint)
+        buttonDirection.setOnClickListener(this)
+        selectNumberHintLayout = gameActivity.findViewById(R.id.game_select_number_hint)
+
+        buttonNumberHint = gameActivity.findViewById(R.id.game_number_hint)
+        buttonNumberHint.setOnClickListener(this)
+
+        button_Value_1 = gameActivity.findViewById(R.id.game_button_value_1)
+        button_Value_1.setOnClickListener(this)
+
+        button_Value_2 = gameActivity.findViewById(R.id.game_button_value_2)
+        button_Value_2.setOnClickListener(this)
+
+        button_Value_3 = gameActivity.findViewById(R.id.game_button_value_3)
+        button_Value_3.setOnClickListener(this)
+
+        button_Value_4 = gameActivity.findViewById(R.id.game_button_value_4)
+        button_Value_4.setOnClickListener(this)
+
+        button_Value_5 = gameActivity.findViewById(R.id.game_button_value_5)
+        button_Value_5.setOnClickListener(this)
+
+        button_Value_6 = gameActivity.findViewById(R.id.game_button_value_6)
+        button_Value_6.setOnClickListener(this)
 
         return gameView
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.game_direction_hint -> showDirectionHintFragment()
+            R.id.game_number_hint -> showNumbersHint()
+            R.id.game_button_value_1 -> selectNumberHint("1")
+            R.id.game_button_value_2 -> selectNumberHint("2")
+            R.id.game_button_value_3 -> selectNumberHint("3")
+            R.id.game_button_value_4 -> selectNumberHint("4")
+            R.id.game_button_value_5 -> selectNumberHint("5")
+            R.id.game_button_value_6 -> selectNumberHint("6")
+        }
+    }
+
+    private fun selectNumberHint(value: String){
+        selectNumberHintLayout.visibility = View.GONE
+        buttonNumberHint.text = value
+    }
+
+    private fun showNumbersHint(){
+        if (selectNumberHintLayout.visibility == View.VISIBLE) {
+            selectNumberHintLayout.visibility = View.GONE
+        } else {
+            selectNumberHintLayout.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showDirectionHintFragment(){
+        val chooseDirectionsFragment = ChooseDirectionFragment()
+        chooseDirectionsFragment.show(gameActivity.supportFragmentManager, "GameFragment->ChooseDirectionFragment")
     }
 }

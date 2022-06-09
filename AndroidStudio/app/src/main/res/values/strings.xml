@@ -76,4 +76,6 @@
     <string name="give_clue">Give Clue</string>
     <string name="clue_hint_edittext">Type your clue here</string>
     <string name="pass_button">Pass</string>
+    <string name="confirm_button">Confirm</string>
+    <string name="remaining_hints">Remaining hints:</string>
 </resources>
