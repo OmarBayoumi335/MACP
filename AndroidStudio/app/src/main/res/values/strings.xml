@@ -70,5 +70,10 @@
     <string name="south">SOUTH</string>
     <string name="east">EAST</string>
     <string name="west">WEST</string>
-    <string name="vote_text">You want vote this word?</string>
+    <string name="vote_text1">Do you want to vote</string>
+    <string name="vote_text2">this word?</string>
+    <string name="vote">Vote</string>
+    <string name="give_clue">Give Clue</string>
+    <string name="clue_hint_edittext">Type your clue here</string>
+    <string name="pass_button">Pass</string>
 </resources>

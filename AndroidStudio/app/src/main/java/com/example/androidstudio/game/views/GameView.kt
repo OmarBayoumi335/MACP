@@ -218,11 +218,12 @@ class GameView: View, View.OnTouchListener {
         canvas?.drawLine(endGridx, upY, endRightPartX, upY, linePaint)
         canvas?.drawLine(endGridx, chatTextY, endRightPartX, chatTextY, linePaint)
         // bottom part
-        canvas?.drawLine(startGridX, bottomPartY, endRightPartX, bottomPartY, linePaint)
-        canvas?.drawLine(startGridX, bottomGridY, startGridX, bottomPartY, linePaint)
-        canvas?.drawLine(endGridx, bottomGridY, endGridx, bottomPartY, linePaint)
-        canvas?.drawLine(endRightPartX, bottomGridY, endRightPartX, bottomPartY, linePaint)
-        canvas?.drawLine(directionNumberY, bottomGridY, directionNumberY, bottomPartY, linePaint)
+//        canvas?.drawLine(startGridX, bottomPartY, endRightPartX, bottomPartY, linePaint)
+//        canvas?.drawLine(startGridX, bottomGridY, startGridX, bottomPartY, linePaint)
+//        canvas?.drawLine(endRightPartX, bottomGridY, endRightPartX, bottomPartY, linePaint)
+//        canvas?.drawLine(rightX, bottomGridY, rightX, bottomPartY, linePaint)
+//        canvas?.drawLine(centerGridX, bottomGridY, centerGridX, bottomPartY, linePaint)
+//        canvas?.drawLine(directionNumberY, bottomGridY, directionNumberY, bottomPartY, linePaint)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {

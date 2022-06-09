@@ -135,7 +135,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/three_quarters_right"
-                app:layout_constraintVertical_bias="0.3333333333"/>
+                app:layout_constraintVertical_bias="0.3333333333" />
 
             <TextView
                 android:id="@+id/game_turn_team_textview"
@@ -196,6 +196,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="horizontal"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@id/game_bottom_padding_space"
             app:layout_constraintEnd_toStartOf="@id/game_end_padding_space"
             app:layout_constraintStart_toEndOf="@id/game_start_padding_space"
@@ -211,38 +212,47 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Space
-                android:id="@+id/end_grid"
+                android:id="@+id/end_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.65"
+                app:layout_constraintHorizontal_bias="0.325"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Space
-                android:id="@+id/three_quarters_right_bottom"
+                android:id="@+id/end_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.33333333333333"
-                app:layout_constraintStart_toEndOf="@id/end_grid"
+                app:layout_constraintHorizontal_bias="0.4875"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
+            <Space
+                android:id="@+id/end_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/end_number"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
                 android:id="@+id/game_word_hint"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:gravity="center"
-                android:text="Pinguino"
+                android:hint="@string/clue_hint_edittext"
                 android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/end_grid"
+                app:layout_constraintEnd_toStartOf="@id/end_text"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
+            <Button
                 android:id="@+id/game_number_hint"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -250,11 +260,11 @@
                 android:text="9"
                 android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/three_quarters_right_bottom"
-                app:layout_constraintStart_toEndOf="@id/end_grid"
+                app:layout_constraintEnd_toStartOf="@id/end_number"
+                app:layout_constraintStart_toEndOf="@id/end_text"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
+            <Button
                 android:id="@+id/game_direction_hint"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -262,8 +272,118 @@
                 android:text="OVEST OVEST OVEST"
                 android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/end_hint"
+                app:layout_constraintStart_toEndOf="@id/end_number"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/game_confirm_hint"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:text="@string/give_clue"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/three_quarters_right_bottom"
+                app:layout_constraintStart_toEndOf="@id/end_hint"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/game_bottom_part_member"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/game_bottom_padding_space"
+            app:layout_constraintEnd_toStartOf="@id/game_end_padding_space"
+            app:layout_constraintStart_toEndOf="@id/game_start_padding_space"
+            app:layout_constraintTop_toBottomOf="@id/game_grid_space">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#604085FF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Space
+                android:id="@+id/end_text_member"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.325"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Space
+                android:id="@+id/end_number_member"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.4875"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Space
+                android:id="@+id/end_hint_member"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/end_number_member"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/game_word_hint_member"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:text="pinguino"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/end_text_member"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/game_number_hint_member"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:text="9"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/end_number_member"
+                app:layout_constraintStart_toEndOf="@id/end_text_member"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/game_direction_hint_member"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:text="OVEST OVEST OVEST"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/end_hint_member"
+                app:layout_constraintStart_toEndOf="@id/end_number_member"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/game_pass_hint_member"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:text="@string/pass_button"
+                android:textAlignment="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/end_hint_member"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
