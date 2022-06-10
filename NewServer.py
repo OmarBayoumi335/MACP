@@ -169,7 +169,7 @@ class EnigmaServer(Resource):
                             user["status"] = "inLobby"
             return {"message":"list of invitable users", "userInvitableList": {"userList": invitableUsers}, "error": False}
         
-        #5 return the number of member joined in game. Input(req, lobbyId)
+        #5 return the number of member joined in game. Input(req, gameLobbyId)
         if self.req == GET_GAME_LOBBY_NUMBER_OF_MEMBERS:
             gameLobby = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             return {"message": "number of members", "number": len(gameLobby), "error": False}
@@ -246,7 +246,7 @@ class EnigmaServer(Resource):
                          "turnNumber": 0,
                          "words": words}
             db.child("GameLobbies").child(self.gameLobbyId).set(gameLobby)
-            return {"message": "nw game lobby created", "error": False}
+            return {"message": "new game lobby created", "error": False}
             
         return {"message": "put request failed", "error": True}
     

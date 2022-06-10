@@ -238,10 +238,13 @@ class GameFragmentLoading : Fragment() {
                     Config.GET,
                     Config.GET_ALL_READY_GAME,
                     gameLobbyId = gameLobbyId,
+                    userId = userId,
+                    team = myTeam,
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
                             val allReady = reply?.getBoolean("allReady")
-                            if (allReady!!) {
+                            val members = reply?.getInt("members")
+                            if (allReady!! && members == lobbyGameMembers) {
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     joinLobbyGame("allReady")
                                 },
