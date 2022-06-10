@@ -24,6 +24,7 @@ class GameActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
         views = findViewById(R.id.game_views)
+        views.visibility = View.GONE
         myTurnCaptain = findViewById(R.id.game_bottom_part)
         myTurnMember = findViewById(R.id.game_bottom_part_member)
         opponentTurnMember = findViewById(R.id.game_bottom_part_opponent)
@@ -36,11 +37,13 @@ class GameActivity : AppCompatActivity(){
     fun setViewMyTurnMember() {
         myTurnMember.visibility = View.VISIBLE
         myTurnCaptain.visibility = View.GONE
+        opponentTurnMember.visibility = View.GONE
     }
 
     fun setViewMyTurnCaptain() {
         myTurnMember.visibility = View.GONE
         myTurnCaptain.visibility = View.VISIBLE
+        opponentTurnMember.visibility = View.GONE
     }
 
     fun setViewOpponentTurn() {

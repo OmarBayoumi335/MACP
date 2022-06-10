@@ -463,7 +463,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/game_bottom_padding_space"
             app:layout_constraintEnd_toStartOf="@id/game_end_padding_space"
             app:layout_constraintStart_toEndOf="@id/game_start_padding_space"
