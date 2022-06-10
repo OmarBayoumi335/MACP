@@ -174,13 +174,22 @@ class EnigmaServer(Resource):
             gameLobby = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             return {"message": "number of members", "number": len(gameLobby), "error": False}
         
-        #6 return true if all member are joined, false otherwise. Input(req, gameLobbyId)
+        #6 return true if all member are joined, false otherwise. Input(req, userId, team, gameLobbyId)
         if self.req == GET_ALL_READY_GAME:
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
+            user = db.child("Users").child(self.userId).get().val()
+            userGame = {"userId": self.userId,
+                        "username": user["username"],
+                        "team": self.team,
+                        "captain": False,
+                        "ready": True}
+            if userGame not in members:
+                members.append(userGame)
+                db.child("GameLobbies").child(self.gameLobbyId).update({"members": members})
             for member in members:
                 if member["ready"] == False:
-                    return {"message": "not everyone is ready to start", "allReady": False, "error": False}
-            return {"message": "all are ready to start", "allReady": True, "error": False}
+                    return {"message": "not everyone is ready to start", "allReady": False, "members": len(members), "error": False}
+            return {"message": "all are ready to start", "allReady": True, "members": len(members), "error": False}
         
         #7 returns information on: game lobby and the 'user game' that called this API. Input(req, userId, gameLobbyId)
         if self.req == GET_GAME_INFORMATION:
