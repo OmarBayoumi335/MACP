@@ -19,6 +19,7 @@ db = firebase.database()
 #request codes and parser arguments
 MAX_LOBBY_MEMBERS = 16
 MIN_START_MEMBER = 2
+MAX_HINT = 3
 
 # GET
 GET_USERNAME = "get0"
@@ -70,8 +71,8 @@ parser.add_argument('team', type = str, required = False)
 parser.add_argument('words', type = str, required = False)
 parser.add_argument('turn', type = str, required = False)
 parser.add_argument('gameLobbyId', type = str, required = False)
-parser.add_argument('team1Members', type = int, required = False)
-parser.add_argument('team2Members', type = int, required = False)
+parser.add_argument('captainIndex1', type = str, required = False)
+parser.add_argument('captainIndex1', type = str, required = False)
 
 # Api call handler
 class EnigmaServer(Resource):
@@ -92,8 +93,8 @@ class EnigmaServer(Resource):
         self.words = args["words"]
         self.turn = args["turn"]
         self.gameLobbyId = args["gameLobbyId"]
-        self.team1Members = args["team1Members"]
-        self.team2Members = args["team2Members"]
+        self.captainIndex1 = args["captainIndex1"]
+        self.captainIndex2 = args["captainIndex2"]
     
     def get(self):       
          
@@ -181,7 +182,6 @@ class EnigmaServer(Resource):
             userGame = {"userId": self.userId,
                         "username": user["username"],
                         "team": self.team,
-                        "captain": False,
                         "ready": True}
             if userGame not in members:
                 members.append(userGame)
@@ -233,13 +233,12 @@ class EnigmaServer(Resource):
             db.child("Lobbies").child(lobbyId).set(lobby)
             return {"message": "lobby created", "lobby": lobby, "error": False}
         
-        #2 create new lobby for the game. Input(req, userId, gameLobbyId, words, turn, team)
+        #2 create new lobby for the game. Input(req, userId, gameLobbyId, words, turn, team, captainIndex1, captainIndex2)
         if self.req == PUT_NEW_GAME_LOBBY:
             user = db.child("Users").child(self.userId).get().val()
             userGame = {"userId": user["userId"], 
                         "username": user["username"],
                         "team": self.team,
-                        "captain": False,
                         "ready": False}
             words = []
             for word in self.words.split("--"):
@@ -253,7 +252,11 @@ class EnigmaServer(Resource):
                          "chatTeam2": [],
                          "turn": self.turn,
                          "turnNumber": 0,
-                         "words": words}
+                         "words": words,
+                         "captainIndex1": self.captainIndex1,
+                         "captainIndex2": self.captainIndex2,
+                         "hint1": MAX_HINT,
+                         "hint2": MAX_HINT}
             db.child("GameLobbies").child(self.gameLobbyId).set(gameLobby)
             return {"message": "new game lobby created", "error": False}
             
@@ -472,7 +475,6 @@ class EnigmaServer(Resource):
             userGame = {"userId": self.userId,
                         "username": user["username"],
                         "team": self.team,
-                        "captain": False,
                         "ready": True}
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             members.append(userGame)
@@ -568,7 +570,7 @@ class EnigmaServer(Resource):
             db.child("Users").child(self.userId).update({"pendingInviteRequests":newPendingInviteRequests})
             return{"message": "invites removed", "error": False}
         
-        #4 delete the party lobby and set ready for the game lobby. Input(req, lobbyId, gameLobbyId, userId, team1Members, team2Members)
+        #4 delete the party lobby and set ready for the game lobby. Input(req, lobbyId, gameLobbyId, userId)
         if self.req == DELETE_LOBBY:
             db.child("Lobbies").child(self.lobbyId).remove()
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
@@ -576,10 +578,6 @@ class EnigmaServer(Resource):
                 if member["userId"] == self.userId:
                     db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"ready": True})
                     break
-            captainIndex1 = random.randint(0, self.team1Members)
-            captainIndex2 = random.randint(0, self.team2Members)
-            db.child("GameLobbies").child("members").child(str(captainIndex1)).update({"captain" : True})
-            db.child("GameLobbies").child("members").child(str(captainIndex2)).update({"captain" : True})
             return {"message": "party lobby deleted and ready to play", "error": False}
         return {"message": "delete request failed", "error": True}
 

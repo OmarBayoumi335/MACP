@@ -271,8 +271,8 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         intent.putExtra("userId", user.userId)
         intent.putExtra("lobbyId", lobby.lobbyId)
         intent.putExtra("lobbyGameMembers", lobby.team1.size + lobby.team2.size)
-        intent.putExtra("team1Members", lobby.team1.size)
-        intent.putExtra("team2Members", lobby.team2.size)
+        intent.putExtra("captainIndex1", lobby.team1.random().userId)
+        intent.putExtra("captainIndex2", lobby.team2.random().userId)
         intent.putExtra("team", getTeam())
         return intent
     }

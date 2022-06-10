@@ -35,8 +35,8 @@ class ServerHandler(context: Context?) {
                 words: String = "",
                 turn: String = "",
                 gameLobbyId: String = "",
-                team1Members: String = "",
-                team2Members: String = "",
+                captainIndex1: String = "",
+                captainIndex2: String = "",
                 callBack: VolleyCallBack? = null) {
         var requestMethod = 0
         val reqParsed = reqParser(
@@ -53,8 +53,8 @@ class ServerHandler(context: Context?) {
             words = words,
             turn = turn,
             gameLobbyId = gameLobbyId,
-            team1Members = team1Members,
-            team2Members = team2Members)
+            captainIndex1 = captainIndex1,
+            captainIndex2 = captainIndex2)
         if (callType == Config.GET) requestMethod = Request.Method.GET
         if (callType == Config.POST) requestMethod = Request.Method.POST
         if (callType == Config.PUT) requestMethod = Request.Method.PUT
@@ -75,8 +75,8 @@ class ServerHandler(context: Context?) {
                           words: String = "",
                           gameLobbyId: String = "",
                           turn: String = "",
-                          team1Members: String = "",
-                          team2Members: String = "",): String {
+                          captainIndex1: String = "",
+                          captainIndex2: String = "",): String {
         var reqParsed = url.plus("req=$req")
         if (userId != "") reqParsed = reqParsed.plus("&userId=$userId")
         if (googleUserId != "") reqParsed = reqParsed.plus("&googleUserId=$googleUserId")
@@ -90,8 +90,8 @@ class ServerHandler(context: Context?) {
         if (words != "") reqParsed = reqParsed.plus("&words=$words")
         if (turn != "") reqParsed = reqParsed.plus("&turn=$turn")
         if (gameLobbyId != "") reqParsed = reqParsed.plus("&gameLobbyId=$gameLobbyId")
-        if (team1Members != "") reqParsed = reqParsed.plus("&team1Members=$team1Members")
-        if (team2Members != "") reqParsed = reqParsed.plus("&team2Members=$team2Members")
+        if (captainIndex1 != "") reqParsed = reqParsed.plus("&captainIndex1=$captainIndex1")
+        if (captainIndex2 != "") reqParsed = reqParsed.plus("&captainIndex2=$captainIndex2")
         return reqParsed
     }
 

@@ -31,8 +31,8 @@ class GameFragmentLoading : Fragment() {
     private lateinit var userId: String
     private lateinit var lobbyId: String
     private var lobbyGameMembers by Delegates.notNull<Int>()
-    private var team1Members by Delegates.notNull<Int>()
-    private var team2Members by Delegates.notNull<Int>()
+    private lateinit var captainIndex1: String
+    private lateinit var captainIndex2: String
     private lateinit var myTeam: String
     private lateinit var words: MutableList<Word>
 
@@ -67,8 +67,8 @@ class GameFragmentLoading : Fragment() {
 
         // Number of players
         lobbyGameMembers = requireActivity().intent.extras?.getInt("lobbyGameMembers")!!
-        team1Members = requireActivity().intent.extras?.getInt("team1Members")!!
-        team2Members = requireActivity().intent.extras?.getInt("team2Members")!!
+        captainIndex1 = requireActivity().intent.extras?.getString("captainIndex1")!!
+        captainIndex2 = requireActivity().intent.extras?.getString("captainIndex2")!!
 
         // My team
         myTeam = requireActivity().intent.extras?.getString("team")!!
@@ -165,6 +165,8 @@ class GameFragmentLoading : Fragment() {
                     words = toStringWords,
                     turn = turns.random(),
                     team = myTeam,
+                    captainIndex1 = captainIndex1,
+                    captainIndex2 = captainIndex2,
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
                             Handler(Looper.getMainLooper()).postDelayed({
@@ -213,8 +215,6 @@ class GameFragmentLoading : Fragment() {
                                     lobbyId = lobbyId,
                                     gameLobbyId = gameLobbyId,
                                     userId = userId,
-                                    team1Members = team1Members.toString(),
-                                    team2Members = team2Members.toString(),
                                     callBack = object : ServerHandler.VolleyCallBack {
                                         override fun onSuccess(reply: JSONObject?) {
                                             Handler(Looper.getMainLooper()).postDelayed({

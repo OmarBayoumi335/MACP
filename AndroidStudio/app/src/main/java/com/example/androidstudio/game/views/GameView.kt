@@ -130,7 +130,7 @@ class GameView: View, View.OnTouchListener {
                 roundRectCard.bottom = coordinates[1][j + 1] - padding
                 cards.add(Card(gameLobby.words[i*4 + j], roundRectCard))
                 // set the color of the card
-                if (userGame.captain) {
+                if (userGame.userId == gameLobby.captainIndex1 || userGame.userId == gameLobby.captainIndex2) {
 //                val cardGreen = BitmapFactory.decodeStream(context.assets.open("greenBackCard.jpg"))
 //                roundRectPaint.shader = BitmapShader(cardGreen, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
                     when (gameLobby.words[i*4 + j].color) {
@@ -162,7 +162,7 @@ class GameView: View, View.OnTouchListener {
                 canvas?.drawText(gameLobby.words[i*4 + j].text, textX, textY, cardTextPaint)
                 // set coordinates for the direction word
 
-                if (userGame.captain) {
+                if (userGame.userId == gameLobby.captainIndex1 || userGame.userId == gameLobby.captainIndex2) {
                     textBound = Rect()
                     cardTextPaint.getTextBounds(
                         gameLobby.words[i * 4 + j].direction,
