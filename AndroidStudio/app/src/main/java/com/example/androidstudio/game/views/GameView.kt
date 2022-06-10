@@ -229,18 +229,23 @@ class GameView: View, View.OnTouchListener {
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        when (event?.action){
-            MotionEvent.ACTION_DOWN -> {
-                for (card in cards) {
-                    if (
-                        event.x >= card.squareCoordinates.left
-                        && event.x <= card.squareCoordinates.right
-                        && event.y >= card.squareCoordinates.top
-                        && event.y <= card.squareCoordinates.bottom
-                    ) {
-                        val guessCardFragment = GuessCardFragment(card)
-                        guessCardFragment.show(activity.supportFragmentManager, "GameView->GuessCardView")
-                        Log.i(Config.GAME_VIEW_TAG, card.word.toString())
+        if (userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2) {
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    for (card in cards) {
+                        if (
+                            event.x >= card.squareCoordinates.left
+                            && event.x <= card.squareCoordinates.right
+                            && event.y >= card.squareCoordinates.top
+                            && event.y <= card.squareCoordinates.bottom
+                        ) {
+                            val guessCardFragment = GuessCardFragment(card)
+                            guessCardFragment.show(
+                                activity.supportFragmentManager,
+                                "GameView->GuessCardView"
+                            )
+                            Log.i(Config.GAME_VIEW_TAG, card.word.toString())
+                        }
                     }
                 }
             }

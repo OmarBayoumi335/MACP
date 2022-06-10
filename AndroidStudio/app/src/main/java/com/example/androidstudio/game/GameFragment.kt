@@ -15,7 +15,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.GameLobby
 import com.example.androidstudio.classes.types.UserGame
-import com.example.androidstudio.classes.types.Word
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.views.GameView
@@ -30,13 +29,14 @@ class GameFragment : Fragment(), View.OnClickListener{
     private lateinit var buttonDirection: Button
     private lateinit var buttonNumberHint: Button
     private lateinit var selectNumberHintLayout: ConstraintLayout
-    private lateinit var button_Value_1: Button
-    private lateinit var button_Value_2: Button
-    private lateinit var button_Value_3: Button
-    private lateinit var button_Value_4: Button
-    private lateinit var button_Value_5: Button
-    private lateinit var button_Value_6: Button
+    private lateinit var buttonValue1: Button
+    private lateinit var buttonValue2: Button
+    private lateinit var buttonValue3: Button
+    private lateinit var buttonValue4: Button
+    private lateinit var buttonValue5: Button
+    private lateinit var buttonValue6: Button
     private lateinit var gameActivity: GameActivity
+
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +58,8 @@ class GameFragment : Fragment(), View.OnClickListener{
 
         Log.i(Config.GAME_TAG, "\ngameLobby: $gameLobby\nuserGame: $userGame")
 
+        gameActivity = requireActivity() as GameActivity
+
         // Disable Android back button
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
@@ -66,6 +68,17 @@ class GameFragment : Fragment(), View.OnClickListener{
                 }
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+        // set bottom part view
+        if (gameLobby.turn == userGame.team) { // my turn
+            if (userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2) { // not captain
+                gameActivity.setViewMyTurnMember()
+            } else {
+                gameActivity.setViewMyTurnCaptain()
+            }
+        } else { // opponent turn
+            gameActivity.setViewOpponentTurn()
+        }
 
         // pass lobby and user in the view
         gameView.gameLobby = gameLobby
@@ -119,8 +132,6 @@ class GameFragment : Fragment(), View.OnClickListener{
 //            gameView.invalidate()
 //        }
 
-        gameActivity = requireActivity() as GameActivity
-
         buttonDirection = gameActivity.findViewById(R.id.game_direction_hint)
         buttonDirection.setOnClickListener(this)
         selectNumberHintLayout = gameActivity.findViewById(R.id.game_select_number_hint)
@@ -128,23 +139,23 @@ class GameFragment : Fragment(), View.OnClickListener{
         buttonNumberHint = gameActivity.findViewById(R.id.game_number_hint)
         buttonNumberHint.setOnClickListener(this)
 
-        button_Value_1 = gameActivity.findViewById(R.id.game_button_value_1)
-        button_Value_1.setOnClickListener(this)
+        buttonValue1 = gameActivity.findViewById(R.id.game_button_value_1)
+        buttonValue1.setOnClickListener(this)
 
-        button_Value_2 = gameActivity.findViewById(R.id.game_button_value_2)
-        button_Value_2.setOnClickListener(this)
+        buttonValue2 = gameActivity.findViewById(R.id.game_button_value_2)
+        buttonValue2.setOnClickListener(this)
 
-        button_Value_3 = gameActivity.findViewById(R.id.game_button_value_3)
-        button_Value_3.setOnClickListener(this)
+        buttonValue3 = gameActivity.findViewById(R.id.game_button_value_3)
+        buttonValue3.setOnClickListener(this)
 
-        button_Value_4 = gameActivity.findViewById(R.id.game_button_value_4)
-        button_Value_4.setOnClickListener(this)
+        buttonValue4 = gameActivity.findViewById(R.id.game_button_value_4)
+        buttonValue4.setOnClickListener(this)
 
-        button_Value_5 = gameActivity.findViewById(R.id.game_button_value_5)
-        button_Value_5.setOnClickListener(this)
+        buttonValue5 = gameActivity.findViewById(R.id.game_button_value_5)
+        buttonValue5.setOnClickListener(this)
 
-        button_Value_6 = gameActivity.findViewById(R.id.game_button_value_6)
-        button_Value_6.setOnClickListener(this)
+        buttonValue6 = gameActivity.findViewById(R.id.game_button_value_6)
+        buttonValue6.setOnClickListener(this)
 
         return gameView
     }
