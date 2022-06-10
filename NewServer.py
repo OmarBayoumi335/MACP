@@ -1,5 +1,6 @@
 import random
 import pyrebase
+import ast
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 
@@ -30,7 +31,6 @@ GET_INVITABLE_USER = "get4"
 GET_GAME_LOBBY_NUMBER_OF_MEMBERS = "get5"
 GET_ALL_READY_GAME = "get6"
 GET_GAME_INFORMATION = "get7"
-
 # PUT
 PUT_NEW_USER = "put0"
 PUT_NEW_LOBBY = "put1"
@@ -46,6 +46,7 @@ POST_CHANGE_TEAM = "post5"
 POST_SEND_MESSAGE = "post6"
 POST_CHANGE_READY_STATUS = "post7"
 POST_JOIN_GAME_LOBBY = "post8"
+POST_SEND_CLUE = "post9"
 POST_PROVA = "prova"
 
 # DELETE
@@ -73,6 +74,7 @@ parser.add_argument('turn', type = str, required = False)
 parser.add_argument('gameLobbyId', type = str, required = False)
 parser.add_argument('captainIndex1', type = str, required = False)
 parser.add_argument('captainIndex2', type = str, required = False)
+parser.add_argument('clue', type = str, required = False)
 
 # Api call handler
 class EnigmaServer(Resource):
@@ -95,6 +97,7 @@ class EnigmaServer(Resource):
         self.gameLobbyId = args["gameLobbyId"]
         self.captainIndex1 = args["captainIndex1"]
         self.captainIndex2 = args["captainIndex2"]
+        self.clue = args["clue"]
     
     def get(self):       
          
@@ -203,6 +206,7 @@ class EnigmaServer(Resource):
                     "userGame": userGame, 
                     "gameLobby": gameLobby, 
                     "error": False}
+        
         return {"message": "get request failed", "error": True}
         
       
@@ -256,7 +260,8 @@ class EnigmaServer(Resource):
                          "captainIndex1": self.captainIndex1,
                          "captainIndex2": self.captainIndex2,
                          "hint1": MAX_HINT,
-                         "hint2": MAX_HINT}
+                         "hint2": MAX_HINT,
+                         "clue": {"text": "", "number": 0, "directions": []}}
             db.child("GameLobbies").child(self.gameLobbyId).set(gameLobby)
             return {"message": "new game lobby created", "error": False}
             
@@ -480,6 +485,32 @@ class EnigmaServer(Resource):
             members.append(userGame)
             db.child("GameLobbies").child(self.gameLobbyId).update({"members": members})
             return {"message": "user joined in the game lobby", "lobbyExist": True, "error": False}
+        
+        #9 captain send clue. Input(req, userId, gamelobby, clue)
+        if self.req == POST_SEND_CLUE:
+            clue = db.child("GameLobbies").child(self.gameLobbyId).child("clue").get().val()
+            clue = "" if db.child("GameLobbies").child(self.gameLobbyId).child("clue").get().val() == None else clue
+            captainteam1 = db.child("GameLobbies").child(self.gameLobbyId).child("captainIndex1").get().val()
+            listClue = self.clue.split("-")
+            clue["text"] = listClue[0].upper()
+            clue["number"] = listClue[1]
+            directionsList =  listClue[2].split(",")
+            newDirectionsList = []
+            for direction in directionsList:
+                if direction[0] == "[" or direction[0] == " ":
+                  direction = direction[1:]
+                if direction[-1] == "]":
+                  direction = direction[:-1]
+                newDirectionsList.append(direction)
+            clue["directions"] = newDirectionsList
+            db.child("GameLobbies").child(self.gameLobbyId).update({"clue": clue})
+            newHint = MAX_HINT - len(directionsList)
+            if captainteam1 == self.userId:
+                db.child("GameLobbies").child(self.gameLobbyId).update({"hint1": newHint})
+            else:
+                db.child("GameLobbies").child(self.gameLobbyId).update({"hint2": newHint})
+            return {"message": "clue sended", "error": False}
+            
         
         if self.req == POST_PROVA:
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()

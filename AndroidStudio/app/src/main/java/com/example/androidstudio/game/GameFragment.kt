@@ -247,11 +247,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             directions = buttonDirection.text.toString().split(" ").toMutableList()
         }
         val clue = Clue(text, number, directions)
-//        serverHandler.apiCall(Config.GET, Config.GET_USER, userId = userGame.userId, gameLobbyId = gameLobby.lobbyId, callBack = object : ServerHandler.VolleyCallBack {
-//            override fun onSuccess(reply: JSONObject?) {
-//                val a = reply?.get("users")
-//            }
-//        })
+        serverHandler.apiCall(Config.POST, Config.POST_SEND_CLUE, userId = userGame.userId, gameLobbyId = gameLobby.lobbyId, clue = clue.toString())
         Log.i(Config.GAME_VIEW_TAG, clue.toString())
     }
 
