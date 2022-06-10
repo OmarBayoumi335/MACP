@@ -72,7 +72,7 @@ parser.add_argument('words', type = str, required = False)
 parser.add_argument('turn', type = str, required = False)
 parser.add_argument('gameLobbyId', type = str, required = False)
 parser.add_argument('captainIndex1', type = str, required = False)
-parser.add_argument('captainIndex1', type = str, required = False)
+parser.add_argument('captainIndex2', type = str, required = False)
 
 # Api call handler
 class EnigmaServer(Resource):
