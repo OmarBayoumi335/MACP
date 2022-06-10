@@ -156,7 +156,7 @@ class GameFragmentLoading : Fragment() {
                     toStringWords = toStringWords.plus("--$word")
                 }
                 toStringWords = toStringWords.substring(2)
-                val turns = mutableListOf("team1", "team2")
+                val turns = mutableListOf(resources.getString(R.string.team1), resources.getString(R.string.team2))
                 serverHandler.apiCall(
                     Config.PUT,
                     Config.PUT_NEW_GAME_LOBBY,

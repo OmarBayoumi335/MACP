@@ -18,7 +18,7 @@ db = firebase.database()
 
 #request codes and parser arguments
 MAX_LOBBY_MEMBERS = 16
-MIN_START_MEMBER = 2
+MIN_START_MEMBER = 1
 MAX_HINT = 3
 
 # GET
@@ -251,7 +251,7 @@ class EnigmaServer(Resource):
                          "chatTeam1": [],
                          "chatTeam2": [],
                          "turn": self.turn,
-                         "turnNumber": 0,
+                         "turnPhase": 0,
                          "words": words,
                          "captainIndex1": self.captainIndex1,
                          "captainIndex2": self.captainIndex2,

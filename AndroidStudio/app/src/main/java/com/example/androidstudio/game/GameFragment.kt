@@ -2,23 +2,28 @@ package com.example.androidstudio.game
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.types.Clue
 import com.example.androidstudio.classes.types.GameLobby
 import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.views.GameView
 import com.google.gson.Gson
+import org.json.JSONObject
 
 class GameFragment : Fragment(), View.OnClickListener{
 
@@ -35,7 +40,11 @@ class GameFragment : Fragment(), View.OnClickListener{
     private lateinit var buttonValue4: Button
     private lateinit var buttonValue5: Button
     private lateinit var buttonValue6: Button
+    private lateinit var giveClue: Button
+    private lateinit var gameWordHint: EditText
     private lateinit var gameActivity: GameActivity
+    private var selectNumber = false
+    private var selectText = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -67,12 +76,16 @@ class GameFragment : Fragment(), View.OnClickListener{
 
                 }
             }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        gameActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         // set bottom part view
         if (gameLobby.turn == userGame.team) { // my turn
-            if (userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2) { // not captain
-                gameActivity.setViewMyTurnMember()
+            if ((userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2)) { // not captain
+                if (gameLobby.turnPhase == 0) {
+                    gameActivity.setViewOpponentTurn()
+                } else {
+                    gameActivity.setViewMyTurnMember()
+                }
             } else {
                 gameActivity.setViewMyTurnCaptain()
             }
@@ -80,21 +93,27 @@ class GameFragment : Fragment(), View.OnClickListener{
             gameActivity.setViewOpponentTurn()
         }
 
+        // turn title
+        val turn = gameActivity.findViewById<TextView>(R.id.game_turn_team_textview)
+        val phase = if (gameLobby.turnPhase == 0) {
+            resources.getString(R.string.phase1)
+        } else {
+            resources.getString(R.string.phase2)
+        }
+        turn.text = "${gameLobby.turn}: $phase"
+
+        // chat title
+        val chatTitle = gameActivity.findViewById<TextView>(R.id.game_chat_team_title_textview)
+        chatTitle.text = userGame.team
+
+        // send message in chat
+        val sendMessageButton = gameActivity.findViewById<ImageButton>(R.id.game_send_message_image_button)
+        sendMessageButton.setOnClickListener(this)
+
         // pass lobby and user in the view
         gameView.gameLobby = gameLobby
         gameView.userGame = userGame
 
-        // turn title
-        val turn = requireActivity().findViewById<TextView>(R.id.game_turn_team_textview)
-        turn.text = "${resources.getString(R.string.team)} ${gameView.gameLobby.turn}: ${resources.getString(R.string.turn)} ${gameView.gameLobby.turnNumber}"
-
-        // chat title
-        val chatTitle = requireActivity().findViewById<TextView>(R.id.game_chat_team_title_textview)
-        chatTitle.text = "${resources.getString(R.string.team_chat)} ${gameView.userGame.team}"
-
-        // send message in chat
-        val sendMessageButton = requireActivity().findViewById<ImageButton>(R.id.game_send_message_image_button)
-        sendMessageButton.setOnClickListener(this)
 
 
 //        val words = mutableListOf(
@@ -134,6 +153,7 @@ class GameFragment : Fragment(), View.OnClickListener{
 
         buttonDirection = gameActivity.findViewById(R.id.game_direction_hint)
         buttonDirection.setOnClickListener(this)
+
         selectNumberHintLayout = gameActivity.findViewById(R.id.game_select_number_hint)
 
         buttonNumberHint = gameActivity.findViewById(R.id.game_number_hint)
@@ -157,6 +177,22 @@ class GameFragment : Fragment(), View.OnClickListener{
         buttonValue6 = gameActivity.findViewById(R.id.game_button_value_6)
         buttonValue6.setOnClickListener(this)
 
+        gameWordHint = gameActivity.findViewById(R.id.game_word_hint)
+        gameWordHint.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                selectText = s.toString() != ""
+                checkClue()
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+
+        giveClue = gameActivity.findViewById(R.id.game_confirm_hint)
+        giveClue.setOnClickListener(this)
+        giveClue.isClickable = false
+
         return gameView
     }
 
@@ -171,12 +207,15 @@ class GameFragment : Fragment(), View.OnClickListener{
             R.id.game_button_value_5 -> selectNumberHint("5")
             R.id.game_button_value_6 -> selectNumberHint("6")
             R.id.game_send_message_image_button -> sendMessage()
+            R.id.game_confirm_hint -> giveClueToMembers()
         }
     }
 
     private fun selectNumberHint(value: String){
         selectNumberHintLayout.visibility = View.GONE
         buttonNumberHint.text = value
+        selectNumber = true
+        checkClue()
     }
 
     private fun showNumbersHint(){
@@ -188,11 +227,35 @@ class GameFragment : Fragment(), View.OnClickListener{
     }
 
     private fun showDirectionHintFragment(){
-        val chooseDirectionsFragment = ChooseDirectionFragment()
+        val chooseDirectionsFragment = if (userGame.team == resources.getString(R.string.team1)) {
+            ChooseDirectionFragment(gameLobby.hint1)
+        } else {
+            ChooseDirectionFragment(gameLobby.hint2)
+        }
         chooseDirectionsFragment.show(gameActivity.supportFragmentManager, "GameFragment->ChooseDirectionFragment")
     }
 
     private fun sendMessage() {
-        TODO("Not yet implemented")
+
+    }
+
+    private fun giveClueToMembers() {
+        val text = gameWordHint.text.toString()
+        val number = buttonNumberHint.text.toString().toInt()
+        var directions = mutableListOf<String>()
+        if (buttonDirection.text.toString() != "-") {
+            directions = buttonDirection.text.toString().split(" ").toMutableList()
+        }
+        val clue = Clue(text, number, directions)
+//        serverHandler.apiCall(Config.GET, Config.GET_USER, userId = userGame.userId, gameLobbyId = gameLobby.lobbyId, callBack = object : ServerHandler.VolleyCallBack {
+//            override fun onSuccess(reply: JSONObject?) {
+//                val a = reply?.get("users")
+//            }
+//        })
+        Log.i(Config.GAME_VIEW_TAG, clue.toString())
+    }
+
+    private fun checkClue() {
+        giveClue.isClickable = selectNumber && selectText
     }
 }

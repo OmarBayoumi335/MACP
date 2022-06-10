@@ -37,6 +37,7 @@ class ServerHandler(context: Context?) {
                 gameLobbyId: String = "",
                 captainIndex1: String = "",
                 captainIndex2: String = "",
+                clue: String = "",
                 callBack: VolleyCallBack? = null) {
         var requestMethod = 0
         val reqParsed = reqParser(
@@ -54,7 +55,8 @@ class ServerHandler(context: Context?) {
             turn = turn,
             gameLobbyId = gameLobbyId,
             captainIndex1 = captainIndex1,
-            captainIndex2 = captainIndex2)
+            captainIndex2 = captainIndex2,
+            clue = clue)
         if (callType == Config.GET) requestMethod = Request.Method.GET
         if (callType == Config.POST) requestMethod = Request.Method.POST
         if (callType == Config.PUT) requestMethod = Request.Method.PUT
@@ -76,7 +78,8 @@ class ServerHandler(context: Context?) {
                           gameLobbyId: String = "",
                           turn: String = "",
                           captainIndex1: String = "",
-                          captainIndex2: String = "",): String {
+                          captainIndex2: String = "",
+                          clue: String = "",): String {
         var reqParsed = url.plus("req=$req")
         if (userId != "") reqParsed = reqParsed.plus("&userId=$userId")
         if (googleUserId != "") reqParsed = reqParsed.plus("&googleUserId=$googleUserId")
@@ -92,6 +95,7 @@ class ServerHandler(context: Context?) {
         if (gameLobbyId != "") reqParsed = reqParsed.plus("&gameLobbyId=$gameLobbyId")
         if (captainIndex1 != "") reqParsed = reqParsed.plus("&captainIndex1=$captainIndex1")
         if (captainIndex2 != "") reqParsed = reqParsed.plus("&captainIndex2=$captainIndex2")
+        if (clue != "") reqParsed = reqParsed.plus("&clue=$clue")
         return reqParsed
     }
 

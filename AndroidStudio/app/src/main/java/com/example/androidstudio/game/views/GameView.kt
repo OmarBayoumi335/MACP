@@ -187,8 +187,8 @@ class GameView: View, View.OnTouchListener {
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        // background
-        if (gameLobby.turn == "red") {
+        // background turn
+        if (gameLobby.turn == resources.getString(R.string.team2)) {
             canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_red))
         } else {
             canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_green))

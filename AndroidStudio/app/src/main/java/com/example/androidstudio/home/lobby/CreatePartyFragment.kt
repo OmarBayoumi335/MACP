@@ -280,10 +280,10 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private fun getTeam(): String? {
         for (member in lobby.team1) {
             if (member.userId == user.userId) {
-                return "team1"
+                return resources.getString(R.string.team1)
             }
         }
-        return "team2"
+        return resources.getString(R.string.team2)
     }
 
     private fun generateGameLobbyId(): String? {

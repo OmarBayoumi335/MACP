@@ -11,7 +11,7 @@
     <!--Profile Friend-->
     <string name="add_friend_title">Add a friend</string>
     <string name="find_friend_textview">Search:</string>
-    <string name="find_friend_hint">ex. #123456</string>
+    <string name="find_friend_hint">ex. 123456</string>
     <string name="add_friend_button">Add</string>
     <string name="friend_found">Request sent!</string>
     <string name="friend_already_sent">Friend request already sent</string>
@@ -44,8 +44,8 @@
     <string name="party_invitations">Party invitations</string>
     <string name="invites_friends">Invites friends</string>
     <string name="lobby_title_textview">Lobby</string>
-    <string name="team1">Team green</string>
-    <string name="team2">Team red</string>
+    <string name="team1">Team Green</string>
+    <string name="team2">Team Red</string>
     <string name="leave_lobby_alert">Leave lobby</string>
     <string name="leave_lobby_alert_message">Are you sure you want to leave the lobby?</string>
 
@@ -78,4 +78,6 @@
     <string name="pass_button">Pass</string>
     <string name="confirm_button">Confirm</string>
     <string name="remaining_hints">Remaining hints:</string>
+    <string name="phase1">Captain choosing a clue</string>
+    <string name="phase2">Your member are guessing</string>
 </resources>

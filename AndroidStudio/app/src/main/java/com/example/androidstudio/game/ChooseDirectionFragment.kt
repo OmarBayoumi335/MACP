@@ -1,7 +1,7 @@
 package com.example.androidstudio.game
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +9,13 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.utils.Config
 
-class ChooseDirectionFragment : DialogFragment(), View.OnClickListener{
+class ChooseDirectionFragment(remainingHint: Int) : DialogFragment(), View.OnClickListener{
 
-    private val MAX_HINT = 3
+    private var remainingHint: Int
+    init {
+        this.remainingHint = remainingHint
+    }
     private lateinit var buttonDirection1: Button
     private lateinit var buttonDirection2: Button
     private lateinit var buttonDirection3: Button
@@ -24,11 +26,15 @@ class ChooseDirectionFragment : DialogFragment(), View.OnClickListener{
     private lateinit var textViewEast: TextView
     private lateinit var textViewSouth: TextView
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_choose_direction, container, false)
+        val remainingHintTextView = rootView.findViewById<TextView>(R.id.remaining_hints_textview_choose_direction)
+        remainingHintTextView.text = "${resources.getString(R.string.remaining_hints)} $remainingHint"
+
         buttonDirection1 = rootView.findViewById(R.id.direction1_button_choose_direction)
         buttonDirection1.setOnClickListener(this)
         buttonDirection2 = rootView.findViewById(R.id.direction2_button_choose_direction)
@@ -101,7 +107,7 @@ class ChooseDirectionFragment : DialogFragment(), View.OnClickListener{
 
     private fun addDirection(direction: String){
         val directions = mutableListOf(buttonDirection1, buttonDirection2, buttonDirection3)
-        for (i in 0 until MAX_HINT){
+        for (i in 0 until remainingHint){
             if (directions[i].visibility == View.GONE){
                 directions[i].text = direction
                 directions[i].visibility = View.VISIBLE
