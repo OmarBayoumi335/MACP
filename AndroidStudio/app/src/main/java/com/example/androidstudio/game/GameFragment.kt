@@ -45,65 +45,79 @@ class GameFragment : Fragment(), View.OnClickListener{
         // Inflate the layout for this fragment
         gameView = GameView(requireContext())
         gameView.activity = requireActivity()
-//        serverHandler = ServerHandler(requireContext())
-//        val gson = Gson()
-//
-//        // Game lobby info
-//        val gameLobbyString = arguments?.getString("gameLobby")
-//        gameLobby = gson.fromJson(gameLobbyString, GameLobby::class.java)
-//
-//        // User in game info
-//        val userGameString = arguments?.getString("userGame")
-//        userGame = gson.fromJson(userGameString, UserGame::class.java)
-//
-//        Log.i(Config.GAME_TAG, "\ngameLobby: $gameLobby\nuserGame: $userGame")
-//
-//        // Disable Android back button
-//        val callback: OnBackPressedCallback =
-//            object : OnBackPressedCallback(true) {
-//                override fun handleOnBackPressed() {
-//
-//                }
-//            }
-//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-//        gameView.gameLobby = gameLobby
-//        gameView.userGame = userGame
+        serverHandler = ServerHandler(requireContext())
+        val gson = Gson()
 
+        // Game lobby info
+        val gameLobbyString = arguments?.getString("gameLobby")
+        gameLobby = gson.fromJson(gameLobbyString, GameLobby::class.java)
 
-        val words = mutableListOf(
-            Word("importer", "green", "SOUTH"),
-            Word("esok", "gray", "NORTH"),
-            Word("morbidity", "green", "EAST"),
-            Word("kitsch", "red", "WEST"),
-            Word("tune", "green", "SOUTH"),
-            Word("haddock", "red", "SOUTH"),
-            Word("zookeeper", "green", "WEST"),
-            Word("ecologist", "gray", "NORTH"),
-            Word("fruitbat", "green", "SOUTH"),
-            Word("hen", "red", "NORTH"),
-            Word("salamander", "red", "EAST"),
-            Word("apatosaur", "gray", "SOUTH"),
-            Word("kerosene", "green", "SOUTH"),
-            Word("glowworm", "red", "NORTH"),
-            Word("factotum", "red", "SOUTH"),
-            Word("city", "black", "SOUTH")
-        )
-        gameView.gameLobby = GameLobby()
-        gameView.gameLobby.words = words
-        gameView.gameLobby.turn = mutableListOf("red", "green").random()
-        gameView.userGame = UserGame()
-        gameView.userGame.captain = false
-        gameView.userGame.team = mutableListOf("red", "green").random()
+        // User in game info
+        val userGameString = arguments?.getString("userGame")
+        userGame = gson.fromJson(userGameString, UserGame::class.java)
 
+        Log.i(Config.GAME_TAG, "\ngameLobby: $gameLobby\nuserGame: $userGame")
+
+        // Disable Android back button
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+        // pass lobby and user in the view
+        gameView.gameLobby = gameLobby
+        gameView.userGame = userGame
+
+        // turn title
         val turn = requireActivity().findViewById<TextView>(R.id.game_turn_team_textview)
         turn.text = "${resources.getString(R.string.team)} ${gameView.gameLobby.turn}: ${resources.getString(R.string.turn)} ${gameView.gameLobby.turnNumber}"
+
+        // chat title
         val chatTitle = requireActivity().findViewById<TextView>(R.id.game_chat_team_title_textview)
         chatTitle.text = "${resources.getString(R.string.team_chat)} ${gameView.userGame.team}"
-        val b = requireActivity().findViewById<ImageButton>(R.id.game_send_message_image_button)
-        b.setOnClickListener {
-            gameView.gameLobby.turn = if (gameView.gameLobby.turn == "red") "green" else "red"
-            gameView.invalidate()
-        }
+
+        // send message in chat
+        val sendMessageButton = requireActivity().findViewById<ImageButton>(R.id.game_send_message_image_button)
+        sendMessageButton.setOnClickListener(this)
+
+
+//        val words = mutableListOf(
+//            Word("importer", "green", "SOUTH"),
+//            Word("esok", "gray", "NORTH"),
+//            Word("morbidity", "green", "EAST"),
+//            Word("kitsch", "red", "WEST"),
+//            Word("tune", "green", "SOUTH"),
+//            Word("haddock", "red", "SOUTH"),
+//            Word("zookeeper", "green", "WEST"),
+//            Word("ecologist", "gray", "NORTH"),
+//            Word("fruitbat", "green", "SOUTH"),
+//            Word("hen", "red", "NORTH"),
+//            Word("salamander", "red", "EAST"),
+//            Word("apatosaur", "gray", "SOUTH"),
+//            Word("kerosene", "green", "SOUTH"),
+//            Word("glowworm", "red", "NORTH"),
+//            Word("factotum", "red", "SOUTH"),
+//            Word("city", "black", "SOUTH")
+//        )
+//        gameView.gameLobby = GameLobby()
+//        gameView.gameLobby.words = words
+//        gameView.gameLobby.turn = mutableListOf("red", "green").random()
+//        gameView.userGame = UserGame()
+//        gameView.userGame.captain = false
+//        gameView.userGame.team = mutableListOf("red", "green").random()
+//
+//        val turn = requireActivity().findViewById<TextView>(R.id.game_turn_team_textview)
+//        turn.text = "${resources.getString(R.string.team)} ${gameView.gameLobby.turn}: ${resources.getString(R.string.turn)} ${gameView.gameLobby.turnNumber}"
+//        val chatTitle = requireActivity().findViewById<TextView>(R.id.game_chat_team_title_textview)
+//        chatTitle.text = "${resources.getString(R.string.team_chat)} ${gameView.userGame.team}"
+//        val b = requireActivity().findViewById<ImageButton>(R.id.game_send_message_image_button)
+//        b.setOnClickListener {
+//            gameView.gameLobby.turn = if (gameView.gameLobby.turn == "red") "green" else "red"
+//            gameView.invalidate()
+//        }
 
         gameActivity = requireActivity() as GameActivity
 
@@ -145,6 +159,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             R.id.game_button_value_4 -> selectNumberHint("4")
             R.id.game_button_value_5 -> selectNumberHint("5")
             R.id.game_button_value_6 -> selectNumberHint("6")
+            R.id.game_send_message_image_button -> sendMessage()
         }
     }
 
@@ -164,5 +179,9 @@ class GameFragment : Fragment(), View.OnClickListener{
     private fun showDirectionHintFragment(){
         val chooseDirectionsFragment = ChooseDirectionFragment()
         chooseDirectionsFragment.show(gameActivity.supportFragmentManager, "GameFragment->ChooseDirectionFragment")
+    }
+
+    private fun sendMessage() {
+        TODO("Not yet implemented")
     }
 }

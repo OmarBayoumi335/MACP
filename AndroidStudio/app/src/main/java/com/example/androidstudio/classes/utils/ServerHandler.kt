@@ -35,6 +35,8 @@ class ServerHandler(context: Context?) {
                 words: String = "",
                 turn: String = "",
                 gameLobbyId: String = "",
+                team1Members: String = "",
+                team2Members: String = "",
                 callBack: VolleyCallBack? = null) {
         var requestMethod = 0
         val reqParsed = reqParser(
@@ -50,7 +52,9 @@ class ServerHandler(context: Context?) {
             team = team,
             words = words,
             turn = turn,
-            gameLobbyId = gameLobbyId)
+            gameLobbyId = gameLobbyId,
+            team1Members = team1Members,
+            team2Members = team2Members)
         if (callType == Config.GET) requestMethod = Request.Method.GET
         if (callType == Config.POST) requestMethod = Request.Method.POST
         if (callType == Config.PUT) requestMethod = Request.Method.PUT
@@ -70,7 +74,9 @@ class ServerHandler(context: Context?) {
                           team: String = "",
                           words: String = "",
                           gameLobbyId: String = "",
-                          turn: String = "",): String {
+                          turn: String = "",
+                          team1Members: String = "",
+                          team2Members: String = "",): String {
         var reqParsed = url.plus("req=$req")
         if (userId != "") reqParsed = reqParsed.plus("&userId=$userId")
         if (googleUserId != "") reqParsed = reqParsed.plus("&googleUserId=$googleUserId")
@@ -84,6 +90,8 @@ class ServerHandler(context: Context?) {
         if (words != "") reqParsed = reqParsed.plus("&words=$words")
         if (turn != "") reqParsed = reqParsed.plus("&turn=$turn")
         if (gameLobbyId != "") reqParsed = reqParsed.plus("&gameLobbyId=$gameLobbyId")
+        if (team1Members != "") reqParsed = reqParsed.plus("&team1Members=$team1Members")
+        if (team2Members != "") reqParsed = reqParsed.plus("&team2Members=$team2Members")
         return reqParsed
     }
 

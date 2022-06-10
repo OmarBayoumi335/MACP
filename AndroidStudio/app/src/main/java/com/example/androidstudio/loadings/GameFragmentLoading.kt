@@ -31,6 +31,8 @@ class GameFragmentLoading : Fragment() {
     private lateinit var userId: String
     private lateinit var lobbyId: String
     private var lobbyGameMembers by Delegates.notNull<Int>()
+    private var team1Members by Delegates.notNull<Int>()
+    private var team2Members by Delegates.notNull<Int>()
     private lateinit var myTeam: String
     private lateinit var words: MutableList<Word>
 
@@ -43,37 +45,39 @@ class GameFragmentLoading : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_game_loading, container, false)
-        findNavController().navigate(R.id.action_gameFragmentLoading_to_gameFragment)
-        val gameActivity: GameActivity = requireActivity() as GameActivity
-        gameActivity.setViewVisible()
-//        serverHandler = ServerHandler(requireContext())
-//
-//        // If i click ready last
-//        starter = requireActivity().intent.extras?.getBoolean("starter")!!
-//
-//        // Game lobby id
-//        gameLobbyId = requireActivity().intent.extras?.getString("gameLobbyId")!!
-//        var gameLobbyIds = gameLobbyId.split("-")
-//        gameLobbyIds = gameLobbyIds.sorted()
-//        gameLobbyId = gameLobbyIds.joinToString("")
-//
-//        // User ID
-//        userId = requireActivity().intent.extras?.getString("userId")!!
-//
-//        // Lobby ID
-//        lobbyId = requireActivity().intent.extras?.getString("lobbyId")!!
-//
-//        // Number of players
-//        lobbyGameMembers = requireActivity().intent.extras?.getInt("lobbyGameMembers")!!
-//
-//        // My team
-//        myTeam = requireActivity().intent.extras?.getString("team")!!
-//
-//        // Words in game
-//        words = getWords(requireContext())
-////        Log.i(Config.LOADING_GAME_TAG, words.toString())
-//
-//        joinLobbyGame("getUser")
+//        findNavController().navigate(R.id.action_gameFragmentLoading_to_gameFragment)
+//        val gameActivity: GameActivity = requireActivity() as GameActivity
+//        gameActivity.setViewVisible()
+        serverHandler = ServerHandler(requireContext())
+
+        // If i click ready last
+        starter = requireActivity().intent.extras?.getBoolean("starter")!!
+
+        // Game lobby id
+        gameLobbyId = requireActivity().intent.extras?.getString("gameLobbyId")!!
+        var gameLobbyIds = gameLobbyId.split("-")
+        gameLobbyIds = gameLobbyIds.sorted()
+        gameLobbyId = gameLobbyIds.joinToString("")
+
+        // User ID
+        userId = requireActivity().intent.extras?.getString("userId")!!
+
+        // Lobby ID
+        lobbyId = requireActivity().intent.extras?.getString("lobbyId")!!
+
+        // Number of players
+        lobbyGameMembers = requireActivity().intent.extras?.getInt("lobbyGameMembers")!!
+        team1Members = requireActivity().intent.extras?.getInt("team1Members")!!
+        team2Members = requireActivity().intent.extras?.getInt("team2Members")!!
+
+        // My team
+        myTeam = requireActivity().intent.extras?.getString("team")!!
+
+        // Words in game
+        words = getWords(requireContext())
+//        Log.i(Config.LOADING_GAME_TAG, words.toString())
+
+        joinLobbyGame("getUser")
         return rootView
     }
 
@@ -209,6 +213,8 @@ class GameFragmentLoading : Fragment() {
                                     lobbyId = lobbyId,
                                     gameLobbyId = gameLobbyId,
                                     userId = userId,
+                                    team1Members = team1Members.toString(),
+                                    team2Members = team2Members.toString(),
                                     callBack = object : ServerHandler.VolleyCallBack {
                                         override fun onSuccess(reply: JSONObject?) {
                                             Handler(Looper.getMainLooper()).postDelayed({

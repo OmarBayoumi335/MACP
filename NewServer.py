@@ -18,7 +18,7 @@ db = firebase.database()
 
 #request codes and parser arguments
 MAX_LOBBY_MEMBERS = 16
-MIN_START_MEMBER = 1
+MIN_START_MEMBER = 2
 
 # GET
 GET_USERNAME = "get0"
@@ -70,6 +70,8 @@ parser.add_argument('team', type = str, required = False)
 parser.add_argument('words', type = str, required = False)
 parser.add_argument('turn', type = str, required = False)
 parser.add_argument('gameLobbyId', type = str, required = False)
+parser.add_argument('team1Members', type = int, required = False)
+parser.add_argument('team2Members', type = int, required = False)
 
 # Api call handler
 class EnigmaServer(Resource):
@@ -90,6 +92,8 @@ class EnigmaServer(Resource):
         self.words = args["words"]
         self.turn = args["turn"]
         self.gameLobbyId = args["gameLobbyId"]
+        self.team1Members = args["team1Members"]
+        self.team2Members = args["team2Members"]
     
     def get(self):       
          
@@ -555,19 +559,18 @@ class EnigmaServer(Resource):
             db.child("Users").child(self.userId).update({"pendingInviteRequests":newPendingInviteRequests})
             return{"message": "invites removed", "error": False}
         
-        #4 delete the party lobby and set ready for the game lobby. Input(req, lobbyId, gameLobbyId, userId)
+        #4 delete the party lobby and set ready for the game lobby. Input(req, lobbyId, gameLobbyId, userId, team1Members, team2Members)
         if self.req == DELETE_LOBBY:
             db.child("Lobbies").child(self.lobbyId).remove()
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             for i, member in enumerate(members):
                 if member["userId"] == self.userId:
-                    db.child(
-                        "GameLobbies").child(
-                            self.gameLobbyId).child(
-                                "members").child(
-                                    str(i)).update(
-                                        {"ready": True})
+                    db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"ready": True})
                     break
+            captainIndex1 = random.randint(0, self.team1Members)
+            captainIndex2 = random.randint(0, self.team2Members)
+            db.child("GameLobbies").child("members").child(str(captainIndex1)).update({"captain" : True})
+            db.child("GameLobbies").child("members").child(str(captainIndex2)).update({"captain" : True})
             return {"message": "party lobby deleted and ready to play", "error": False}
         return {"message": "delete request failed", "error": True}
 
