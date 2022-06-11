@@ -527,7 +527,7 @@ class EnigmaServer(Resource):
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             for i, member in enumerate(members):
                 if member["userId"] == self.userId:
-                    db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"vote": self.voteIndex})
+                    db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"vote": int(self.voteIndex)})
                     break
             return {"message": "vote inserted", "error": False}    
         
