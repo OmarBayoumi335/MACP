@@ -272,7 +272,7 @@ class GameView: View, View.OnTouchListener {
 //        canvas?.drawLine(rightX, bottomGridY, rightX, bottomPartY, linePaint)
 //        canvas?.drawLine(centerGridX, bottomGridY, centerGridX, bottomPartY, linePaint)
 //        canvas?.drawLine(directionNumberY, bottomGridY, directionNumberY, bottomPartY, linePaint)
-        invalidate()
+//        invalidate()
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {

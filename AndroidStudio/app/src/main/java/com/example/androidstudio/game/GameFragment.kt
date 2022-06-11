@@ -301,6 +301,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
             updateBottomPart()
             updateRightPart()
+            gameView.postInvalidate()
         }
     }
 
