@@ -493,7 +493,7 @@ class EnigmaServer(Resource):
             captainteam1 = db.child("GameLobbies").child(self.gameLobbyId).child("captainIndex1").get().val()
             listClue = self.clue.split("-")
             clue["text"] = listClue[0].upper()
-            clue["number"] = listClue[1]
+            clue["number"] = int(listClue[1])
             directionsList =  listClue[2].split(",")
             newDirectionsList = []
             for direction in directionsList:

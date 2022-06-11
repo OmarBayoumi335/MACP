@@ -92,7 +92,8 @@ class GameFragmentLoading : Fragment() {
         }
         val listOfWords = object : TypeToken<MutableList<String>>() {}.type
 
-        val allWords: MutableList<String> = Gson().fromJson(jsonString, listOfWords)
+        var allWords: MutableList<String> = Gson().fromJson(jsonString, listOfWords)
+        allWords = allWords.shuffled().toMutableList()
 
         val directions = mutableListOf(
             resources.getString(R.string.north),
@@ -156,14 +157,15 @@ class GameFragmentLoading : Fragment() {
                     toStringWords = toStringWords.plus("--$word")
                 }
                 toStringWords = toStringWords.substring(2)
-                val turns = mutableListOf(resources.getString(R.string.team1), resources.getString(R.string.team2))
+                var turns = mutableListOf(resources.getString(R.string.team1), resources.getString(R.string.team2))
+                turns = turns.shuffled().toMutableList()
                 serverHandler.apiCall(
                     Config.PUT,
                     Config.PUT_NEW_GAME_LOBBY,
                     userId = userId,
                     gameLobbyId = gameLobbyId,
                     words = toStringWords,
-                    turn = turns.random(),
+                    turn = turns[0],
                     team = myTeam,
                     captainIndex1 = captainIndex1,
                     captainIndex2 = captainIndex2,

@@ -11,7 +11,7 @@ data class GameLobby(var lobbyId: String,
                      var captainIndex2: String,
                      var hint1: Int,
                      var hint2: Int,
-                     var currentClue: Clue){
+                     var clue: Clue){
 
     constructor() : this(
         "",
@@ -40,7 +40,7 @@ data class GameLobby(var lobbyId: String,
                 "captainIndex2='$captainIndex2', " +
                 "hint1=$hint1, " +
                 "hint2=$hint2, " +
-                "currentClue=$currentClue)"
+                "clue=$clue)"
     }
 
 }

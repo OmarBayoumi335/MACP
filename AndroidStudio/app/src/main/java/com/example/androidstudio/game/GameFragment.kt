@@ -243,23 +243,23 @@ class GameFragment : Fragment(), View.OnClickListener{
     }
 
     private fun updateBottomPart() {
-        Log.i(Config.GAME_VIEW_TAG, gameLobby.currentClue.toString())
+        Log.i(Config.GAME_VIEW_TAG, gameLobby.toString())
         if (gameLobby.turn == userGame.team) { // my turn
             if ((userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2)) { // not captain
                 if (gameLobby.turnPhase == 0) {
-                    gameActivity.setViewOpponentTurn()
+                    gameActivity.setViewOpponentTurn(gameLobby.clue)
                 } else {
-                    gameActivity.setViewMyTurnMember()
+                    gameActivity.setViewMyTurnMember(gameLobby.clue)
                 }
             } else { // captain
                 if (gameLobby.turnPhase == 1) {
-                    gameActivity.setViewOpponentTurn()
+                    gameActivity.setViewOpponentTurn(gameLobby.clue)
                 } else {
                     gameActivity.setViewMyTurnCaptain()
                 }
             }
         } else { // opponent turn
-            gameActivity.setViewOpponentTurn()
+            gameActivity.setViewOpponentTurn(gameLobby.clue)
         }
 
     }
@@ -292,7 +292,7 @@ class GameFragment : Fragment(), View.OnClickListener{
         gameLobby.captainIndex2 = newGameLobby.captainIndex2
         gameLobby.hint1 = newGameLobby.hint1
         gameLobby.hint2 = newGameLobby.hint2
-        gameLobby.currentClue = newGameLobby.currentClue
+        gameLobby.clue = newGameLobby.clue
         updateBottomPart()
         updateRightPart()
     }
