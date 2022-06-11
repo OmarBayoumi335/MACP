@@ -233,7 +233,16 @@ class GameFragmentLoading : Fragment() {
                                     Config.POLLING_PERIOD)
                             }
                         }
-                    })
+                    },
+                    callBackError = object : ServerHandler.VolleyCallBackError {
+                        override fun onError() {
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                joinLobbyGame("deleteLobby")
+                            },
+                                Config.POLLING_PERIOD)
+                        }
+                    }
+                )
             }
             "waiting" -> {
                 serverHandler.apiCall(
@@ -257,6 +266,14 @@ class GameFragmentLoading : Fragment() {
                                 },
                                     Config.POLLING_PERIOD)
                             }
+                        }
+                    },
+                    callBackError = object : ServerHandler.VolleyCallBackError {
+                        override fun onError() {
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                joinLobbyGame("waiting")
+                            },
+                                Config.POLLING_PERIOD)
                         }
                     }
                 )

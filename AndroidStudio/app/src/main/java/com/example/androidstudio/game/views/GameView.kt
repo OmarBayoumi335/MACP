@@ -56,6 +56,14 @@ class GameView: View, View.OnTouchListener {
         textSize = 12f * resources.displayMetrics.density
         isFakeBoldText = true
     }
+    private val cardCircleVotePaint = Paint().apply {
+        color = Color.BLUE
+        style = Paint.Style.FILL
+    }
+    private val cardTextVotePaint = Paint().apply {
+        color = Color.CYAN
+        textSize = 9f * resources.displayMetrics.density
+    }
 
     // border
     private var bottomGridY by Delegates.notNull<Float>()
@@ -161,6 +169,36 @@ class GameView: View, View.OnTouchListener {
                 // draw the text
                 canvas?.drawText(gameLobby.words[i*4 + j].text, textX, textY, cardTextPaint)
                 // set coordinates for the direction word
+                var numberVoteCard = 0
+                for (member in gameLobby.members) {
+                    if (member.vote == i*4 + j) {
+                        numberVoteCard += 1
+                    }
+                }
+                if (numberVoteCard != 0) {
+                    canvas?.drawCircle(
+                        roundRectCard.right - padding,
+                        roundRectCard.top + padding,
+                        10f * resources.displayMetrics.density,
+                        cardCircleVotePaint
+                    )
+                    textBound = Rect()
+                    cardTextVotePaint.getTextBounds(
+                        "4",
+                        0,
+                        "4".length,
+                        textBound
+                    )
+                    textX = roundRectCard.right - padding - textBound.exactCenterX()
+                    textY = roundRectCard.top + padding - textBound.exactCenterY()
+                    // draw the text
+                    canvas?.drawText(
+                        "4",
+                        textX,
+                        textY,
+                        cardTextVotePaint
+                    )
+                }
 
                 if (userGame.userId == gameLobby.captainIndex1 || userGame.userId == gameLobby.captainIndex2) {
                     textBound = Rect()

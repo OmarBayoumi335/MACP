@@ -38,7 +38,8 @@ class ServerHandler(context: Context?) {
                 captainIndex1: String = "",
                 captainIndex2: String = "",
                 clue: String = "",
-                callBack: VolleyCallBack? = null) {
+                callBack: VolleyCallBack? = null,
+                callBackError: VolleyCallBackError? = null) {
         var requestMethod = 0
         val reqParsed = reqParser(
             req = req,
@@ -61,7 +62,7 @@ class ServerHandler(context: Context?) {
         if (callType == Config.POST) requestMethod = Request.Method.POST
         if (callType == Config.PUT) requestMethod = Request.Method.PUT
         if (callType == Config.DELETE) requestMethod = Request.Method.DELETE
-        call(requestMethod, callType, req, reqParsed, callBack)
+        call(requestMethod, callType, req, reqParsed, callBack, callBackError)
     }
 
     private fun reqParser(req: String,
@@ -103,7 +104,8 @@ class ServerHandler(context: Context?) {
                      stringMethod: String,
                      reqCode: String,
                      req: String,
-                     callBack: VolleyCallBack? = null) {
+                     callBack: VolleyCallBack? = null,
+                     callBackError: VolleyCallBackError? = null) {
         val stringRequest = StringRequest(requestMethod, req, {
                 response ->
             // Display the first 500 characters of the response string.
@@ -113,6 +115,7 @@ class ServerHandler(context: Context?) {
         }, {
                 error: VolleyError? ->
             Log.e(Config.API_TAG, "onError ${stringMethod}, ${reqCode}: " + error.toString())
+            callBackError?.onError()
         })
         // Add the request to the RequestQueue.
         queue.add(stringRequest)
@@ -120,5 +123,9 @@ class ServerHandler(context: Context?) {
 
     interface VolleyCallBack {
         fun onSuccess(reply: JSONObject?)
+    }
+
+    interface VolleyCallBackError {
+        fun onError()
     }
 }
