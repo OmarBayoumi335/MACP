@@ -185,7 +185,8 @@ class EnigmaServer(Resource):
             userGame = {"userId": self.userId,
                         "username": user["username"],
                         "team": self.team,
-                        "ready": True}
+                        "ready": True,
+                        "vote": 100}
             if userGame not in members:
                 members.append(userGame)
                 db.child("GameLobbies").child(self.gameLobbyId).update({"members": members})
@@ -243,7 +244,8 @@ class EnigmaServer(Resource):
             userGame = {"userId": user["userId"], 
                         "username": user["username"],
                         "team": self.team,
-                        "ready": False}
+                        "ready": False,
+                        "vote": 100}
             words = []
             for word in self.words.split("--"):
                 words.append(
@@ -480,7 +482,8 @@ class EnigmaServer(Resource):
             userGame = {"userId": self.userId,
                         "username": user["username"],
                         "team": self.team,
-                        "ready": True}
+                        "ready": True,
+                        "vote": 100}
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             members.append(userGame)
             db.child("GameLobbies").child(self.gameLobbyId).update({"members": members})
