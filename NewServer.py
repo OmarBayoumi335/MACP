@@ -31,6 +31,7 @@ GET_INVITABLE_USER = "get4"
 GET_GAME_LOBBY_NUMBER_OF_MEMBERS = "get5"
 GET_ALL_READY_GAME = "get6"
 GET_GAME_INFORMATION = "get7"
+
 # PUT
 PUT_NEW_USER = "put0"
 PUT_NEW_LOBBY = "put1"
@@ -47,6 +48,7 @@ POST_SEND_MESSAGE = "post6"
 POST_CHANGE_READY_STATUS = "post7"
 POST_JOIN_GAME_LOBBY = "post8"
 POST_SEND_CLUE = "post9"
+POST_VOTE = "post10"
 POST_PROVA = "prova"
 
 # DELETE
@@ -75,6 +77,7 @@ parser.add_argument('gameLobbyId', type = str, required = False)
 parser.add_argument('captainIndex1', type = str, required = False)
 parser.add_argument('captainIndex2', type = str, required = False)
 parser.add_argument('clue', type = str, required = False)
+parser.add_argument('voteIndex', type = str, required = False)
 
 # Api call handler
 class EnigmaServer(Resource):
@@ -98,6 +101,7 @@ class EnigmaServer(Resource):
         self.captainIndex1 = args["captainIndex1"]
         self.captainIndex2 = args["captainIndex2"]
         self.clue = args["clue"]
+        self.voteIndex = args["voteIndex"]
     
     def get(self):       
          
@@ -518,6 +522,14 @@ class EnigmaServer(Resource):
             db.child("GameLobbies").child(self.gameLobbyId).update({"turnPhase": 1})
             return {"message": "clue sended", "error": False}
             
+        #10 vote a card or pass. Input(req, userId, gameLobbyId, voteIndex)
+        if self.req == POST_VOTE:
+            members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
+            for i, member in enumerate(members):
+                if member["userId"] == self.userId:
+                    db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"vote": self.voteIndex})
+                    break
+            return {"message": "vote inserted", "error": False}    
         
         if self.req == POST_PROVA:
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()

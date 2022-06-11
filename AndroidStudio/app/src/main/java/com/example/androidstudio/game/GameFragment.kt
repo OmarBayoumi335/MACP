@@ -293,6 +293,11 @@ class GameFragment : Fragment(), View.OnClickListener{
         gameLobby.hint1 = newGameLobby.hint1
         gameLobby.hint2 = newGameLobby.hint2
         gameLobby.clue = newGameLobby.clue
+        for (member in gameLobby.members) {
+            if (member.userId == userGame.userId) {
+                userGame.vote = member.vote
+            }
+        }
         updateBottomPart()
         updateRightPart()
     }

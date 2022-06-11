@@ -8,10 +8,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.Card
+import com.example.androidstudio.classes.types.GameLobby
+import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.game.views.GameView
 import com.example.androidstudio.game.views.GuessCardView
 
-class GuessCardFragment(private val card: Card) : DialogFragment() {
+class GuessCardFragment(
+    private val card: Card,
+    private val userGame: UserGame,
+    private val gameLobby: GameLobby) : DialogFragment() {
 
     private lateinit var guessCardView: GuessCardView
 
@@ -23,6 +28,9 @@ class GuessCardFragment(private val card: Card) : DialogFragment() {
         guessCardView = GuessCardView(requireContext())
         guessCardView.card = card
         guessCardView.guessCardFragment = this
+        guessCardView.requireContext = requireContext()
+        guessCardView.userGame = userGame
+        guessCardView.gameLobby = gameLobby
 
         return guessCardView
     }

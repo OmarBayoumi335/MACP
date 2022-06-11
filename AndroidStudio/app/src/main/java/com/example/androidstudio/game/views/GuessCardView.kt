@@ -24,7 +24,10 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withMatrix
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.Card
+import com.example.androidstudio.classes.types.GameLobby
+import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.GuessCardFragment
 import kotlin.properties.Delegates
 
@@ -101,6 +104,9 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
 
     lateinit var card: Card
     lateinit var guessCardFragment: GuessCardFragment
+    lateinit var requireContext: Context
+    lateinit var userGame: UserGame
+    lateinit var gameLobby: GameLobby
     private val padding = 7f * resources.displayMetrics.density
     private lateinit var compass: Bitmap
     private var lastAcceleration = FloatArray(3)
@@ -343,77 +349,6 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             textY,
             buttonTextPaint
         )
-
-
-//        circlePaint.shader = RadialGradient(
-//            leftCenterX, centerY,
-//            compassDiameter/2f, Color.LTGRAY, Color.GRAY, Shader.TileMode.MIRROR)
-//        canvas?.drawArc(
-//            leftCenterX - compassDiameter/2,
-//            centerY - compassDiameter/2,
-//            leftCenterX + compassDiameter/2,
-//            centerY + compassDiameter/2,
-//            0f,
-//            -180f,
-//            true,
-//            circlePaint
-//        )
-//        canvas?.drawArc(
-//            leftCenterX - compassDiameter/2f,
-//            centerY - compassDiameter/2f,
-//            leftCenterX + compassDiameter/2f,
-//            centerY + compassDiameter/2f,
-//            0f,
-//            -180f,
-//            true,
-//            linePaint
-//        )
-//        canvas?.drawArc(
-//            leftCenterX - compassDiameter * (1f/6f),
-//            centerY - compassDiameter * (1f/6f),
-//            leftCenterX + compassDiameter * (1f/6f),
-//            centerY + compassDiameter * (1f/6f),
-//            0f,
-//            -180f,
-//            true,
-//            linePaint
-//        )
-//        var angle = Math.toRadians(-60.0)
-//        canvas?.drawLine(
-//            leftCenterX + compassDiameter * (1f/6f) * cos(angle).toFloat(),
-//            centerY + compassDiameter * (1f/6f) * sin(angle).toFloat(),
-//            leftCenterX + compassDiameter/2f * cos(angle).toFloat(),
-//            centerY + compassDiameter/2f * sin(angle).toFloat(),
-//            linePaint
-//        )
-//        angle = Math.toRadians(-120.0)
-//        canvas?.drawLine(
-//            leftCenterX + compassDiameter * (1f/6f) * cos(angle).toFloat(),
-//            centerY + compassDiameter * (1f/6f) * sin(angle).toFloat(),
-//            leftCenterX + compassDiameter/2f * cos(angle).toFloat(),
-//            centerY + compassDiameter/2f * sin(angle).toFloat(),
-//            linePaint
-//        )
-//
-//        circlePaint.shader = RadialGradient(
-//            leftCenterX, centerY,
-//            compassDiameter/2f, Color.GRAY, Color.DKGRAY, Shader.TileMode.MIRROR)
-//        canvas?.drawCircle(
-//            centerBallX,
-//            centerBallY - linePaint.strokeWidth/2f - compassDiameter * (1f/18f),
-//            compassDiameter * (1f/18f),
-//            circlePaint
-//        )
-
-        // I will delete these lines
-//        canvas?.drawLine(divisionX, 0f, divisionX, height.toFloat(), linePaint)
-//        canvas?.drawLine(0f, centerY, width.toFloat(), centerY, linePaint)
-//        canvas?.drawLine(leftCenterX, 0f, leftCenterX, height.toFloat(), linePaint)
-//        canvas?.drawLine(0f, centerY - compassDiameter/2f, width.toFloat(), centerY - compassDiameter/2f, linePaint)
-//        canvas?.drawLine(0f, centerY + compassDiameter/2f, width.toFloat(), centerY + compassDiameter/2f, linePaint)
-//        canvas?.drawLine(centerRightX, 0f, centerRightX, height.toFloat(), linePaint)
-//        canvas?.drawLine(oneQuarterRightX, 0f, oneQuarterRightX, height.toFloat(), linePaint)
-//        canvas?.drawLine(threeQuarterRightX, 0f, threeQuarterRightX, height.toFloat(), linePaint)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -432,6 +367,14 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
                     && event.y <= voteButtonRect.bottom
                 ) {
                     guessCardFragment.dismiss()
+                    val serverHandler = ServerHandler(requireContext)
+                    serverHandler.apiCall(
+                        Config.POST,
+                        Config.POST_VOTE,
+                        userId = userGame.userId,
+                        gameLobbyId = gameLobby.lobbyId,
+                        voteIndex = card.index.toString()
+                    )
                 }
             }
         }

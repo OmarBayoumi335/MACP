@@ -136,7 +136,7 @@ class GameView: View, View.OnTouchListener {
                 roundRectCard.top = coordinates[1][j] + padding
                 roundRectCard.right = coordinates[0][i + 1] - padding
                 roundRectCard.bottom = coordinates[1][j + 1] - padding
-                cards.add(Card(gameLobby.words[i*4 + j], roundRectCard))
+                cards.add(Card(gameLobby.words[i*4 + j], roundRectCard, i*4 + j))
                 // set the color of the card
                 if (userGame.userId == gameLobby.captainIndex1 || userGame.userId == gameLobby.captainIndex2) {
 //                val cardGreen = BitmapFactory.decodeStream(context.assets.open("greenBackCard.jpg"))
@@ -197,6 +197,14 @@ class GameView: View, View.OnTouchListener {
                         textX,
                         textY,
                         cardTextVotePaint
+                    )
+                }
+                if (userGame.vote == i*4 + j) {
+                    canvas?.drawCircle(
+                        roundRectCard.left + padding,
+                        roundRectCard.top + padding,
+                        10f * resources.displayMetrics.density,
+                        cardCircleVotePaint
                     )
                 }
 
@@ -277,7 +285,7 @@ class GameView: View, View.OnTouchListener {
                             && event.y >= card.squareCoordinates.top
                             && event.y <= card.squareCoordinates.bottom
                         ) {
-                            val guessCardFragment = GuessCardFragment(card)
+                            val guessCardFragment = GuessCardFragment(card, userGame, gameLobby)
                             guessCardFragment.show(
                                 activity.supportFragmentManager,
                                 "GameView->GuessCardView"

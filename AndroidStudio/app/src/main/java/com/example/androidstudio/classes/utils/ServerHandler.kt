@@ -38,6 +38,7 @@ class ServerHandler(context: Context?) {
                 captainIndex1: String = "",
                 captainIndex2: String = "",
                 clue: String = "",
+                voteIndex: String = "",
                 callBack: VolleyCallBack? = null,
                 callBackError: VolleyCallBackError? = null) {
         var requestMethod = 0
@@ -57,7 +58,8 @@ class ServerHandler(context: Context?) {
             gameLobbyId = gameLobbyId,
             captainIndex1 = captainIndex1,
             captainIndex2 = captainIndex2,
-            clue = clue)
+            clue = clue,
+            voteIndex = voteIndex)
         if (callType == Config.GET) requestMethod = Request.Method.GET
         if (callType == Config.POST) requestMethod = Request.Method.POST
         if (callType == Config.PUT) requestMethod = Request.Method.PUT
@@ -80,7 +82,8 @@ class ServerHandler(context: Context?) {
                           turn: String = "",
                           captainIndex1: String = "",
                           captainIndex2: String = "",
-                          clue: String = "",): String {
+                          clue: String = "",
+                          voteIndex: String = ""): String {
         var reqParsed = url.plus("req=$req")
         if (userId != "") reqParsed = reqParsed.plus("&userId=$userId")
         if (googleUserId != "") reqParsed = reqParsed.plus("&googleUserId=$googleUserId")
@@ -97,6 +100,7 @@ class ServerHandler(context: Context?) {
         if (captainIndex1 != "") reqParsed = reqParsed.plus("&captainIndex1=$captainIndex1")
         if (captainIndex2 != "") reqParsed = reqParsed.plus("&captainIndex2=$captainIndex2")
         if (clue != "") reqParsed = reqParsed.plus("&clue=$clue")
+        if (voteIndex != "") reqParsed = reqParsed.plus("&voteIndex=$voteIndex")
         return reqParsed
     }
 
