@@ -21,18 +21,12 @@ import com.example.androidstudio.game.GuessCardFragment
 import com.example.androidstudio.home.profile.ProfileFragment
 import kotlin.properties.Delegates
 
-class GameView: View, View.OnTouchListener {
-
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    )
+class GameView(context: Context?) : View(context), View.OnTouchListener, View.OnClickListener {
 
     init {
         setOnTouchListener(this)
+        setOnClickListener(this)
+        isDuplicateParentStateEnabled = false
     }
 
     // painter
@@ -276,6 +270,7 @@ class GameView: View, View.OnTouchListener {
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        Log.i(Config.GAME_VIEW_TAG, event?.action.toString())
         if (userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2) {
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -292,11 +287,16 @@ class GameView: View, View.OnTouchListener {
                                 "GameView->GuessCardView"
                             )
                             Log.i(Config.GAME_VIEW_TAG, card.word.toString())
+                            break
                         }
                     }
                 }
             }
         }
         return true
+    }
+
+    override fun onClick(p0: View?) {
+
     }
 }

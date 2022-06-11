@@ -20,6 +20,7 @@ import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.views.GameView
+import com.example.androidstudio.game.views.GuessCardView
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -128,7 +129,7 @@ class GameFragment : Fragment(), View.OnClickListener{
 //        chatTitle.text = "${resources.getString(R.string.team_chat)} ${gameView.userGame.team}"
 //        val b = requireActivity().findViewById<ImageButton>(R.id.game_send_message_image_button)
 //        b.setOnClickListener {
-//            gameView.gameLobby.turn = if (gameView.gameLobby.turn == "red") "green" else "red"
+//            gameView.gameLobby.turn = if (gameView.gameLobby.turn == "Team Red") "Team Green" else "Team Red"
 //            gameView.invalidate()
 //        }
 
@@ -301,7 +302,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
             updateBottomPart()
             updateRightPart()
-            gameView.postInvalidate()
+            gameView.invalidate()
         }
     }
 

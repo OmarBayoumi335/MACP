@@ -31,7 +31,6 @@ class GuessCardFragment(
         guessCardView.requireContext = requireContext()
         guessCardView.userGame = userGame
         guessCardView.gameLobby = gameLobby
-
         return guessCardView
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

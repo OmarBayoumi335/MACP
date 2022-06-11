@@ -29,6 +29,7 @@ import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.GuessCardFragment
+import org.json.JSONObject
 import kotlin.properties.Delegates
 
 
