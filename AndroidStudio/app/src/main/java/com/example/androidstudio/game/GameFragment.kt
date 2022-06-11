@@ -243,6 +243,7 @@ class GameFragment : Fragment(), View.OnClickListener{
     }
 
     private fun updateBottomPart() {
+        Log.i(Config.GAME_VIEW_TAG, gameLobby.currentClue.toString())
         if (gameLobby.turn == userGame.team) { // my turn
             if ((userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2)) { // not captain
                 if (gameLobby.turnPhase == 0) {
@@ -260,6 +261,7 @@ class GameFragment : Fragment(), View.OnClickListener{
         } else { // opponent turn
             gameActivity.setViewOpponentTurn()
         }
+
     }
 
     @SuppressLint("SetTextI18n")
