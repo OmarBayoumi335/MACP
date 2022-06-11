@@ -184,16 +184,16 @@ class GameView: View, View.OnTouchListener {
                     )
                     textBound = Rect()
                     cardTextVotePaint.getTextBounds(
-                        "4",
+                        numberVoteCard.toString(),
                         0,
-                        "4".length,
+                        numberVoteCard.toString().length,
                         textBound
                     )
                     textX = roundRectCard.right - padding - textBound.exactCenterX()
                     textY = roundRectCard.top + padding - textBound.exactCenterY()
                     // draw the text
                     canvas?.drawText(
-                        "4",
+                        numberVoteCard.toString(),
                         textX,
                         textY,
                         cardTextVotePaint
