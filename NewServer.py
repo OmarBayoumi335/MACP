@@ -504,11 +504,15 @@ class EnigmaServer(Resource):
                 newDirectionsList.append(direction)
             clue["directions"] = newDirectionsList
             db.child("GameLobbies").child(self.gameLobbyId).update({"clue": clue})
-            newHint = MAX_HINT - len(directionsList)
             if captainteam1 == self.userId:
+                currentHint = db.child("GameLobbies").child(self.gameLobbyId).child("hint1").get().val()
+                newHint = currentHint - len(directionsList)
                 db.child("GameLobbies").child(self.gameLobbyId).update({"hint1": newHint})
             else:
+                currentHint = db.child("GameLobbies").child(self.gameLobbyId).child("hint2").get().val()
+                newHint = currentHint - len(directionsList)
                 db.child("GameLobbies").child(self.gameLobbyId).update({"hint2": newHint})
+            db.child("GameLobbies").child(self.gameLobbyId).update({"turnPhase": 1})
             return {"message": "clue sended", "error": False}
             
         

@@ -16,17 +16,20 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.types.Clue
-import com.example.androidstudio.classes.types.GameLobby
-import com.example.androidstudio.classes.types.UserGame
+import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.views.GameView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import org.json.JSONObject
 
 class GameFragment : Fragment(), View.OnClickListener{
 
+    private val dataBase = FirebaseDatabase.getInstance().reference
     private lateinit var serverHandler: ServerHandler
     private lateinit var gameLobby: GameLobby
     private lateinit var userGame: UserGame
@@ -79,32 +82,10 @@ class GameFragment : Fragment(), View.OnClickListener{
         gameActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         // set bottom part view
-        if (gameLobby.turn == userGame.team) { // my turn
-            if ((userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2)) { // not captain
-                if (gameLobby.turnPhase == 0) {
-                    gameActivity.setViewOpponentTurn()
-                } else {
-                    gameActivity.setViewMyTurnMember()
-                }
-            } else {
-                gameActivity.setViewMyTurnCaptain()
-            }
-        } else { // opponent turn
-            gameActivity.setViewOpponentTurn()
-        }
+        updateBottomPart()
 
-        // turn title
-        val turn = gameActivity.findViewById<TextView>(R.id.game_turn_team_textview)
-        val phase = if (gameLobby.turnPhase == 0) {
-            resources.getString(R.string.phase1)
-        } else {
-            resources.getString(R.string.phase2)
-        }
-        turn.text = "${gameLobby.turn}: $phase"
-
-        // chat title
-        val chatTitle = gameActivity.findViewById<TextView>(R.id.game_chat_team_title_textview)
-        chatTitle.text = userGame.team
+        // set right part view
+        updateRightPart()
 
         // send message in chat
         val sendMessageButton = gameActivity.findViewById<ImageButton>(R.id.game_send_message_image_button)
@@ -193,6 +174,7 @@ class GameFragment : Fragment(), View.OnClickListener{
         giveClue.setOnClickListener(this)
         giveClue.isClickable = false
 
+        updateGameLobby()
         return gameView
     }
 
@@ -247,11 +229,85 @@ class GameFragment : Fragment(), View.OnClickListener{
             directions = buttonDirection.text.toString().split(" ").toMutableList()
         }
         val clue = Clue(text, number, directions)
-        serverHandler.apiCall(Config.POST, Config.POST_SEND_CLUE, userId = userGame.userId, gameLobbyId = gameLobby.lobbyId, clue = clue.toString())
-        Log.i(Config.GAME_VIEW_TAG, clue.toString())
+        serverHandler.apiCall(
+            Config.POST,
+            Config.POST_SEND_CLUE,
+            userId = userGame.userId,
+            gameLobbyId = gameLobby.lobbyId,
+            clue = clue.toString()
+        )
     }
 
     private fun checkClue() {
         giveClue.isClickable = selectNumber && selectText
+    }
+
+    private fun updateBottomPart() {
+        if (gameLobby.turn == userGame.team) { // my turn
+            if ((userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2)) { // not captain
+                if (gameLobby.turnPhase == 0) {
+                    gameActivity.setViewOpponentTurn()
+                } else {
+                    gameActivity.setViewMyTurnMember()
+                }
+            } else { // captain
+                if (gameLobby.turnPhase == 1) {
+                    gameActivity.setViewOpponentTurn()
+                } else {
+                    gameActivity.setViewMyTurnCaptain()
+                }
+            }
+        } else { // opponent turn
+            gameActivity.setViewOpponentTurn()
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateRightPart() {
+        // turn title
+        val turn = gameActivity.findViewById<TextView>(R.id.game_turn_team_textview)
+        val phase = if (gameLobby.turnPhase == 0) {
+            resources.getString(R.string.phase1)
+        } else {
+            resources.getString(R.string.phase2)
+        }
+        turn.text = "${gameLobby.turn}: $phase"
+
+        // chat title
+        val chatTitle = gameActivity.findViewById<TextView>(R.id.game_chat_team_title_textview)
+        chatTitle.text = userGame.team
+    }
+
+    private fun updateGameLobbyUI(newGameLobby: GameLobby) {
+        gameLobby.lobbyId = newGameLobby.lobbyId
+        gameLobby.members = newGameLobby.members
+        gameLobby.chatTeam1 = newGameLobby.chatTeam1
+        gameLobby.chatTeam2 = newGameLobby.chatTeam2
+        gameLobby.turn = newGameLobby.turn
+        gameLobby.turnPhase = newGameLobby.turnPhase
+        gameLobby.words = newGameLobby.words
+        gameLobby.captainIndex1 = newGameLobby.captainIndex1
+        gameLobby.captainIndex2 = newGameLobby.captainIndex2
+        gameLobby.hint1 = newGameLobby.hint1
+        gameLobby.hint2 = newGameLobby.hint2
+        gameLobby.currentClue = newGameLobby.currentClue
+        updateBottomPart()
+        updateRightPart()
+    }
+
+    private fun updateGameLobby() {
+        dataBase.child("GameLobbies").child(gameLobby.lobbyId).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val newGameLobby = snapshot.getValue(GameLobby::class.java)
+                if (newGameLobby != null) {
+                    updateGameLobbyUI(newGameLobby)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 }
