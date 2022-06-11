@@ -300,6 +300,7 @@ class GameFragment : Fragment(), View.OnClickListener{
         }
         updateBottomPart()
         updateRightPart()
+        gameView.invalidate()
     }
 
     private fun updateGameLobby() {
