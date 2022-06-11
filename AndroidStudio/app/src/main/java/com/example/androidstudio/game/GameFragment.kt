@@ -281,26 +281,27 @@ class GameFragment : Fragment(), View.OnClickListener{
     }
 
     private fun updateGameLobbyUI(newGameLobby: GameLobby) {
-        gameLobby.lobbyId = newGameLobby.lobbyId
-        gameLobby.members = newGameLobby.members
-        gameLobby.chatTeam1 = newGameLobby.chatTeam1
-        gameLobby.chatTeam2 = newGameLobby.chatTeam2
-        gameLobby.turn = newGameLobby.turn
-        gameLobby.turnPhase = newGameLobby.turnPhase
-        gameLobby.words = newGameLobby.words
-        gameLobby.captainIndex1 = newGameLobby.captainIndex1
-        gameLobby.captainIndex2 = newGameLobby.captainIndex2
-        gameLobby.hint1 = newGameLobby.hint1
-        gameLobby.hint2 = newGameLobby.hint2
-        gameLobby.clue = newGameLobby.clue
-        for (member in gameLobby.members) {
-            if (member.userId == userGame.userId) {
-                userGame.vote = member.vote
+        if (gameLobby != newGameLobby) {
+            gameLobby.lobbyId = newGameLobby.lobbyId
+            gameLobby.members = newGameLobby.members
+            gameLobby.chatTeam1 = newGameLobby.chatTeam1
+            gameLobby.chatTeam2 = newGameLobby.chatTeam2
+            gameLobby.turn = newGameLobby.turn
+            gameLobby.turnPhase = newGameLobby.turnPhase
+            gameLobby.words = newGameLobby.words
+            gameLobby.captainIndex1 = newGameLobby.captainIndex1
+            gameLobby.captainIndex2 = newGameLobby.captainIndex2
+            gameLobby.hint1 = newGameLobby.hint1
+            gameLobby.hint2 = newGameLobby.hint2
+            gameLobby.clue = newGameLobby.clue
+            for (member in gameLobby.members) {
+                if (member.userId == userGame.userId) {
+                    userGame.vote = member.vote
+                }
             }
+            updateBottomPart()
+            updateRightPart()
         }
-        updateBottomPart()
-        updateRightPart()
-        gameView.invalidate()
     }
 
     private fun updateGameLobby() {

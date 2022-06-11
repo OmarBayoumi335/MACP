@@ -43,4 +43,42 @@ data class GameLobby(var lobbyId: String,
                 "clue=$clue)"
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GameLobby
+
+        if (lobbyId != other.lobbyId) return false
+        if (members != other.members) return false
+        if (chatTeam1 != other.chatTeam1) return false
+        if (chatTeam2 != other.chatTeam2) return false
+        if (turn != other.turn) return false
+        if (turnPhase != other.turnPhase) return false
+        if (words != other.words) return false
+        if (captainIndex1 != other.captainIndex1) return false
+        if (captainIndex2 != other.captainIndex2) return false
+        if (hint1 != other.hint1) return false
+        if (hint2 != other.hint2) return false
+        if (clue != other.clue) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = lobbyId.hashCode()
+        result = 31 * result + members.hashCode()
+        result = 31 * result + chatTeam1.hashCode()
+        result = 31 * result + chatTeam2.hashCode()
+        result = 31 * result + turn.hashCode()
+        result = 31 * result + turnPhase
+        result = 31 * result + words.hashCode()
+        result = 31 * result + captainIndex1.hashCode()
+        result = 31 * result + captainIndex2.hashCode()
+        result = 31 * result + hint1
+        result = 31 * result + hint2
+        result = 31 * result + clue.hashCode()
+        return result
+    }
+
 }
