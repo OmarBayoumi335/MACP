@@ -68,7 +68,7 @@ class GameActivity : AppCompatActivity(){
         updateBottomView(text, number, directions, clue)
     }
 
-    fun setViewMyTurnCaptain(clue: Clue) {
+    fun setViewMyTurnCaptain() {
         myTurnMember.visibility = View.GONE
         myTurnCaptain.visibility = View.VISIBLE
         opponentTurnMember.visibility = View.GONE
