@@ -49,6 +49,7 @@ POST_CHANGE_READY_STATUS = "post7"
 POST_JOIN_GAME_LOBBY = "post8"
 POST_SEND_CLUE = "post9"
 POST_VOTE = "post10"
+POST_READY = "post11"
 POST_PROVA = "prova"
 
 # DELETE
@@ -179,25 +180,17 @@ class EnigmaServer(Resource):
         
         #5 return the number of member joined in game. Input(req, gameLobbyId)
         if self.req == GET_GAME_LOBBY_NUMBER_OF_MEMBERS:
-            gameLobby = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
-            return {"message": "number of members", "number": len(gameLobby), "error": False}
+            members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
+            members = [] if members == None else members
+            return {"message": "number of members", "number": len(members), "error": False}
         
-        #6 return true if all member are joined, false otherwise. Input(req, userId, team, gameLobbyId)
+        #6 return true if all member are joined, false otherwise. Input(req, gameLobbyId)
         if self.req == GET_ALL_READY_GAME:
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
-            user = db.child("Users").child(self.userId).get().val()
-            userGame = {"userId": self.userId,
-                        "username": user["username"],
-                        "team": self.team,
-                        "ready": True,
-                        "vote": 100}
-            if userGame not in members:
-                members.append(userGame)
-                db.child("GameLobbies").child(self.gameLobbyId).update({"members": members})
             for member in members:
                 if member["ready"] == False:
-                    return {"message": "not everyone is ready to start", "allReady": False, "members": len(members), "error": False}
-            return {"message": "all are ready to start", "allReady": True, "members": len(members), "error": False}
+                    return {"message": "not everyone is ready to start", "allReady": False, "error": False}
+            return {"message": "all are ready to start", "allReady": True, "error": False}
         
         #7 returns information on: game lobby and the 'user game' that called this API. Input(req, userId, gameLobbyId)
         if self.req == GET_GAME_INFORMATION:
@@ -483,18 +476,16 @@ class EnigmaServer(Resource):
             
         #8 join the game lobby. Input(req, userId, team, gameLobbyId)
         if self.req == POST_JOIN_GAME_LOBBY:
-            if (db.child("GameLobbies").child(self.gameLobbyId).get().val() == None):
-                return {"message": "game lobby not yet created", "lobbyExist": False, "error": False}
             user = db.child("Users").child(self.userId).get().val()
             userGame = {"userId": self.userId,
                         "username": user["username"],
                         "team": self.team,
-                        "ready": True,
+                        "ready": False,
                         "vote": 100}
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             members.append(userGame)
             db.child("GameLobbies").child(self.gameLobbyId).update({"members": members})
-            return {"message": "user joined in the game lobby", "lobbyExist": True, "error": False}
+            return {"message": "user joined in the game lobby", "error": False}
         
         #9 captain send clue. Input(req, userId, gamelobby, clue)
         if self.req == POST_SEND_CLUE:
@@ -543,7 +534,12 @@ class EnigmaServer(Resource):
             for member in members:
                 if (self.team == member["team"] and member["userId"] != captainIndex1 and member["userId"] != captainIndex2):
                     votes[member["vote"]] += 1
-            cardToTurn = votes.index(max(votes))
+            passVotes = votes[-1]
+            otherVotes = sum(votes[:-1])
+            if passVotes > otherVotes:
+                cardToTurn = 16
+            else:
+                cardToTurn = votes.index(max(votes[:-1]))
             changeTurn = False
             if cardToTurn != 16:
                 colorCard = db.child("GameLobbies").child(self.gameLobbyId).child("words").child(str(cardToTurn)).child("color").get().val()
@@ -574,6 +570,17 @@ class EnigmaServer(Resource):
                 if (self.team == member["team"]):
                     db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"vote": 100})            
             return {"message": "vote inserted and turn/phase changed", "error": False}
+        
+        #11 set ready for the game. Input(req, userId, gameLobbyId)
+        if self.req == POST_READY:
+            members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
+            me = 0
+            for i, member in enumerate(members):
+                if member["userId"] == self.userId:
+                    me = i
+                    break
+            db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(me)).update({"ready": True})
+            return {"message": "ready status changed", "error": False}
         
         if self.req == POST_PROVA:
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
@@ -664,15 +671,10 @@ class EnigmaServer(Resource):
             db.child("Users").child(self.userId).update({"pendingInviteRequests":newPendingInviteRequests})
             return{"message": "invites removed", "error": False}
         
-        #4 delete the party lobby and set ready for the game lobby. Input(req, lobbyId, gameLobbyId, userId)
+        #4 delete the party lobby and set ready for the game lobby. Input(req, lobbyId)
         if self.req == DELETE_LOBBY:
             db.child("Lobbies").child(self.lobbyId).remove()
-            members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
-            for i, member in enumerate(members):
-                if member["userId"] == self.userId:
-                    db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"ready": True})
-                    break
-            return {"message": "party lobby deleted and ready to play", "error": False}
+            return {"message": "party lobby deleted", "error": False}
         return {"message": "delete request failed", "error": True}
 
 

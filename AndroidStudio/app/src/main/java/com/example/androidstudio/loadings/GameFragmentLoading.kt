@@ -11,9 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.androidstudio.R
-import com.example.androidstudio.classes.types.GameLobby
-import com.example.androidstudio.classes.types.User
-import com.example.androidstudio.classes.types.Word
+import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.GameActivity
@@ -35,6 +33,7 @@ class GameFragmentLoading : Fragment() {
     private lateinit var captainIndex2: String
     private lateinit var myTeam: String
     private lateinit var words: MutableList<Word>
+    private lateinit var lobby: Lobby
 
     private lateinit var user: User
     private lateinit var gameLobby: GameLobby
@@ -49,6 +48,10 @@ class GameFragmentLoading : Fragment() {
 //        val gameActivity: GameActivity = requireActivity() as GameActivity
 //        gameActivity.setViewVisible()
         serverHandler = ServerHandler(requireContext())
+
+        val lobbyString = requireActivity().intent.extras?.getString("lobby")!!
+        val gson = Gson()
+        lobby = gson.fromJson(lobbyString, Lobby::class.java)
 
         // If i click ready last
         starter = requireActivity().intent.extras?.getBoolean("starter")!!
@@ -127,7 +130,7 @@ class GameFragmentLoading : Fragment() {
         return words.shuffled().toMutableList()
     }
 
-    private fun joinLobbyGame(pollingPhase: String) {
+    private fun joinLobbyGame(pollingPhase: String, numberJoined: Int = 0, team: String = resources.getString(R.string.team1)) {
         Log.i(Config.LOADING_GAME_TAG, "Polling cycle start: $pollingPhase")
         when (pollingPhase) {
             "getUser" -> {
@@ -144,7 +147,7 @@ class GameFragmentLoading : Fragment() {
                                 if (starter) {
                                     joinLobbyGame("createGameLobby")
                                 } else {
-                                    joinLobbyGame("joinGameLobby")
+                                    joinLobbyGame("waiting")
                                 }
                             },
                                 Config.POLLING_PERIOD)
@@ -172,72 +175,57 @@ class GameFragmentLoading : Fragment() {
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
                             Handler(Looper.getMainLooper()).postDelayed({
-                                joinLobbyGame("deleteLobby")
+                                joinLobbyGame("makeJoinMember")
                             },
                                 Config.POLLING_PERIOD)
                         }
                     })
             }
-            "joinGameLobby" -> {
+            "makeJoinMember" -> {
+                val teamList: MutableList<UserLobby> = if (team == resources.getString(R.string.team1)) {
+                    lobby.team1
+                } else {
+                    lobby.team2
+                }
                 serverHandler.apiCall(
                     Config.POST,
                     Config.POST_JOIN_GAME_LOBBY,
-                    userId = userId,
-                    team = myTeam,
+                    userId = teamList[numberJoined].userId,
+                    team = team,
                     gameLobbyId = gameLobbyId,
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
-                            val lobbyExist = reply?.getBoolean("lobbyExist")
-                            if (lobbyExist!!) {
+                            var newNumberJoined = numberJoined + 1
+                            var newTeam = team
+                            if (teamList.size == newNumberJoined) {
+                                newNumberJoined = 0
+                                newTeam = resources.getString(R.string.team2)
+                            }
+                            if(newTeam == resources.getString(R.string.team2) && newNumberJoined == teamList.size) {
                                 Handler(Looper.getMainLooper()).postDelayed({
-                                    joinLobbyGame("waiting")
+                                    joinLobbyGame("deleteLobby")
                                 },
                                     Config.POLLING_PERIOD)
                             } else {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    joinLobbyGame("joinGameLobby")
-                                },
-                                    Config.POLLING_PERIOD)
+                                Handler(Looper.getMainLooper()).postDelayed(
+                                    {
+                                        joinLobbyGame("makeJoinMember", newNumberJoined, newTeam)
+                                    },
+                                    Config.POLLING_PERIOD
+                                )
                             }
                         }
                     })
             }
             "deleteLobby" -> {
                 serverHandler.apiCall(
-                    Config.GET,
-                    Config.GET_GAME_LOBBY_NUMBER_OF_MEMBERS,
-                    gameLobbyId = gameLobbyId,
+                    Config.DELETE,
+                    Config.DELETE_LOBBY,
+                    lobbyId = lobbyId,
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
-                            val number = reply?.getInt("number")
-                            if (number == lobbyGameMembers) {
-                                serverHandler.apiCall(
-                                    Config.DELETE,
-                                    Config.DELETE_LOBBY,
-                                    lobbyId = lobbyId,
-                                    gameLobbyId = gameLobbyId,
-                                    userId = userId,
-                                    callBack = object : ServerHandler.VolleyCallBack {
-                                        override fun onSuccess(reply: JSONObject?) {
-                                            Handler(Looper.getMainLooper()).postDelayed({
-                                                joinLobbyGame("waiting")
-                                            },
-                                                Config.POLLING_PERIOD)
-                                        }
-                                    }
-                                )
-                            } else {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    joinLobbyGame("deleteLobby")
-                                },
-                                    Config.POLLING_PERIOD)
-                            }
-                        }
-                    },
-                    callBackError = object : ServerHandler.VolleyCallBackError {
-                        override fun onError() {
                             Handler(Looper.getMainLooper()).postDelayed({
-                                joinLobbyGame("deleteLobby")
+                                joinLobbyGame("waiting")
                             },
                                 Config.POLLING_PERIOD)
                         }
@@ -247,17 +235,14 @@ class GameFragmentLoading : Fragment() {
             "waiting" -> {
                 serverHandler.apiCall(
                     Config.GET,
-                    Config.GET_ALL_READY_GAME,
+                    Config.GET_GAME_LOBBY_NUMBER_OF_MEMBERS,
                     gameLobbyId = gameLobbyId,
-                    userId = userId,
-                    team = myTeam,
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
-                            val allReady = reply?.getBoolean("allReady")
-                            val members = reply?.getInt("members")
-                            if (allReady!! && members == lobbyGameMembers) {
+                            val number = reply?.getInt("number")
+                            if (number == lobbyGameMembers) {
                                 Handler(Looper.getMainLooper()).postDelayed({
-                                    joinLobbyGame("allReady")
+                                    joinLobbyGame("setReady")
                                 },
                                     Config.POLLING_PERIOD)
                             } else {
@@ -267,46 +252,198 @@ class GameFragmentLoading : Fragment() {
                                     Config.POLLING_PERIOD)
                             }
                         }
-                    },
-                    callBackError = object : ServerHandler.VolleyCallBackError {
-                        override fun onError() {
+                    }
+                )
+            }
+            "setReady" -> {
+                serverHandler.apiCall(
+                    Config.POST,
+                    Config.POST_READY,
+                    gameLobbyId = gameLobbyId,
+                    userId = userId,
+                    callBack = object : ServerHandler.VolleyCallBack {
+                        override fun onSuccess(reply: JSONObject?) {
                             Handler(Looper.getMainLooper()).postDelayed({
-                                joinLobbyGame("waiting")
+                                joinLobbyGame("allReadyWaiting")
                             },
                                 Config.POLLING_PERIOD)
                         }
                     }
                 )
             }
-            "allReady" -> {
-                // INTENT PUT EXTRA JSON
-                // GameUser
-                // LobbyGame
+            "allReadyWaiting" -> {
                 serverHandler.apiCall(
                     Config.GET,
-                    Config.GET_GAME_INFORMATION,
-                    userId = userId,
+                    Config.GET_ALL_READY_GAME,
                     gameLobbyId = gameLobbyId,
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
-                            val userGameJsonString = reply?.get("userGame").toString()
-                            val gameLobbyJsonString = reply?.get("gameLobby").toString()
-                            val bundle = Bundle()
-                            bundle.putString("userGame", userGameJsonString)
-                            bundle.putString("gameLobby", gameLobbyJsonString)
-                            findNavController().navigate(R.id.action_gameFragmentLoading_to_gameFragment, bundle)
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                joinLobbyGame("pollingEnd")
-                            },
-                                Config.POLLING_PERIOD)
+                            val allReady = reply?.getBoolean("allReady")
+                            if (allReady!!) {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    joinLobbyGame("allReady")
+                                },
+                                    Config.POLLING_PERIOD)
+                            } else {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    joinLobbyGame("allReadyWaiting")
+                                },
+                                    Config.POLLING_PERIOD)
+                            }
                         }
-                    })
+                    }
+                )
+            }
+            "allReady" -> {
+                serverHandler.apiCall(
+                Config.GET,
+                Config.GET_GAME_INFORMATION,
+                userId = userId,
+                gameLobbyId = gameLobbyId,
+                callBack = object : ServerHandler.VolleyCallBack {
+                    override fun onSuccess(reply: JSONObject?) {
+                        val userGameJsonString = reply?.get("userGame").toString()
+                        val gameLobbyJsonString = reply?.get("gameLobby").toString()
+                        val bundle = Bundle()
+                        bundle.putString("userGame", userGameJsonString)
+                        bundle.putString("gameLobby", gameLobbyJsonString)
+                        findNavController().navigate(R.id.action_gameFragmentLoading_to_gameFragment, bundle)
+                        val gameActivity: GameActivity = requireActivity() as GameActivity
+                        gameActivity.setViewVisible()
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            joinLobbyGame("pollingEnd")
+                        },
+                            Config.POLLING_PERIOD)
+                    }
+                })
             }
             "pollingEnd" -> {
-                val gameActivity: GameActivity = requireActivity() as GameActivity
-                gameActivity.setViewVisible()
                 Log.i(Config.LOADING_GAME_TAG, "Polling ended")
             }
+//            "joinGameLobby" -> {
+//                serverHandler.apiCall(
+//                    Config.POST,
+//                    Config.POST_JOIN_GAME_LOBBY,
+//                    userId = userId,
+//                    team = myTeam,
+//                    gameLobbyId = gameLobbyId,
+//                    callBack = object : ServerHandler.VolleyCallBack {
+//                        override fun onSuccess(reply: JSONObject?) {
+//                            val lobbyExist = reply?.getBoolean("lobbyExist")
+//                            if (lobbyExist!!) {
+//                                Handler(Looper.getMainLooper()).postDelayed({
+//                                    joinLobbyGame("waiting")
+//                                },
+//                                    Config.POLLING_PERIOD)
+//                            } else {
+//                                Handler(Looper.getMainLooper()).postDelayed({
+//                                    joinLobbyGame("joinGameLobby")
+//                                },
+//                                    Config.POLLING_PERIOD)
+//                            }
+//                        }
+//                    })
+//            }
+//            "deleteLobby" -> {
+//                serverHandler.apiCall(
+//                    Config.GET,
+//                    Config.GET_GAME_LOBBY_NUMBER_OF_MEMBERS,
+//                    gameLobbyId = gameLobbyId,
+//                    callBack = object : ServerHandler.VolleyCallBack {
+//                        override fun onSuccess(reply: JSONObject?) {
+//                            val number = reply?.getInt("number")
+//                            if (number == lobbyGameMembers) {
+//                                serverHandler.apiCall(
+//                                    Config.DELETE,
+//                                    Config.DELETE_LOBBY,
+//                                    lobbyId = lobbyId,
+//                                    gameLobbyId = gameLobbyId,
+//                                    userId = userId,
+//                                    callBack = object : ServerHandler.VolleyCallBack {
+//                                        override fun onSuccess(reply: JSONObject?) {
+//                                            Handler(Looper.getMainLooper()).postDelayed({
+//                                                joinLobbyGame("waiting")
+//                                            },
+//                                                Config.POLLING_PERIOD)
+//                                        }
+//                                    }
+//                                )
+//                            } else {
+//                                Handler(Looper.getMainLooper()).postDelayed({
+//                                    joinLobbyGame("deleteLobby")
+//                                },
+//                                    Config.POLLING_PERIOD)
+//                            }
+//                        }
+//                    },
+//                    callBackError = object : ServerHandler.VolleyCallBackError {
+//                        override fun onError() {
+//                            Handler(Looper.getMainLooper()).postDelayed({
+//                                joinLobbyGame("deleteLobby")
+//                            },
+//                                Config.POLLING_PERIOD)
+//                        }
+//                    }
+//                )
+//            }
+//            "waiting" -> {
+//                serverHandler.apiCall(
+//                    Config.GET,
+//                    Config.GET_ALL_READY_GAME,
+//                    gameLobbyId = gameLobbyId,
+//                    userId = userId,
+//                    team = myTeam,
+//                    callBack = object : ServerHandler.VolleyCallBack {
+//                        override fun onSuccess(reply: JSONObject?) {
+//                            val allReady = reply?.getBoolean("allReady")
+//                            val members = reply?.getInt("members")
+//                            if (allReady!! && members == lobbyGameMembers) {
+//                                Handler(Looper.getMainLooper()).postDelayed({
+//                                    joinLobbyGame("allReady")
+//                                },
+//                                    Config.POLLING_PERIOD)
+//                            } else {
+//                                Handler(Looper.getMainLooper()).postDelayed({
+//                                    joinLobbyGame("waiting")
+//                                },
+//                                    Config.POLLING_PERIOD)
+//                            }
+//                        }
+//                    },
+//                    callBackError = object : ServerHandler.VolleyCallBackError {
+//                        override fun onError() {
+//                            Handler(Looper.getMainLooper()).postDelayed({
+//                                joinLobbyGame("waiting")
+//                            },
+//                                Config.POLLING_PERIOD)
+//                        }
+//                    }
+//                )
+//            }
+//            "allReady" -> {
+//                // INTENT PUT EXTRA JSON
+//                // GameUser
+//                // LobbyGame
+//                serverHandler.apiCall(
+//                    Config.GET,
+//                    Config.GET_GAME_INFORMATION,
+//                    userId = userId,
+//                    gameLobbyId = gameLobbyId,
+//                    callBack = object : ServerHandler.VolleyCallBack {
+//                        override fun onSuccess(reply: JSONObject?) {
+//                            val userGameJsonString = reply?.get("userGame").toString()
+//                            val gameLobbyJsonString = reply?.get("gameLobby").toString()
+//                            val bundle = Bundle()
+//                            bundle.putString("userGame", userGameJsonString)
+//                            bundle.putString("gameLobby", gameLobbyJsonString)
+//                            findNavController().navigate(R.id.action_gameFragmentLoading_to_gameFragment, bundle)
+//                            Handler(Looper.getMainLooper()).postDelayed({
+//                                joinLobbyGame("pollingEnd")
+//                            },
+//                                Config.POLLING_PERIOD)
+//                        }
+//                    })
+//            }
         }
     }
 }

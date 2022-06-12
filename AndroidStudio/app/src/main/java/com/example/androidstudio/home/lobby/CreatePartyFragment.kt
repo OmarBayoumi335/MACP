@@ -274,6 +274,9 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         intent.putExtra("captainIndex1", lobby.team1.random().userId)
         intent.putExtra("captainIndex2", lobby.team2.random().userId)
         intent.putExtra("team", getTeam())
+        val gson = Gson()
+        val lobbyStringJSON = gson.toJson(lobby)
+        intent.putExtra("lobby", lobbyStringJSON)
         return intent
     }
 
