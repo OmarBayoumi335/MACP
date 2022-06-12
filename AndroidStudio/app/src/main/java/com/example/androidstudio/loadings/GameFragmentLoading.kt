@@ -165,11 +165,9 @@ class GameFragmentLoading : Fragment() {
                 serverHandler.apiCall(
                     Config.PUT,
                     Config.PUT_NEW_GAME_LOBBY,
-                    userId = userId,
                     gameLobbyId = gameLobbyId,
                     words = toStringWords,
                     turn = turns[0],
-                    team = myTeam,
                     captainIndex1 = captainIndex1,
                     captainIndex2 = captainIndex2,
                     callBack = object : ServerHandler.VolleyCallBack {
@@ -197,10 +195,11 @@ class GameFragmentLoading : Fragment() {
                         override fun onSuccess(reply: JSONObject?) {
                             var newNumberJoined = numberJoined + 1
                             var newTeam = team
-                            if (teamList.size == newNumberJoined) {
+                            if (teamList.size == newNumberJoined && newTeam != resources.getString(R.string.team2)) {
                                 newNumberJoined = 0
                                 newTeam = resources.getString(R.string.team2)
                             }
+//                            Log.i(Config.LOADING_GAME_TAG, "$newTeam  $newNumberJoined ${teamList.size}")
                             if(newTeam == resources.getString(R.string.team2) && newNumberJoined == teamList.size) {
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     joinLobbyGame("deleteLobby")

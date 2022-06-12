@@ -235,14 +235,8 @@ class EnigmaServer(Resource):
             db.child("Lobbies").child(lobbyId).set(lobby)
             return {"message": "lobby created", "lobby": lobby, "error": False}
         
-        #2 create new lobby for the game. Input(req, userId, gameLobbyId, words, turn, team, captainIndex1, captainIndex2)
+        #2 create new lobby for the game. Input(req, gameLobbyId, words, turn, captainIndex1, captainIndex2)
         if self.req == PUT_NEW_GAME_LOBBY:
-            user = db.child("Users").child(self.userId).get().val()
-            userGame = {"userId": user["userId"], 
-                        "username": user["username"],
-                        "team": self.team,
-                        "ready": False,
-                        "vote": 100}
             words = []
             for word in self.words.split("--"):
                 turned = True if word.split("_")[3].lower() == "true" else False
@@ -252,7 +246,7 @@ class EnigmaServer(Resource):
                      "direction": word.split("_")[2], 
                      "turned": turned})
             gameLobby = {"lobbyId": self.gameLobbyId, 
-                         "members": [userGame],
+                         "members": [],
                          "chatTeam1": [],
                          "chatTeam2": [],
                          "turn": self.turn,
@@ -483,6 +477,7 @@ class EnigmaServer(Resource):
                         "ready": False,
                         "vote": 100}
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
+            members = [] if members == None else members
             members.append(userGame)
             db.child("GameLobbies").child(self.gameLobbyId).update({"members": members})
             return {"message": "user joined in the game lobby", "error": False}
