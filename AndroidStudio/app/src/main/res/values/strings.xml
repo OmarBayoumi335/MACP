@@ -81,4 +81,7 @@
     <string name="remaining_hints">Remaining hints:</string>
     <string name="phase1">Captain choosing a clue</string>
     <string name="phase2">Your member are guessing</string>
+    <string name="you_win">Your team won</string>
+    <string name="you_lose">Your team lost</string>
+    <string name="come_back_home">Go to home</string>
 </resources>

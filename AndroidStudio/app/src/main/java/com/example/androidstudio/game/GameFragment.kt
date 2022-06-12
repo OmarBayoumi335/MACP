@@ -297,7 +297,9 @@ class GameFragment : Fragment(), View.OnClickListener{
                 }
             }
             if (gameLobby.winner != "no") {
-                // qualcuno ha vinto
+                val iWon = userGame.team == gameLobby.winner
+                val endGameFragment = EndGameFragment(iWon)
+                endGameFragment.show(gameActivity.supportFragmentManager, "GameFragment->EndGameFragment")
             }
             updateBottomPart()
             updateRightPart()
