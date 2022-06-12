@@ -118,7 +118,7 @@ class GameFragmentLoading : Fragment() {
                 } else {
                     "black"
                 }
-                words.add(Word(randomElement, color, directions.random()))
+                words.add(Word(randomElement, color, directions.random(), false))
                 if (i == 16) {
                     break
                 }

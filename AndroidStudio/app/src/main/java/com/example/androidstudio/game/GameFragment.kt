@@ -15,6 +15,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
@@ -37,6 +38,7 @@ class GameFragment : Fragment(), View.OnClickListener{
     private lateinit var gameView: GameView
     private lateinit var buttonDirection: Button
     private lateinit var buttonNumberHint: Button
+    private lateinit var buttonPass: Button
     private lateinit var selectNumberHintLayout: ConstraintLayout
     private lateinit var buttonValue1: Button
     private lateinit var buttonValue2: Button
@@ -82,12 +84,6 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
         gameActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        // set bottom part view
-        updateBottomPart()
-
-        // set right part view
-        updateRightPart()
-
         // send message in chat
         val sendMessageButton = gameActivity.findViewById<ImageButton>(R.id.game_send_message_image_button)
         sendMessageButton.setOnClickListener(this)
@@ -96,69 +92,34 @@ class GameFragment : Fragment(), View.OnClickListener{
         gameView.gameLobby = gameLobby
         gameView.userGame = userGame
 
-
-
-//        val words = mutableListOf(
-//            Word("importer", "green", "SOUTH"),
-//            Word("esok", "gray", "NORTH"),
-//            Word("morbidity", "green", "EAST"),
-//            Word("kitsch", "red", "WEST"),
-//            Word("tune", "green", "SOUTH"),
-//            Word("haddock", "red", "SOUTH"),
-//            Word("zookeeper", "green", "WEST"),
-//            Word("ecologist", "gray", "NORTH"),
-//            Word("fruitbat", "green", "SOUTH"),
-//            Word("hen", "red", "NORTH"),
-//            Word("salamander", "red", "EAST"),
-//            Word("apatosaur", "gray", "SOUTH"),
-//            Word("kerosene", "green", "SOUTH"),
-//            Word("glowworm", "red", "NORTH"),
-//            Word("factotum", "red", "SOUTH"),
-//            Word("city", "black", "SOUTH")
-//        )
-//        gameView.gameLobby = GameLobby()
-//        gameView.gameLobby.words = words
-//        gameView.gameLobby.turn = mutableListOf("red", "green").random()
-//        gameView.userGame = UserGame()
-//        gameView.userGame.captain = false
-//        gameView.userGame.team = mutableListOf("red", "green").random()
-//
-//        val turn = requireActivity().findViewById<TextView>(R.id.game_turn_team_textview)
-//        turn.text = "${resources.getString(R.string.team)} ${gameView.gameLobby.turn}: ${resources.getString(R.string.turn)} ${gameView.gameLobby.turnNumber}"
-//        val chatTitle = requireActivity().findViewById<TextView>(R.id.game_chat_team_title_textview)
-//        chatTitle.text = "${resources.getString(R.string.team_chat)} ${gameView.userGame.team}"
-//        val b = requireActivity().findViewById<ImageButton>(R.id.game_send_message_image_button)
-//        b.setOnClickListener {
-//            gameView.gameLobby.turn = if (gameView.gameLobby.turn == "Team Red") "Team Green" else "Team Red"
-//            gameView.invalidate()
-//        }
-
+        // button to choose direction for the clue
         buttonDirection = gameActivity.findViewById(R.id.game_direction_hint)
         buttonDirection.setOnClickListener(this)
 
+        // buttons to choose the number for the clue
         selectNumberHintLayout = gameActivity.findViewById(R.id.game_select_number_hint)
-
         buttonNumberHint = gameActivity.findViewById(R.id.game_number_hint)
         buttonNumberHint.setOnClickListener(this)
-
+        // hint number 1
         buttonValue1 = gameActivity.findViewById(R.id.game_button_value_1)
         buttonValue1.setOnClickListener(this)
-
+        // hint number 2
         buttonValue2 = gameActivity.findViewById(R.id.game_button_value_2)
         buttonValue2.setOnClickListener(this)
-
+        // hint number 3
         buttonValue3 = gameActivity.findViewById(R.id.game_button_value_3)
         buttonValue3.setOnClickListener(this)
-
+        // hint number 4
         buttonValue4 = gameActivity.findViewById(R.id.game_button_value_4)
         buttonValue4.setOnClickListener(this)
-
+        // hint number 5
         buttonValue5 = gameActivity.findViewById(R.id.game_button_value_5)
         buttonValue5.setOnClickListener(this)
-
+        // hint number 6
         buttonValue6 = gameActivity.findViewById(R.id.game_button_value_6)
         buttonValue6.setOnClickListener(this)
 
+        // edit text to choose the word for the clue
         gameWordHint = gameActivity.findViewById(R.id.game_word_hint)
         gameWordHint.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -171,10 +132,22 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
         })
 
+        // button that give the clue for the members
         giveClue = gameActivity.findViewById(R.id.game_confirm_hint)
         giveClue.setOnClickListener(this)
         giveClue.isClickable = false
 
+        // button for pass the game phase without voting
+        buttonPass = gameActivity.findViewById(R.id.game_pass_hint_member)
+        buttonPass.setOnClickListener(this)
+
+        // set bottom part view
+        updateBottomPart()
+
+        // set right part view
+        updateRightPart()
+
+        // update game status
         updateGameLobby()
         return gameView
     }
@@ -191,6 +164,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             R.id.game_button_value_6 -> selectNumberHint("6")
             R.id.game_send_message_image_button -> sendMessage()
             R.id.game_confirm_hint -> giveClueToMembers()
+            R.id.game_pass_hint_member -> passButton()
         }
     }
 
@@ -230,6 +204,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             directions = buttonDirection.text.toString().split(" ").toMutableList()
         }
         val clue = Clue(text, number, directions)
+        giveClue.isClickable = false
         serverHandler.apiCall(
             Config.POST,
             Config.POST_SEND_CLUE,
@@ -237,6 +212,23 @@ class GameFragment : Fragment(), View.OnClickListener{
             gameLobbyId = gameLobby.lobbyId,
             clue = clue.toString()
         )
+    }
+
+    private fun passButton() {
+        if (userGame.vote != 16) {
+            buttonPass.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey))
+            buttonPass.text = resources.getString(R.string.don_t_pass_button)
+            buttonPass.isClickable = false
+            serverHandler.apiCall(
+                Config.POST,
+                Config.POST_VOTE,
+                userId = userGame.userId,
+                gameLobbyId = gameLobby.lobbyId,
+                clue = gameLobby.clue.toString(),
+                team = userGame.team,
+                voteIndex = "16"
+            )
+        }
     }
 
     private fun checkClue() {
@@ -248,21 +240,25 @@ class GameFragment : Fragment(), View.OnClickListener{
         if (gameLobby.turn == userGame.team) { // my turn
             if ((userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2)) { // not captain
                 if (gameLobby.turnPhase == 0) {
-                    gameActivity.setViewOpponentTurn(gameLobby.clue)
+                    gameActivity.setViewOpponentTurn(gameLobby.clue, gameLobby.turnPhase)
                 } else {
-                    gameActivity.setViewMyTurnMember(gameLobby.clue)
+                    gameActivity.setViewMyTurnMember(gameLobby.clue, gameLobby.turnPhase)
                 }
             } else { // captain
                 if (gameLobby.turnPhase == 1) {
-                    gameActivity.setViewOpponentTurn(gameLobby.clue)
+                    gameActivity.setViewOpponentTurn(gameLobby.clue, gameLobby.turnPhase)
                 } else {
                     gameActivity.setViewMyTurnCaptain()
                 }
             }
         } else { // opponent turn
-            gameActivity.setViewOpponentTurn(gameLobby.clue)
+            gameActivity.setViewOpponentTurn(gameLobby.clue, gameLobby.turnPhase)
         }
-
+        if (userGame.vote != 16) {
+            buttonPass.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            buttonPass.text = resources.getString(R.string.pass_button)
+            buttonPass.isClickable = true
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -300,6 +296,9 @@ class GameFragment : Fragment(), View.OnClickListener{
                     userGame.vote = member.vote
                 }
             }
+            if (gameLobby.winner != "no") {
+                // qualcuno ha vinto
+            }
             updateBottomPart()
             updateRightPart()
             gameView.invalidate()
@@ -322,3 +321,40 @@ class GameFragment : Fragment(), View.OnClickListener{
         })
     }
 }
+
+
+
+//        val words = mutableListOf(
+//            Word("importer", "green", "SOUTH"),
+//            Word("esok", "gray", "NORTH"),
+//            Word("morbidity", "green", "EAST"),
+//            Word("kitsch", "red", "WEST"),
+//            Word("tune", "green", "SOUTH"),
+//            Word("haddock", "red", "SOUTH"),
+//            Word("zookeeper", "green", "WEST"),
+//            Word("ecologist", "gray", "NORTH"),
+//            Word("fruitbat", "green", "SOUTH"),
+//            Word("hen", "red", "NORTH"),
+//            Word("salamander", "red", "EAST"),
+//            Word("apatosaur", "gray", "SOUTH"),
+//            Word("kerosene", "green", "SOUTH"),
+//            Word("glowworm", "red", "NORTH"),
+//            Word("factotum", "red", "SOUTH"),
+//            Word("city", "black", "SOUTH")
+//        )
+//        gameView.gameLobby = GameLobby()
+//        gameView.gameLobby.words = words
+//        gameView.gameLobby.turn = mutableListOf("red", "green").random()
+//        gameView.userGame = UserGame()
+//        gameView.userGame.captain = false
+//        gameView.userGame.team = mutableListOf("red", "green").random()
+//
+//        val turn = requireActivity().findViewById<TextView>(R.id.game_turn_team_textview)
+//        turn.text = "${resources.getString(R.string.team)} ${gameView.gameLobby.turn}: ${resources.getString(R.string.turn)} ${gameView.gameLobby.turnNumber}"
+//        val chatTitle = requireActivity().findViewById<TextView>(R.id.game_chat_team_title_textview)
+//        chatTitle.text = "${resources.getString(R.string.team_chat)} ${gameView.userGame.team}"
+//        val b = requireActivity().findViewById<ImageButton>(R.id.game_send_message_image_button)
+//        b.setOnClickListener {
+//            gameView.gameLobby.turn = if (gameView.gameLobby.turn == "Team Red") "Team Green" else "Team Red"
+//            gameView.invalidate()
+//        }

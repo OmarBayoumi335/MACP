@@ -374,6 +374,8 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
                         Config.POST_VOTE,
                         userId = userGame.userId,
                         gameLobbyId = gameLobby.lobbyId,
+                        clue = gameLobby.clue.toString(),
+                        team = userGame.team,
                         voteIndex = card.index.toString()
                     )
                 }

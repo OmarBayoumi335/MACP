@@ -252,10 +252,12 @@ class EnigmaServer(Resource):
                         "vote": 100}
             words = []
             for word in self.words.split("--"):
+                turned = True if word.split("_")[3].lower() == "true" else False
                 words.append(
                     {"text": word.split("_")[0], 
                      "color": word.split("_")[1], 
-                     "direction": word.split("_")[2]})
+                     "direction": word.split("_")[2], 
+                     "turned": turned})
             gameLobby = {"lobbyId": self.gameLobbyId, 
                          "members": [userGame],
                          "chatTeam1": [],
@@ -267,7 +269,8 @@ class EnigmaServer(Resource):
                          "captainIndex2": self.captainIndex2,
                          "hint1": MAX_HINT,
                          "hint2": MAX_HINT,
-                         "clue": {"text": "", "number": 0, "directions": []}}
+                         "clue": {"text": "", "number": 0, "directions": []},
+                         "winner": "no"}
             db.child("GameLobbies").child(self.gameLobbyId).set(gameLobby)
             return {"message": "new game lobby created", "error": False}
             
@@ -501,7 +504,7 @@ class EnigmaServer(Resource):
             listClue = self.clue.split("-")
             clue["text"] = listClue[0].upper()
             clue["number"] = int(listClue[1])
-            directionsList =  listClue[2].split(",")
+            directionsList =  [] if listClue[2] == "[]" else listClue[2].split(",")
             newDirectionsList = []
             for direction in directionsList:
                 if direction[0] == "[" or direction[0] == " ":
@@ -522,14 +525,55 @@ class EnigmaServer(Resource):
             db.child("GameLobbies").child(self.gameLobbyId).update({"turnPhase": 1})
             return {"message": "clue sended", "error": False}
             
-        #10 vote a card or pass. Input(req, userId, gameLobbyId, voteIndex)
+        #10 vote a card or pass. Input(req, userId, gameLobbyId, voteIndex, clue, team)
         if self.req == POST_VOTE:
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
+            turnPhase = db.child("GameLobbies").child(self.gameLobbyId).child("turnPhase").get().val()
+            captainIndex1 = db.child("GameLobbies").child(self.gameLobbyId).child("captainIndex1").get().val()
+            captainIndex2 = db.child("GameLobbies").child(self.gameLobbyId).child("captainIndex2").get().val()
             for i, member in enumerate(members):
                 if member["userId"] == self.userId:
+                    member["vote"] = int(self.voteIndex)
                     db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"vote": int(self.voteIndex)})
                     break
-            return {"message": "vote inserted", "error": False}    
+            for member in members:
+                if (member["vote"] == 100 and self.team == member["team"] and member["userId"] != captainIndex1 and member["userId"] != captainIndex2):
+                    return {"message": "vote inserted", "error": False}
+            votes = [0]*17
+            for member in members:
+                if (self.team == member["team"] and member["userId"] != captainIndex1 and member["userId"] != captainIndex2):
+                    votes[member["vote"]] += 1
+            cardToTurn = votes.index(max(votes))
+            changeTurn = False
+            if cardToTurn != 16:
+                colorCard = db.child("GameLobbies").child(self.gameLobbyId).child("words").child(str(cardToTurn)).child("color").get().val()
+                db.child("GameLobbies").child(self.gameLobbyId).child("words").child(str(cardToTurn)).update({"turned": True})
+                if colorCard == "black":
+                    winner = "Team Red" if self.team == "Team Green" else "Team Green"
+                    db.child("GameLobbies").child(self.gameLobbyId).update({"winner": winner})
+                    return {"message": "game ended", "error": False}
+                else:
+                    if self.serverUtils.checkWinner(self.gameLobbyId):
+                        return {"message": "game ended", "error": False}
+                    if colorCard == "gray":
+                        changeTurn = True
+                    elif colorCard == "red":
+                        changeTurn = True if self.team == "Team Green" else False
+                    elif colorCard == "green":
+                        changeTurn = True if self.team == "Team Red" else False
+            else: 
+                changeTurn = True
+            if int(self.clue.split("-")[1]) > int(turnPhase) and not changeTurn:
+                db.child("GameLobbies").child(self.gameLobbyId).update({"turnPhase": turnPhase + 1})
+            else:
+                turn = db.child("GameLobbies").child(self.gameLobbyId).child("turn").get().val()
+                newTurn = "Team Red" if turn == "Team Green" else "Team Green"
+                db.child("GameLobbies").child(self.gameLobbyId).update({"turn": newTurn})
+                db.child("GameLobbies").child(self.gameLobbyId).update({"turnPhase": 0})
+            for i, member in enumerate(members):
+                if (self.team == member["team"]):
+                    db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"vote": 100})            
+            return {"message": "vote inserted and turn/phase changed", "error": False}
         
         if self.req == POST_PROVA:
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
@@ -634,6 +678,23 @@ class EnigmaServer(Resource):
 
 # Class that contains utility functions
 class EnigmaServerUtils():
+    
+    def checkWinner(self, gameLobbyId):
+        cards = db.child("GameLobbies").child(gameLobbyId).child("words").get().val()
+        green = 0
+        red = 0
+        for card in cards:
+            if card["color"] == "green" and card["turned"]:
+                green += 1
+            if card["color"] == "red" and card["turned"]:
+                red += 1
+        if green == 6:
+            db.child("GameLobbies").child(gameLobbyId).update({"winner": "Team Green"})
+            return True
+        if red == 6:
+            db.child("GameLobbies").child(gameLobbyId).update({"winner": "Team Red"})
+            return True
+        return False
     
     def checkifAlreadySent(self, userIdValue, friendIdValue):
         userId = db.child("Users").child(userIdValue).get().val()["id"]

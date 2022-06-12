@@ -314,14 +314,14 @@
                 android:id="@+id/game_word_hint"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
                 android:gravity="center"
                 android:hint="@string/clue_hint_edittext"
                 android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/end_text"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
 
             <Button
@@ -450,6 +450,7 @@
                 android:gravity="center"
                 android:text="@string/pass_button"
                 android:textAlignment="center"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/end_hint_member"

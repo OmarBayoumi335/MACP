@@ -21,12 +21,10 @@ import com.example.androidstudio.game.GuessCardFragment
 import com.example.androidstudio.home.profile.ProfileFragment
 import kotlin.properties.Delegates
 
-class GameView(context: Context?) : View(context), View.OnTouchListener, View.OnClickListener {
+class GameView(context: Context?) : View(context), View.OnTouchListener{
 
     init {
         setOnTouchListener(this)
-        setOnClickListener(this)
-        isDuplicateParentStateEnabled = false
     }
 
     // painter
@@ -130,95 +128,119 @@ class GameView(context: Context?) : View(context), View.OnTouchListener, View.On
                 roundRectCard.top = coordinates[1][j] + padding
                 roundRectCard.right = coordinates[0][i + 1] - padding
                 roundRectCard.bottom = coordinates[1][j + 1] - padding
-                cards.add(Card(gameLobby.words[i*4 + j], roundRectCard, i*4 + j))
+                cards.add(
+                    Card(
+                        gameLobby.words[i * 4 + j],
+                        roundRectCard,
+                        i * 4 + j,
+                        gameLobby.words[i * 4 + j].turned
+                    )
+                )
                 // set the color of the card
-                if (userGame.userId == gameLobby.captainIndex1 || userGame.userId == gameLobby.captainIndex2) {
+                if (userGame.userId == gameLobby.captainIndex1
+                    || userGame.userId == gameLobby.captainIndex2
+                    || gameLobby.words[i * 4 + j].turned
+                ) {
 //                val cardGreen = BitmapFactory.decodeStream(context.assets.open("greenBackCard.jpg"))
 //                roundRectPaint.shader = BitmapShader(cardGreen, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-                    when (gameLobby.words[i*4 + j].color) {
+                    when (gameLobby.words[i * 4 + j].color) {
                         "green" -> roundRectPaint.color = Color.GREEN
                         "gray" -> roundRectPaint.color = Color.GRAY
                         "black" -> roundRectPaint.color = Color.BLACK
                         "red" -> roundRectPaint.color = Color.RED
                     }
                 } else {
-                   roundRectPaint.color = Color.LTGRAY
+                    roundRectPaint.color = Color.LTGRAY
                 }
                 // draw the card
-                canvas?.drawRoundRect(roundRectCard,
-                    20f* resources.displayMetrics.density,
-                    15f*resources.displayMetrics.density,
+                canvas?.drawRoundRect(
+                    roundRectCard,
+                    20f * resources.displayMetrics.density,
+                    15f * resources.displayMetrics.density,
                     roundRectPaint
                 )
-                // set coordinates for the text word
-                var textBound = Rect()
-                cardTextPaint.getTextBounds(
-                    gameLobby.words[i*4 + j].text,
-                    0,
-                    gameLobby.words[i*4 + j].text.length,
-                    textBound
-                )
-                var textX = roundRectCard.centerX() - textBound.exactCenterX()
-                var textY = roundRectCard.centerY() - textBound.exactCenterY()
-                // draw the text
-                canvas?.drawText(gameLobby.words[i*4 + j].text, textX, textY, cardTextPaint)
-                // set coordinates for the direction word
-                var numberVoteCard = 0
-                for (member in gameLobby.members) {
-                    if (member.vote == i*4 + j) {
-                        numberVoteCard += 1
-                    }
-                }
-                if (numberVoteCard != 0) {
-                    canvas?.drawCircle(
-                        roundRectCard.right - padding,
-                        roundRectCard.top + padding,
-                        10f * resources.displayMetrics.density,
-                        cardCircleVotePaint
-                    )
-                    textBound = Rect()
-                    cardTextVotePaint.getTextBounds(
-                        numberVoteCard.toString(),
-                        0,
-                        numberVoteCard.toString().length,
-                        textBound
-                    )
-                    textX = roundRectCard.right - padding - textBound.exactCenterX()
-                    textY = roundRectCard.top + padding - textBound.exactCenterY()
-                    // draw the text
-                    canvas?.drawText(
-                        numberVoteCard.toString(),
-                        textX,
-                        textY,
-                        cardTextVotePaint
-                    )
-                }
-                if (userGame.vote == i*4 + j) {
-                    canvas?.drawCircle(
-                        roundRectCard.left + padding,
-                        roundRectCard.top + padding,
-                        10f * resources.displayMetrics.density,
-                        cardCircleVotePaint
-                    )
-                }
-
-                if (userGame.userId == gameLobby.captainIndex1 || userGame.userId == gameLobby.captainIndex2) {
-                    textBound = Rect()
+                // if the card is not turned
+                if (!gameLobby.words[i * 4 + j].turned) {
+                    // set coordinates for the text word
+                    var textBound = Rect()
                     cardTextPaint.getTextBounds(
-                        gameLobby.words[i * 4 + j].direction,
+                        gameLobby.words[i * 4 + j].text,
                         0,
-                        gameLobby.words[i * 4 + j].direction.length,
+                        gameLobby.words[i * 4 + j].text.length,
                         textBound
                     )
-                    textX = roundRectCard.left + padding
-                    textY = roundRectCard.bottom - padding
+                    var textX = roundRectCard.centerX() - textBound.exactCenterX()
+                    var textY = roundRectCard.centerY() - textBound.exactCenterY()
                     // draw the text
-                    canvas?.drawText(
-                        gameLobby.words[i * 4 + j].direction,
-                        textX,
-                        textY,
-                        cardDirectionPaint
-                    )
+                    canvas?.drawText(gameLobby.words[i * 4 + j].text, textX, textY, cardTextPaint)
+
+                    // if the turn phase is not "captain choosing the clue"
+                    if (gameLobby.turnPhase != 0) {
+                        // find the number of votes for this card
+                        var numberVoteCard = 0
+                        for (member in gameLobby.members) {
+                            if (member.vote == i * 4 + j) {
+                                numberVoteCard += 1
+                            }
+                        }
+                        // if the number of votes is greater than 0 show the votes
+                        if (numberVoteCard != 0) {
+                            // draw the circle that contain the number of votes
+                            canvas?.drawCircle(
+                                roundRectCard.right - padding,
+                                roundRectCard.top + padding,
+                                10f * resources.displayMetrics.density,
+                                cardCircleVotePaint
+                            )
+                            // set coordinate for votes word
+                            textBound = Rect()
+                            cardTextVotePaint.getTextBounds(
+                                numberVoteCard.toString(),
+                                0,
+                                numberVoteCard.toString().length,
+                                textBound
+                            )
+                            textX = roundRectCard.right - padding - textBound.exactCenterX()
+                            textY = roundRectCard.top + padding - textBound.exactCenterY()
+                            // draw the text votes
+                            canvas?.drawText(
+                                numberVoteCard.toString(),
+                                textX,
+                                textY,
+                                cardTextVotePaint
+                            )
+                        }
+                        // if my vote is on this card show it with a symbol
+                        if (userGame.vote == i * 4 + j) {
+                            // draw the symbol
+                            canvas?.drawCircle(
+                                roundRectCard.left + padding,
+                                roundRectCard.top + padding,
+                                10f * resources.displayMetrics.density,
+                                cardCircleVotePaint
+                            )
+                        }
+                    }
+                    // if im the captain show the direction of the card
+                    if (userGame.userId == gameLobby.captainIndex1 || userGame.userId == gameLobby.captainIndex2) {
+                        // set coordinates for the direction word
+                        textBound = Rect()
+                        cardTextPaint.getTextBounds(
+                            gameLobby.words[i * 4 + j].direction,
+                            0,
+                            gameLobby.words[i * 4 + j].direction.length,
+                            textBound
+                        )
+                        textX = roundRectCard.left + padding
+                        textY = roundRectCard.bottom - padding
+                        // draw the direction word
+                        canvas?.drawText(
+                            gameLobby.words[i * 4 + j].direction,
+                            textX,
+                            textY,
+                            cardDirectionPaint
+                        )
+                    }
                 }
             }
         }
@@ -228,6 +250,7 @@ class GameView(context: Context?) : View(context), View.OnTouchListener, View.On
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         // background turn
+        cards = mutableListOf()
         if (gameLobby.turn == resources.getString(R.string.team2)) {
             canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_red))
         } else {
@@ -270,8 +293,11 @@ class GameView(context: Context?) : View(context), View.OnTouchListener, View.On
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        Log.i(Config.GAME_VIEW_TAG, event?.action.toString())
-        if (userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2) {
+        if (userGame.userId != gameLobby.captainIndex1
+            && userGame.userId != gameLobby.captainIndex2
+            && gameLobby.turn == userGame.team
+            && gameLobby.turnPhase >= 1
+        ) {
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     for (card in cards) {
@@ -280,6 +306,7 @@ class GameView(context: Context?) : View(context), View.OnTouchListener, View.On
                             && event.x <= card.squareCoordinates.right
                             && event.y >= card.squareCoordinates.top
                             && event.y <= card.squareCoordinates.bottom
+                            && !card.turned
                         ) {
                             val guessCardFragment = GuessCardFragment(card, userGame, gameLobby)
                             guessCardFragment.show(
@@ -287,16 +314,12 @@ class GameView(context: Context?) : View(context), View.OnTouchListener, View.On
                                 "GameView->GuessCardView"
                             )
                             Log.i(Config.GAME_VIEW_TAG, card.word.toString())
-                            break
+//                            break
                         }
                     }
                 }
             }
         }
         return true
-    }
-
-    override fun onClick(p0: View?) {
-
     }
 }

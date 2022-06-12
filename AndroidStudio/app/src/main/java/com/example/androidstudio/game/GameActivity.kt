@@ -58,14 +58,18 @@ class GameActivity : AppCompatActivity(){
         }
     }
 
-    fun setViewMyTurnMember(clue: Clue) {
+    fun setViewMyTurnMember(clue: Clue, gamePhase: Int) {
         myTurnMember.visibility = View.VISIBLE
         myTurnCaptain.visibility = View.GONE
         opponentTurnMember.visibility = View.GONE
         val text = findViewById<TextView>(R.id.game_word_hint_member)
         val number = findViewById<TextView>(R.id.game_number_hint_member)
         val directions = findViewById<TextView>(R.id.game_direction_hint_member)
-        updateBottomView(text, number, directions, clue)
+        if (gamePhase == 0) {
+            updateBottomView(text, number, directions, Clue())
+        } else {
+            updateBottomView(text, number, directions, clue)
+        }
     }
 
     fun setViewMyTurnCaptain() {
@@ -80,13 +84,17 @@ class GameActivity : AppCompatActivity(){
         directions.text = "-"
     }
 
-    fun setViewOpponentTurn(clue: Clue) {
+    fun setViewOpponentTurn(clue: Clue, gamePhase: Int) {
         myTurnMember.visibility = View.GONE
         myTurnCaptain.visibility = View.GONE
         opponentTurnMember.visibility = View.VISIBLE
         val text = findViewById<TextView>(R.id.game_word_hint_opponent)
         val number = findViewById<TextView>(R.id.game_number_hint_opponent)
         val directions = findViewById<TextView>(R.id.game_direction_hint_opponent)
-        updateBottomView(text, number, directions, clue)
+        if (gamePhase == 0) {
+            updateBottomView(text, number, directions, Clue())
+        } else {
+            updateBottomView(text, number, directions, clue)
+        }
     }
 }

@@ -11,7 +11,8 @@ data class GameLobby(var lobbyId: String,
                      var captainIndex2: String,
                      var hint1: Int,
                      var hint2: Int,
-                     var clue: Clue){
+                     var clue: Clue,
+                     var winner: String){
 
     constructor() : this(
         "",
@@ -25,7 +26,8 @@ data class GameLobby(var lobbyId: String,
         "",
         0,
         0,
-        Clue()
+        Clue(),
+        "no"
     )
 
     override fun toString(): String {
@@ -40,7 +42,8 @@ data class GameLobby(var lobbyId: String,
                 "captainIndex2='$captainIndex2', " +
                 "hint1=$hint1, " +
                 "hint2=$hint2, " +
-                "clue=$clue)"
+                "clue=$clue, " +
+                "winner=$winner)"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -61,6 +64,7 @@ data class GameLobby(var lobbyId: String,
         if (hint1 != other.hint1) return false
         if (hint2 != other.hint2) return false
         if (clue != other.clue) return false
+        if (winner != other.winner) return false
 
         return true
     }
@@ -78,6 +82,7 @@ data class GameLobby(var lobbyId: String,
         result = 31 * result + hint1
         result = 31 * result + hint2
         result = 31 * result + clue.hashCode()
+        result = 31 * result + winner.hashCode()
         return result
     }
 
