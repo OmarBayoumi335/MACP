@@ -1,6 +1,5 @@
 import random
 import pyrebase
-import ast
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 
@@ -58,6 +57,7 @@ DELETE_REMOVE_FRIEND_REQUEST ="delete1"
 DELETE_LEAVE_LOBBY = "delete2"
 DELETE_LOBBY_INVITE = "delete3"
 DELETE_LOBBY = "delete4"
+DELETE_LEAVE_GAMELOBBY = "delete5"
 
 
 # parser
@@ -649,6 +649,15 @@ class EnigmaServer(Resource):
             #last user leaves lobby
             if len(team1) + len(team2) == 0:
                 db.child("Lobbies").child(self.lobbyId).remove()
+                users = db.child("Users").get().val()
+                for user in users:
+                    pendingInvites = db.child("Users").child(user).child("pendingInviteRequests").get().val()
+                    pendingInvites = [] if pendingInvites == None else pendingInvites
+                    newPendingList = []
+                    for pending in pendingInvites:
+                        if self.lobbyId != pending["lobbyId"]:
+                            newPendingList.append(pending)
+                    db.child("Users").child(user).update({"pendingInviteRequests": newPendingList})
                 return {"message": "lobby deleted", "error": False}
             
             db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
@@ -670,6 +679,40 @@ class EnigmaServer(Resource):
         if self.req == DELETE_LOBBY:
             db.child("Lobbies").child(self.lobbyId).remove()
             return {"message": "party lobby deleted", "error": False}
+        
+        #5 user leaves lobby and if there are no users the lobby will be removed. Input(req, userId, gameLobbyId)
+        if self.req == DELETE_LEAVE_GAMELOBBY:
+            members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
+            usergame = {}
+            for member in members:
+                if member["userId"] == self.userId:
+                    usergame = member
+                    break
+            winner = db.child("GameLobbies").child(self.gameLobbyId).child("winner").get().val()
+            captainIndex1 = db.child("GameLobbies").child(self.gameLobbyId).child("captainIndex1").get().val()
+            captainIndex2 = db.child("GameLobbies").child(self.gameLobbyId).child("captainIndex2").get().val()
+            if self.userId == captainIndex1:
+                for member in members:
+                    if member["userId"] != usergame["userId"] and member["team"] == usergame["team"]:
+                        db.child("GameLobbies").child(self.gameLobbyId).update({"captainIndex1": member["userId"]})
+                        break
+            if self.userId == captainIndex2:
+                for member in members:
+                    if member["userId"] != usergame["userId"] and member["team"] == usergame["team"]:
+                        db.child("GameLobbies").child(self.gameLobbyId).update({"captainIndex2": member["userId"]})
+                        break
+            members.remove(usergame)
+            db.child("GameLobbies").child(self.gameLobbyId).update({"members": members})
+            
+            if len(members) == 0 and winner != "no":
+                db.child("GameLobbies").child(self.gameLobbyId).remove()
+                return {"message": "game lobby deleted", "winner": True, "error": False}
+            
+            if len(members) == 0 and winner == "no":
+                db.child("GameLobbies").child(self.gameLobbyId).remove()
+                return {"message": "game lobby deleted", "winner": False, "error": False}
+            
+            return {"message": "user left gamelobby", "error": False}
         return {"message": "delete request failed", "error": True}
 
 
