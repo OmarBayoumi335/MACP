@@ -47,7 +47,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
         profileButton.setOnClickListener(this)
 
         val serverHandler = ServerHandler(applicationContext)
-        exampleService = EnigmaService(myLobby, serverHandler)
+        exampleService = EnigmaService(serverHandler, myLobby = myLobby)
         intentService = Intent(this, exampleService::class.java)
         startService(intentService);
     }

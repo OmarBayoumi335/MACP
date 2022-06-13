@@ -1,6 +1,7 @@
 package com.example.androidstudio.game
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +12,12 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.Clue
+import com.example.androidstudio.classes.types.GameLobby
+import com.example.androidstudio.classes.types.Lobby
+import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.classes.utils.EnigmaService
+import com.example.androidstudio.classes.utils.ServerHandler
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.IOException
@@ -22,6 +28,24 @@ class GameActivity : AppCompatActivity(){
     private lateinit var myTurnCaptain: ConstraintLayout
     private lateinit var myTurnMember: ConstraintLayout
     private lateinit var opponentTurnMember: ConstraintLayout
+    private lateinit var intentService: Intent
+    private lateinit var exampleService: EnigmaService
+    private var myGameLobby: GameLobby = GameLobby(
+        "",
+        mutableListOf(),
+        mutableListOf(),
+        mutableListOf(),
+        "",
+        0,
+        mutableListOf(),
+        "",
+        "",
+        0,
+        0,
+        Clue(),
+        ""
+    )
+    private var myUserGame: UserGame = UserGame("", "", "", 0, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +55,11 @@ class GameActivity : AppCompatActivity(){
         myTurnCaptain = findViewById(R.id.game_bottom_part)
         myTurnMember = findViewById(R.id.game_bottom_part_member)
         opponentTurnMember = findViewById(R.id.game_bottom_part_opponent)
+
+        val serverHandler = ServerHandler(applicationContext)
+        exampleService = EnigmaService(serverHandler, myGameLobby = myGameLobby)
+        intentService = Intent(this, exampleService::class.java)
+        startService(intentService);
     }
 
     fun setViewVisible() {
@@ -96,5 +125,22 @@ class GameActivity : AppCompatActivity(){
         } else {
             updateBottomView(text, number, directions, clue)
         }
+    }
+
+    fun setGameLobby(newGameLobby: GameLobby) {
+        myGameLobby = newGameLobby
+        exampleService.setGameLobby(myGameLobby)
+    }
+
+    fun setUserGame(newUserGame: UserGame) {
+        myUserGame = newUserGame
+    }
+
+    override fun onDestroy() {
+        val intentOnUnbind = Intent()
+        intentOnUnbind.putExtra("userId", myUserGame.userId)
+        intentOnUnbind.putExtra("isGameLobby", true)
+        exampleService.onUnbind(intentOnUnbind)
+        super.onDestroy()
     }
 }

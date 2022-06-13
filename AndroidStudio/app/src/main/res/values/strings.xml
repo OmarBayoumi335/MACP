@@ -88,5 +88,5 @@
     <string name="leave_game_lobby_alert_message">Are you sure you want to leave the game?</string>
     <string name="not_enough_player">Not enough player</string>
     <string name="not_enough_player_my_team_alert_message">You are the last player on the team</string>
-    <string name="not_enough_player_opponent_team_alert_message">The opposing team has no more players</string>
+    <string name="not_enough_player_opponent_team_alert_message">The opposing team has not enough players</string>
 </resources>

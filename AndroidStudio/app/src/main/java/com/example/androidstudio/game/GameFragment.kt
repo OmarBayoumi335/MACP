@@ -79,6 +79,8 @@ class GameFragment : Fragment(), View.OnClickListener{
         Log.i(Config.GAME_TAG, "\ngameLobby: $gameLobby\nuserGame: $userGame")
 
         gameActivity = requireActivity() as GameActivity
+        gameActivity.setGameLobby(gameLobby)
+        gameActivity.setUserGame(userGame)
 
         // Disable Android back button
         val callback: OnBackPressedCallback =
@@ -418,40 +420,3 @@ class GameFragment : Fragment(), View.OnClickListener{
         })
     }
 }
-
-
-
-//        val words = mutableListOf(
-//            Word("importer", "green", "SOUTH"),
-//            Word("esok", "gray", "NORTH"),
-//            Word("morbidity", "green", "EAST"),
-//            Word("kitsch", "red", "WEST"),
-//            Word("tune", "green", "SOUTH"),
-//            Word("haddock", "red", "SOUTH"),
-//            Word("zookeeper", "green", "WEST"),
-//            Word("ecologist", "gray", "NORTH"),
-//            Word("fruitbat", "green", "SOUTH"),
-//            Word("hen", "red", "NORTH"),
-//            Word("salamander", "red", "EAST"),
-//            Word("apatosaur", "gray", "SOUTH"),
-//            Word("kerosene", "green", "SOUTH"),
-//            Word("glowworm", "red", "NORTH"),
-//            Word("factotum", "red", "SOUTH"),
-//            Word("city", "black", "SOUTH")
-//        )
-//        gameView.gameLobby = GameLobby()
-//        gameView.gameLobby.words = words
-//        gameView.gameLobby.turn = mutableListOf("red", "green").random()
-//        gameView.userGame = UserGame()
-//        gameView.userGame.captain = false
-//        gameView.userGame.team = mutableListOf("red", "green").random()
-//
-//        val turn = requireActivity().findViewById<TextView>(R.id.game_turn_team_textview)
-//        turn.text = "${resources.getString(R.string.team)} ${gameView.gameLobby.turn}: ${resources.getString(R.string.turn)} ${gameView.gameLobby.turnNumber}"
-//        val chatTitle = requireActivity().findViewById<TextView>(R.id.game_chat_team_title_textview)
-//        chatTitle.text = "${resources.getString(R.string.team_chat)} ${gameView.userGame.team}"
-//        val b = requireActivity().findViewById<ImageButton>(R.id.game_send_message_image_button)
-//        b.setOnClickListener {
-//            gameView.gameLobby.turn = if (gameView.gameLobby.turn == "Team Red") "Team Green" else "Team Red"
-//            gameView.invalidate()
-//        }
