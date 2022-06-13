@@ -21,7 +21,7 @@ MAX_LOBBY_MEMBERS = 16
 MIN_START_MEMBER = 1
 MAX_HINT = 3
 TEAM_RED = "Team Red"
-TEAM_GEEN = "Team Green"
+TEAM_GREEN = "Team Green"
 
 # GET
 GET_USERNAME = "get0"
