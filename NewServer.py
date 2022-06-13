@@ -49,6 +49,7 @@ POST_JOIN_GAME_LOBBY = "post8"
 POST_SEND_CLUE = "post9"
 POST_VOTE = "post10"
 POST_READY = "post11"
+POST_SEND_MESSAGE_GAMELOBBY = "post12"
 POST_PROVA = "prova"
 
 # DELETE
@@ -109,9 +110,8 @@ class EnigmaServer(Resource):
         #0 return the username given the user id. Input(req, userId)
         if self.req == GET_USERNAME:
             userId = "" if self.userId == None else self.userId
-            username = ""
-            if db.child("Users").child(userId).get().val() != None:
-                username = db.child("Users").child(userId).get().val()["username"]
+            username = db.child("Users").child(self.userId).child("username").get().val()
+            username = "" if username == None else username
             return {"message": "get username", "username": username, "error": False}
         
         #1 return true if the user already exist, false otherwise. Input(req, googleUserId)
@@ -576,6 +576,21 @@ class EnigmaServer(Resource):
                     break
             db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(me)).update({"ready": True})
             return {"message": "ready status changed", "error": False}
+        
+        
+        #12 send message to display in the gamelobby chat. Input(req, userId, gameLobbyId, username, chatText)
+        if self.req == POST_SEND_MESSAGE_GAMELOBBY:
+            gamelobby = db.child("GameLobbies").child(self.gameLobbyId).get().val()
+            if self.userId == gamelobby["captainIndex1"] or self.userId == gamelobby["captainIndex2"]:
+                return {"message" : "captain can't send messagges", "error": False}
+            username = "" if self.username == None else self.username
+            chat = db.child("GameLobbies").child(self.gameLobbyId).child("chat").get().val()
+            chat = [] if chat == None else chat
+            message = {"user":{"userId": self.userId, "username": username}, "text": self.chatText}
+            chat.append(message)
+            db.child("GameLobbies").child(self.gameLobbyId).update({"chat": chat})
+            return {"message": "message sent", "error": False}
+        
         
         if self.req == POST_PROVA:
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
