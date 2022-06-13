@@ -543,7 +543,7 @@ class EnigmaServer(Resource):
                 colorCard = db.child("GameLobbies").child(self.gameLobbyId).child("words").child(str(cardToTurn)).child("color").get().val()
                 db.child("GameLobbies").child(self.gameLobbyId).child("words").child(str(cardToTurn)).update({"turned": True})
                 if colorCard == "black":
-                    winner = "Team Red" if self.team == "Team Green" else "Team Green"
+                    winner = TEAM_RED if self.team == TEAM_GREEN else TEAM_GREEN
                     db.child("GameLobbies").child(self.gameLobbyId).update({"winner": winner})
                     return {"message": "game ended", "error": False}
                 else:
@@ -552,16 +552,16 @@ class EnigmaServer(Resource):
                     if colorCard == "gray":
                         changeTurn = True
                     elif colorCard == "red":
-                        changeTurn = True if self.team == "Team Green" else False
+                        changeTurn = True if self.team == TEAM_GREEN else False
                     elif colorCard == "green":
-                        changeTurn = True if self.team == "Team Red" else False
+                        changeTurn = True if self.team == TEAM_RED else False
             else: 
                 changeTurn = True
             if int(self.clue.split("-")[1]) > int(turnPhase) and not changeTurn:
                 db.child("GameLobbies").child(self.gameLobbyId).update({"turnPhase": turnPhase + 1})
             else:
                 turn = db.child("GameLobbies").child(self.gameLobbyId).child("turn").get().val()
-                newTurn = "Team Red" if turn == "Team Green" else "Team Green"
+                newTurn = TEAM_RED if turn == TEAM_GREEN else TEAM_GREEN
                 db.child("GameLobbies").child(self.gameLobbyId).update({"turn": newTurn})
                 db.child("GameLobbies").child(self.gameLobbyId).update({"turnPhase": 0})
             for i, member in enumerate(members):
@@ -594,7 +594,7 @@ class EnigmaServer(Resource):
             chatTeam1 = [] if chatTeam1 == None else chatTeam1
             chatTeam2 = [] if chatTeam2 == None else chatTeam2
             message = {"user":{"userId": self.userId, "username": username}, "text": self.chatText}
-            if user["team"] == "Team Green":
+            if user["team"] == TEAM_GREEN:
                 chatTeam1.append(message)
                 db.child("GameLobbies").child(self.gameLobbyId).update({"chatTeam1": chatTeam1})
             else:
@@ -755,10 +755,10 @@ class EnigmaServerUtils():
             if card["color"] == "red" and card["turned"]:
                 red += 1
         if green == 6:
-            db.child("GameLobbies").child(gameLobbyId).update({"winner": "Team Green"})
+            db.child("GameLobbies").child(gameLobbyId).update({"winner": TEAM_GREEN})
             return True
         if red == 6:
-            db.child("GameLobbies").child(gameLobbyId).update({"winner": "Team Red"})
+            db.child("GameLobbies").child(gameLobbyId).update({"winner": TEAM_RED})
             return True
         return False
     
