@@ -1,6 +1,8 @@
 package com.example.androidstudio.game
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,12 +18,14 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.views.GameView
 import com.example.androidstudio.game.views.GuessCardView
+import com.example.androidstudio.home.MenuActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -80,7 +84,7 @@ class GameFragment : Fragment(), View.OnClickListener{
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-
+                    leave()
                 }
             }
         gameActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
@@ -167,6 +171,39 @@ class GameFragment : Fragment(), View.OnClickListener{
             R.id.game_confirm_hint -> giveClueToMembers()
             R.id.game_pass_hint_member -> passButton()
         }
+    }
+
+    private fun leave() {
+        AlertDialog.Builder(context)
+            .setTitle(R.string.leave_game_lobby_alert)
+            .setMessage(R.string.leave_game_lobby_alert_message)
+            .setPositiveButton(
+                R.string.yes
+            ) { _, _ ->
+                serverHandler.apiCall(
+                    Config.GET,
+                    Config.GET_USER,
+                    userId = userGame.userId,
+                    callBack = object : ServerHandler.VolleyCallBack {
+                        override fun onSuccess(reply: JSONObject?) {
+                            val userJsonString = reply.toString()
+                            val intent = Intent(requireContext(), MenuActivity::class.java)
+                            intent.putExtra("user", userJsonString)
+                            startActivity(intent)
+                            requireActivity().overridePendingTransition(0, 0);
+                            requireActivity().finish()
+                            serverHandler.apiCall(
+                                Config.DELETE,
+                                Config.DELETE_LEAVE_GAMELOBBY,
+                                userId = userGame.userId,
+                                gameLobbyId = gameLobby.lobbyId
+                            )
+                        }
+                    })
+            }
+            .setNegativeButton(R.string.no, null)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
     }
 
     private fun selectNumberHint(value: String){

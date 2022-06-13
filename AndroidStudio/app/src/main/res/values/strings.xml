@@ -84,4 +84,6 @@
     <string name="you_win">Your team won</string>
     <string name="you_lose">Your team lost</string>
     <string name="come_back_home">Go to home</string>
+    <string name="leave_game_lobby_alert">Leave the game</string>
+    <string name="leave_game_lobby_alert_message">Are you sure you want to leave the game?</string>
 </resources>
