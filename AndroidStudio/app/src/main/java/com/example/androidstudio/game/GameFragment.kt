@@ -173,37 +173,75 @@ class GameFragment : Fragment(), View.OnClickListener{
         }
     }
 
-    private fun leave() {
-        AlertDialog.Builder(context)
-            .setTitle(R.string.leave_game_lobby_alert)
-            .setMessage(R.string.leave_game_lobby_alert_message)
-            .setPositiveButton(
-                R.string.yes
-            ) { _, _ ->
-                serverHandler.apiCall(
-                    Config.GET,
-                    Config.GET_USER,
-                    userId = userGame.userId,
-                    callBack = object : ServerHandler.VolleyCallBack {
-                        override fun onSuccess(reply: JSONObject?) {
-                            val userJsonString = reply.toString()
-                            val intent = Intent(requireContext(), MenuActivity::class.java)
-                            intent.putExtra("user", userJsonString)
-                            startActivity(intent)
-                            requireActivity().overridePendingTransition(0, 0);
-                            requireActivity().finish()
-                            serverHandler.apiCall(
-                                Config.DELETE,
-                                Config.DELETE_LEAVE_GAMELOBBY,
-                                userId = userGame.userId,
-                                gameLobbyId = gameLobby.lobbyId
-                            )
-                        }
-                    })
+    private fun leave(notEnoughPlayer: Boolean = false, teamNotEnoughPlayer: String = "") {
+        if (notEnoughPlayer) {
+            ended = false
+            val message = if (teamNotEnoughPlayer == userGame.team) {
+                resources.getString(R.string.not_enough_player_my_team_alert_message)
+            } else {
+                resources.getString(R.string.not_enough_player_opponent_team_alert_message)
             }
-            .setNegativeButton(R.string.no, null)
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .show()
+            AlertDialog.Builder(context)
+                .setTitle(R.string.not_enough_player)
+                .setMessage(message)
+                .setPositiveButton(
+                    R.string.come_back_home
+                ) { _, _ ->
+                    serverHandler.apiCall(
+                        Config.GET,
+                        Config.GET_USER,
+                        userId = userGame.userId,
+                        callBack = object : ServerHandler.VolleyCallBack {
+                            override fun onSuccess(reply: JSONObject?) {
+                                val userJsonString = reply.toString()
+                                val intent = Intent(requireContext(), MenuActivity::class.java)
+                                intent.putExtra("user", userJsonString)
+                                startActivity(intent)
+                                requireActivity().overridePendingTransition(0, 0);
+                                requireActivity().finish()
+                                serverHandler.apiCall(
+                                    Config.DELETE,
+                                    Config.DELETE_LEAVE_GAMELOBBY,
+                                    userId = userGame.userId,
+                                    gameLobbyId = gameLobby.lobbyId
+                                )
+                            }
+                        })
+                }
+                .show()
+        } else {
+            AlertDialog.Builder(context)
+                .setTitle(R.string.leave_game_lobby_alert)
+                .setMessage(R.string.leave_game_lobby_alert_message)
+                .setPositiveButton(
+                    R.string.yes
+                ) { _, _ ->
+                    ended = false
+                    serverHandler.apiCall(
+                        Config.GET,
+                        Config.GET_USER,
+                        userId = userGame.userId,
+                        callBack = object : ServerHandler.VolleyCallBack {
+                            override fun onSuccess(reply: JSONObject?) {
+                                val userJsonString = reply.toString()
+                                val intent = Intent(requireContext(), MenuActivity::class.java)
+                                intent.putExtra("user", userJsonString)
+                                startActivity(intent)
+                                requireActivity().overridePendingTransition(0, 0);
+                                requireActivity().finish()
+                                serverHandler.apiCall(
+                                    Config.DELETE,
+                                    Config.DELETE_LEAVE_GAMELOBBY,
+                                    userId = userGame.userId,
+                                    gameLobbyId = gameLobby.lobbyId
+                                )
+                            }
+                        })
+                }
+                .setNegativeButton(R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show()
+        }
     }
 
     private fun selectNumberHint(value: String){
@@ -316,6 +354,21 @@ class GameFragment : Fragment(), View.OnClickListener{
     }
 
     private fun updateGameLobbyUI(newGameLobby: GameLobby) {
+        var team1Members = 0
+        var team2Members = 0
+        for (member in gameLobby.members) {
+            if (member.team == resources.getString(R.string.team1)) {
+                team1Members += 1
+            } else {
+                team2Members += 1
+            }
+        }
+        if (team1Members < 2) {
+            leave(true, resources.getString(R.string.team1))
+        }
+        if (team2Members < 2) {
+            leave(true, resources.getString(R.string.team2))
+        }
         if (gameLobby != newGameLobby && ended) {
             gameLobby.lobbyId = newGameLobby.lobbyId
             gameLobby.members = newGameLobby.members
