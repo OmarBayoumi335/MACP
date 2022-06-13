@@ -51,6 +51,7 @@ class GameFragment : Fragment(), View.OnClickListener{
     private lateinit var gameActivity: GameActivity
     private var selectNumber = false
     private var selectText = false
+    private var ended = true
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -297,7 +298,8 @@ class GameFragment : Fragment(), View.OnClickListener{
                     userGame.vote = member.vote
                 }
             }
-            if (gameLobby.winner != "no") {
+            if (gameLobby.winner != "no" && ended) {
+                ended = false
                 val iWon = userGame.team == gameLobby.winner
                 val endGameFragment = EndGameFragment(iWon, userGame, gameLobby)
                 endGameFragment.show(gameActivity.supportFragmentManager, "GameFragment->EndGameFragment")
