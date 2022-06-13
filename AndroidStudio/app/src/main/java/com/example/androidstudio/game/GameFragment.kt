@@ -94,10 +94,6 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
         gameActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        // send message in chat
-        val sendMessageButton = gameActivity.findViewById<ImageButton>(R.id.game_send_message_image_button)
-        sendMessageButton.setOnClickListener(this)
-
         // pass lobby and user in the view
         gameView.gameLobby = gameLobby
         gameView.userGame = userGame
@@ -172,7 +168,6 @@ class GameFragment : Fragment(), View.OnClickListener{
             R.id.game_button_value_4 -> selectNumberHint("4")
             R.id.game_button_value_5 -> selectNumberHint("5")
             R.id.game_button_value_6 -> selectNumberHint("6")
-            R.id.game_send_message_image_button -> sendMessage()
             R.id.game_confirm_hint -> giveClueToMembers()
             R.id.game_pass_hint_member -> passButton()
         }
@@ -271,10 +266,6 @@ class GameFragment : Fragment(), View.OnClickListener{
             ChooseDirectionFragment(gameLobby.hint2)
         }
         chooseDirectionsFragment.show(gameActivity.supportFragmentManager, "GameFragment->ChooseDirectionFragment")
-    }
-
-    private fun sendMessage() {
-
     }
 
     private fun giveClueToMembers() {

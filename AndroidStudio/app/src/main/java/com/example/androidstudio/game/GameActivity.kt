@@ -39,6 +39,7 @@ class GameActivity : AppCompatActivity(){
     private lateinit var opponentTurnMember: ConstraintLayout
     private lateinit var intentService: Intent
     private lateinit var exampleService: EnigmaService
+    private lateinit var serverHandler: ServerHandler
     private var myGameLobby: GameLobby = GameLobby(
         "",
         mutableListOf(),
@@ -59,7 +60,7 @@ class GameActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-        val serverHandler = ServerHandler(applicationContext)
+        serverHandler = ServerHandler(applicationContext)
         views = findViewById(R.id.game_views)
         views.visibility = View.GONE
         myTurnCaptain = findViewById(R.id.game_bottom_part)
@@ -79,15 +80,7 @@ class GameActivity : AppCompatActivity(){
         chatEditText = findViewById(R.id.game_message_edittext)
         chatImageButton = findViewById(R.id.game_send_message_image_button)
         chatImageButton.setOnClickListener {
-            val chatText = chatEditText.text.toString()
-            serverHandler.apiCall(
-                Config.POST,
-                Config.POST_SEND_MESSAGE_GAMELOBBY,
-                userId = myUserGame.userId,
-                gameLobbyId = myGameLobby.lobbyId,
-                username = myUserGame.username,
-                chatText = chatText
-            )
+            sendMessage()
         }
 
         exampleService = EnigmaService(serverHandler, myGameLobby = myGameLobby)
@@ -179,5 +172,30 @@ class GameActivity : AppCompatActivity(){
         intentOnUnbind.putExtra("isGameLobby", true)
         exampleService.onUnbind(intentOnUnbind)
         super.onDestroy()
+    }
+
+    private fun sendMessage() {
+        var textToSend = chatEditText.text.toString()
+        var allSpace = true
+        for (i in textToSend.indices) {
+            if (textToSend[i] != ' ') {
+                textToSend = textToSend.substring(i)
+                allSpace = false
+                break
+            }
+        }
+        if (!allSpace) {
+            chatImageButton.isClickable = false
+            serverHandler.apiCall(
+                Config.POST,
+                Config.POST_SEND_MESSAGE_GAMELOBBY,
+                userId = myUserGame.userId,
+                gameLobbyId = myGameLobby.lobbyId,
+                username = myUserGame.username,
+                chatText = textToSend
+            )
+        }
+        Log.i(Config.GAME_TAG, "message: ->$textToSend<-")
+        chatEditText.text.clear()
     }
 }
