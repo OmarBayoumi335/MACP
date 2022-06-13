@@ -10,13 +10,14 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.types.GameLobby
 import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.home.MenuActivity
 import org.json.JSONObject
 
-class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame) : DialogFragment() {
+class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame, private val gameLobby: GameLobby) : DialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +33,8 @@ class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame)
             resources.getString(R.string.you_lose)
         }
 
+        isCancelable = false
+
         val buttonEnd = rootView.findViewById<Button>(R.id.go_to_home_end_game_button)
         buttonEnd.setOnClickListener{
             serverHandler.apiCall(
@@ -46,6 +49,12 @@ class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame)
                         startActivity(intent)
                         requireActivity().overridePendingTransition(0, 0);
                         requireActivity().finish()
+                        serverHandler.apiCall(
+                            Config.DELETE,
+                            Config.DELETE_LEAVE_GAMELOBBY,
+                            userId = userGame.userId,
+                            gameLobbyId = gameLobby.lobbyId
+                        )
                     }
                 })
         }
@@ -58,7 +67,7 @@ class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame)
         // Set the fragment dimension to 90% of the device size
         val w = (resources.displayMetrics.widthPixels * 0.90).toInt()
         val h = (resources.displayMetrics.heightPixels * 0.90).toInt()
-        val viewResize: View = view.findViewById(R.id.profile_fragment)
+        val viewResize: View = view.findViewById(R.id.end_game_fragment)
         val layoutParams: ViewGroup.LayoutParams? = viewResize.layoutParams
         layoutParams?.width = w
         layoutParams?.height = h

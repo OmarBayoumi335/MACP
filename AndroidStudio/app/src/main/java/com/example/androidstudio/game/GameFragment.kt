@@ -291,6 +291,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             gameLobby.hint1 = newGameLobby.hint1
             gameLobby.hint2 = newGameLobby.hint2
             gameLobby.clue = newGameLobby.clue
+            gameLobby.winner = newGameLobby.winner
             for (member in gameLobby.members) {
                 if (member.userId == userGame.userId) {
                     userGame.vote = member.vote
@@ -298,7 +299,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
             if (gameLobby.winner != "no") {
                 val iWon = userGame.team == gameLobby.winner
-                val endGameFragment = EndGameFragment(iWon, userGame)
+                val endGameFragment = EndGameFragment(iWon, userGame, gameLobby)
                 endGameFragment.show(gameActivity.supportFragmentManager, "GameFragment->EndGameFragment")
             }
             updateBottomPart()
