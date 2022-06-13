@@ -19,7 +19,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.adapters.ChatAdapter
 import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
@@ -374,6 +377,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
         }
         if (gameLobby != newGameLobby && ended) {
+            gameActivity.updateChat()
             gameLobby.lobbyId = newGameLobby.lobbyId
             gameLobby.members = newGameLobby.members
             gameLobby.chatTeam1 = newGameLobby.chatTeam1

@@ -8,9 +8,14 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.adapters.ChatAdapter
+import com.example.androidstudio.classes.adapters.ChatGameAdapter
 import com.example.androidstudio.classes.types.Clue
 import com.example.androidstudio.classes.types.GameLobby
 import com.example.androidstudio.classes.types.Lobby
@@ -24,6 +29,10 @@ import java.io.IOException
 
 class GameActivity : AppCompatActivity(){
 
+    private lateinit var chatRecyclerView: RecyclerView
+    private lateinit var chatAdapter: ChatGameAdapter
+    private lateinit var chatImageButton: ImageButton
+    private lateinit var chatEditText: EditText
     private lateinit var views: ConstraintLayout
     private lateinit var myTurnCaptain: ConstraintLayout
     private lateinit var myTurnMember: ConstraintLayout
@@ -50,13 +59,37 @@ class GameActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        val serverHandler = ServerHandler(applicationContext)
         views = findViewById(R.id.game_views)
         views.visibility = View.GONE
         myTurnCaptain = findViewById(R.id.game_bottom_part)
         myTurnMember = findViewById(R.id.game_bottom_part_member)
         opponentTurnMember = findViewById(R.id.game_bottom_part_opponent)
 
-        val serverHandler = ServerHandler(applicationContext)
+        // Chat
+        chatRecyclerView = findViewById(R.id.game_chat_recyclerview)
+        chatAdapter = ChatGameAdapter(myGameLobby, myUserGame, applicationContext)
+        chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
+        chatAdapter.notifyDataSetChanged()
+        chatRecyclerView.adapter = chatAdapter
+        chatRecyclerView.layoutManager = LinearLayoutManager(applicationContext).apply {
+            stackFromEnd = true
+            reverseLayout = false
+        }
+        chatEditText = findViewById(R.id.game_message_edittext)
+        chatImageButton = findViewById(R.id.game_send_message_image_button)
+        chatImageButton.setOnClickListener {
+            val chatText = chatEditText.text.toString()
+            serverHandler.apiCall(
+                Config.POST,
+                Config.POST_SEND_MESSAGE_GAMELOBBY,
+                userId = myUserGame.userId,
+                gameLobbyId = myGameLobby.lobbyId,
+                username = myUserGame.username,
+                chatText = chatText
+            )
+        }
+
         exampleService = EnigmaService(serverHandler, myGameLobby = myGameLobby)
         intentService = Intent(this, exampleService::class.java)
         startService(intentService);
@@ -134,6 +167,10 @@ class GameActivity : AppCompatActivity(){
 
     fun setUserGame(newUserGame: UserGame) {
         myUserGame = newUserGame
+    }
+
+    fun updateChat() {
+        chatAdapter.notifyDataSetChanged()
     }
 
     override fun onDestroy() {
