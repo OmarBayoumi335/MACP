@@ -279,7 +279,7 @@ class GameFragment : Fragment(), View.OnClickListener{
     }
 
     private fun updateGameLobbyUI(newGameLobby: GameLobby) {
-        if (gameLobby != newGameLobby) {
+        if (gameLobby != newGameLobby && ended) {
             gameLobby.lobbyId = newGameLobby.lobbyId
             gameLobby.members = newGameLobby.members
             gameLobby.chatTeam1 = newGameLobby.chatTeam1
@@ -298,7 +298,7 @@ class GameFragment : Fragment(), View.OnClickListener{
                     userGame.vote = member.vote
                 }
             }
-            if (gameLobby.winner != "no" && ended) {
+            if (gameLobby.winner != "no") {
                 ended = false
                 val iWon = userGame.team == gameLobby.winner
                 val endGameFragment = EndGameFragment(iWon, userGame, gameLobby)
