@@ -110,7 +110,7 @@ class EnigmaServer(Resource):
         #0 return the username given the user id. Input(req, userId)
         if self.req == GET_USERNAME:
             userId = "" if self.userId == None else self.userId
-            username = db.child("Users").child(self.userId).child("username").get().val()
+            username = db.child("Users").child(userId).child("username").get().val()
             username = "" if username == None else username
             return {"message": "get username", "username": username, "error": False}
         
