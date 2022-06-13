@@ -354,20 +354,22 @@ class GameFragment : Fragment(), View.OnClickListener{
     }
 
     private fun updateGameLobbyUI(newGameLobby: GameLobby) {
-        var team1Members = 0
-        var team2Members = 0
-        for (member in gameLobby.members) {
-            if (member.team == resources.getString(R.string.team1)) {
-                team1Members += 1
-            } else {
-                team2Members += 1
+        if (ended) {
+            var team1Members = 0
+            var team2Members = 0
+            for (member in newGameLobby.members) {
+                if (member.team == resources.getString(R.string.team1)) {
+                    team1Members += 1
+                } else {
+                    team2Members += 1
+                }
             }
-        }
-        if (team1Members < 2) {
-            leave(true, resources.getString(R.string.team1))
-        }
-        if (team2Members < 2) {
-            leave(true, resources.getString(R.string.team2))
+            if (team1Members < 2) {
+                leave(true, resources.getString(R.string.team1))
+            }
+            if (team2Members < 2) {
+                leave(true, resources.getString(R.string.team2))
+            }
         }
         if (gameLobby != newGameLobby && ended) {
             gameLobby.lobbyId = newGameLobby.lobbyId
