@@ -20,6 +20,8 @@ db = firebase.database()
 MAX_LOBBY_MEMBERS = 16
 MIN_START_MEMBER = 1
 MAX_HINT = 3
+TEAM_RED = "Team Red"
+TEAM_GEEN = "Team Green"
 
 # GET
 GET_USERNAME = "get0"
@@ -361,6 +363,7 @@ class EnigmaServer(Resource):
         #4 accept lobby invite and enter into it. Input(req, userId, lobbyId)
         if self.req == POST_ACCEPT_LOBBY_INVITE:
             pendingInviteRequests = db.child("Users").child(self.userId).child("pendingInviteRequests").get().val()
+            pendingInviteRequests = [] if pendingInviteRequests == None else pendingInviteRequests
             user = db.child("Users").child(self.userId).get().val()
             userValue = {"username": user["username"], "userId": user["userId"], "ready": False}
             team1Members = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
@@ -580,15 +583,23 @@ class EnigmaServer(Resource):
         
         #12 send message to display in the gamelobby chat. Input(req, userId, gameLobbyId, username, chatText)
         if self.req == POST_SEND_MESSAGE_GAMELOBBY:
-            gamelobby = db.child("GameLobbies").child(self.gameLobbyId).get().val()
-            if self.userId == gamelobby["captainIndex1"] or self.userId == gamelobby["captainIndex2"]:
-                return {"message" : "captain can't send messagges", "error": False}
+            usersGameLobby = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
+            user = {}
+            for userGame in usersGameLobby:
+                if userGame["userId"] == self.userId:
+                    user = userGame
             username = "" if self.username == None else self.username
-            chat = db.child("GameLobbies").child(self.gameLobbyId).child("chat").get().val()
-            chat = [] if chat == None else chat
+            chatTeam1 = db.child("GameLobbies").child(self.gameLobbyId).child("chatTeam1").get().val()
+            chatTeam2 = db.child("GameLobbies").child(self.gameLobbyId).child("chatTeam2").get().val()
+            chatTeam1 = [] if chatTeam1 == None else chatTeam1
+            chatTeam2 = [] if chatTeam2 == None else chatTeam2
             message = {"user":{"userId": self.userId, "username": username}, "text": self.chatText}
-            chat.append(message)
-            db.child("GameLobbies").child(self.gameLobbyId).update({"chat": chat})
+            if user["team"] == "Team Green":
+                chatTeam1.append(message)
+                db.child("GameLobbies").child(self.gameLobbyId).update({"chatTeam1": chatTeam1})
+            else:
+                chatTeam2.append(message)
+                db.child("GameLobbies").child(self.gameLobbyId).update({"chatTeam2": chatTeam2})
             return {"message": "message sent", "error": False}
         
         
