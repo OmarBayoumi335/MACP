@@ -1,13 +1,16 @@
 package com.example.androidstudio.home.lobby
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.os.bundleOf
@@ -21,13 +24,14 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class SetupGameFragment : Fragment(), View.OnClickListener {
+class SetupGameFragment : Fragment(), View.OnTouchListener {
 
     private val dataBase = FirebaseDatabase.getInstance().reference
 
     private lateinit var user: User
     private lateinit var rootView: View
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,15 +44,15 @@ class SetupGameFragment : Fragment(), View.OnClickListener {
 
         // Create party
         val createPartyButton = rootView.findViewById<Button>(R.id.party_creation_button)
-        createPartyButton.setOnClickListener(this)
+        createPartyButton.setOnTouchListener(this)
 
         // back button
         val backButton = rootView.findViewById<Button>(R.id.button_back_from_setup_game)
-        backButton.setOnClickListener(this)
+        backButton.setOnTouchListener(this)
 
         // party invitation button
         val partyInvitationButton = rootView.findViewById<Button>(R.id.party_invitations_button)
-        partyInvitationButton.setOnClickListener(this)
+        partyInvitationButton.setOnTouchListener(this)
 
         // invites notification
         val invitationsNotification = rootView.findViewById<TextView>(R.id.invite_notification_textView)
@@ -63,12 +67,22 @@ class SetupGameFragment : Fragment(), View.OnClickListener {
         return rootView
     }
 
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.button_back_from_setup_game -> back()
-            R.id.party_creation_button -> createParty()
-            R.id.party_invitations_button -> openInvitations()
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean {
+        val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+        when (motionEvent?.action) {
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_UP -> {
+                v?.startAnimation(scaleDown)
+                when (v?.id) {
+                    R.id.button_back_from_setup_game -> back()
+                    R.id.party_creation_button -> createParty()
+                    R.id.party_invitations_button -> openInvitations()
+                }
+            }
         }
+        return true
     }
 
     private fun openInvitations() {

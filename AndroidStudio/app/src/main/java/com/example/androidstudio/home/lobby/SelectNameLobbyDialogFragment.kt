@@ -1,9 +1,12 @@
 package com.example.androidstudio.home.lobby
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import androidx.core.os.bundleOf
@@ -12,11 +15,12 @@ import androidx.navigation.fragment.findNavController
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.User
 
-class SelectNameLobbyDialogFragment(private val user: User) : DialogFragment(), View.OnClickListener {
+class SelectNameLobbyDialogFragment(private val user: User) : DialogFragment(), View.OnTouchListener {
 
     private lateinit var lobbyName: String
     private lateinit var selectNameEditText: EditText
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,10 +32,10 @@ class SelectNameLobbyDialogFragment(private val user: User) : DialogFragment(), 
         selectNameEditText = rootView.findViewById(R.id.select_lobby_name_edittext)
 
         val cancelButton = rootView.findViewById<Button>(R.id.select_lobby_name_cancel_button)
-        cancelButton.setOnClickListener(this)
+        cancelButton.setOnTouchListener(this)
 
         val createLobbyButton = rootView.findViewById<Button>(R.id.select_lobby_name_confirm_button)
-        createLobbyButton.setOnClickListener(this)
+        createLobbyButton.setOnTouchListener(this)
 
 
         return rootView
@@ -50,11 +54,21 @@ class SelectNameLobbyDialogFragment(private val user: User) : DialogFragment(), 
         viewResize.layoutParams = layoutParams
     }
 
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.select_lobby_name_cancel_button -> dismiss()
-            R.id.select_lobby_name_confirm_button -> createLobby()
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean {
+        val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+        when (motionEvent?.action) {
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_UP -> {
+                v?.startAnimation(scaleDown)
+                when (v?.id) {
+                    R.id.select_lobby_name_cancel_button -> dismiss()
+                    R.id.select_lobby_name_confirm_button -> createLobby()
+                }
+            }
         }
+        return true
     }
 
     private fun createLobby() {

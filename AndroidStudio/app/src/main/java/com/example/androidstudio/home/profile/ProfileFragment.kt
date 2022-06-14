@@ -1,5 +1,6 @@
 package com.example.androidstudio.home.profile
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
@@ -9,8 +10,10 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -32,7 +35,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 
-class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
+class ProfileFragment(user: User) : DialogFragment(), View.OnTouchListener, View.OnClickListener {
 
     private val user: User
 
@@ -59,6 +62,8 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
 
     var tabLayout: TabLayout? = null
     var viewPager: ViewPager? = null
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -108,12 +113,13 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
 
         // Close profile button
         val profileCloseButton = rootView.findViewById<Button>(R.id.profile_close_button)
-        profileCloseButton.setOnClickListener(this)
+        profileCloseButton.setOnTouchListener(this)
 
         update(requestsTextView)
         return rootView
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -129,7 +135,7 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
         // Change name logic
         changeNameButton = view.findViewById(R.id.profile_change_name_button)
         changeNameButton.visibility = View.GONE
-        changeNameButton.setOnClickListener(this)
+        changeNameButton.setOnTouchListener(this)
         nameEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 newName = s.toString()
@@ -149,10 +155,25 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.profile_change_name_button -> changeName()
-            R.id.profile_close_button -> dismiss()
             R.id.profile_id -> copyId()
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean {
+        val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+        when (motionEvent?.action) {
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_UP -> {
+                v?.startAnimation(scaleDown)
+                when (v?.id) {
+                    R.id.profile_change_name_button -> changeName()
+                    R.id.profile_close_button -> dismiss()
+                }
+            }
+        }
+        return true
     }
 
     private fun copyId() {
@@ -163,6 +184,7 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
     }
 
     private fun changeName() {
+        Log.i("prova", "ciao sono entrato")
         user.username = newName
         serverHandler.apiCall(
             Config.POST,

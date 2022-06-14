@@ -1,12 +1,15 @@
 package com.example.androidstudio.home.lobby
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,11 +25,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class PartyInvitationFragment : Fragment(), View.OnClickListener {
+class PartyInvitationFragment : Fragment(), View.OnTouchListener {
 
     private val dataBase = FirebaseDatabase.getInstance().reference
     private lateinit var user: User
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,7 +45,7 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
 
         // Back button
         val backButton = rootView.findViewById<Button>(R.id.button_back_from_party_invitation)
-        backButton.setOnClickListener(this)
+        backButton.setOnTouchListener(this)
 
         // Recycler view for invites with update every sec
         val lobbyInviteRecyclerView = rootView.findViewById<RecyclerView>(R.id.party_invites_recycler_view)
@@ -54,11 +58,20 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
 
         return rootView
     }
-
-    override fun onClick(v: View?) {
-        when(v?.id) {
-            R.id.button_back_from_party_invitation -> back()
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean {
+        val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+        when (motionEvent?.action) {
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_UP -> {
+                v?.startAnimation(scaleDown)
+                when (v?.id) {
+                    R.id.button_back_from_party_invitation -> back()
+                }
+            }
         }
+        return true
     }
 
     private fun back() {
@@ -83,4 +96,5 @@ class PartyInvitationFragment : Fragment(), View.OnClickListener {
 //                Config.POLLING_PERIOD)
 //        }
     }
+
 }

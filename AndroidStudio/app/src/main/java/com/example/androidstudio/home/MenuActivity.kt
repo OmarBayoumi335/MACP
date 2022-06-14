@@ -1,12 +1,16 @@
 package com.example.androidstudio.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.*
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
@@ -21,7 +25,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 
 
-class MenuActivity : AppCompatActivity(), View.OnClickListener{
+class MenuActivity : AppCompatActivity(), View.OnTouchListener{
 
     private val dataBase = FirebaseDatabase.getInstance().reference
 
@@ -32,6 +36,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var intentService: Intent
     private lateinit var exampleService: EnigmaService
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
@@ -44,7 +49,7 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
         updateUser(requestsTextView)
 
         profileButton = findViewById(R.id.button_profile)
-        profileButton.setOnClickListener(this)
+        profileButton.setOnTouchListener(this)
 
         val serverHandler = ServerHandler(applicationContext)
         exampleService = EnigmaService(serverHandler, myLobby = myLobby)
@@ -52,10 +57,20 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
         startService(intentService);
     }
 
-    override fun onClick(v: View?) {
-        when(v?.id) {
-            R.id.button_profile -> openProfile()
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean  {
+        val scaleUp = AnimationUtils.loadAnimation(applicationContext, R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(applicationContext, R.anim.scale_down)
+        when (motionEvent?.action) {
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_UP -> {
+                v?.startAnimation(scaleDown)
+                when(v?.id) {
+                    R.id.button_profile -> openProfile()
+                }
+            }
         }
+        return true
     }
 
     private fun openProfile() {
@@ -120,4 +135,5 @@ class MenuActivity : AppCompatActivity(), View.OnClickListener{
         exampleService.onUnbind(intentOnUnbind)
         super.onDestroy()
     }
+
 }

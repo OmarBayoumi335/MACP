@@ -1,12 +1,15 @@
 package com.example.androidstudio.home.lobby
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -34,7 +37,7 @@ import com.google.gson.Gson
 import org.json.JSONObject
 
 
-class CreatePartyFragment : Fragment(), View.OnClickListener {
+class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
 
     private val dataBase = FirebaseDatabase.getInstance().reference
 
@@ -54,6 +57,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
     private lateinit var readyButton: Button
     private var gameCanStart: Boolean = true
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -85,16 +89,16 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
 
         // Change Team Button
         changeTeamImageButton = rootView.findViewById<ImageButton>(R.id.change_team_image_button)
-        changeTeamImageButton.setOnClickListener(this)
+        changeTeamImageButton.setOnTouchListener(this)
         changeTeamImageButton.isClickable = false
 
         // Leave button
         val leaveButton = rootView.findViewById<Button>(R.id.button_leave_lobby)
-        leaveButton.setOnClickListener(this)
+        leaveButton.setOnTouchListener(this)
 
         // Ready button
         readyButton = rootView.findViewById(R.id.lobby_ready_button)
-        readyButton.setOnClickListener(this)
+        readyButton.setOnTouchListener(this)
 
         // Add friend to lobby button
         val addFriendToLobby = rootView.findViewById<ImageButton>(R.id.lobby_invite_friend_image_button)
@@ -142,13 +146,27 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v?.id) {
-            R.id.button_leave_lobby -> leave()
             R.id.lobby_invite_friend_image_button -> invite()
-            R.id.change_team_image_button -> changeTeam()
             R.id.lobby_chat_send_button -> sendMessage()
-            R.id.lobby_ready_button -> ready()
         }
+    }
 
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean {
+        val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+        when (motionEvent?.action) {
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_UP -> {
+                v?.startAnimation(scaleDown)
+                when (v?.id) {
+                    R.id.button_leave_lobby -> leave()
+                    R.id.change_team_image_button -> changeTeam()
+                    R.id.lobby_ready_button -> ready()
+                }
+            }
+        }
+        return true
     }
 
     private fun leave() {
