@@ -703,6 +703,15 @@ class EnigmaServer(Resource):
         
         #4 delete the party lobby and set ready for the game lobby. Input(req, lobbyId)
         if self.req == DELETE_LOBBY:
+            users = db.child("Users").get().val()
+            for user in users:
+                pendingInvites = db.child("Users").child(user).child("pendingInviteRequests").get().val()
+                pendingInvites = [] if pendingInvites == None else pendingInvites
+                newPendingList = []
+                for pending in pendingInvites:
+                    if self.lobbyId != pending["lobbyId"]:
+                        newPendingList.append(pending)
+                db.child("Users").child(user).update({"pendingInviteRequests": newPendingList})
             db.child("Lobbies").child(self.lobbyId).remove()
             return {"message": "party lobby deleted", "error": False}
         

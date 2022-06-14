@@ -56,6 +56,7 @@ class InviteFriendListAdapter(user: User,
         } else {
             bPositive.visibility = View.VISIBLE
             bPositive.setOnClickListener {
+                bPositive.visibility = View.GONE
                 serverHandler.apiCall(
                     Config.POST,
                     Config.POST_SEND_LOBBY_INVITE,
@@ -67,10 +68,15 @@ class InviteFriendListAdapter(user: User,
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
                             val status = reply?.get("status")
-                            val message = c.resources.getString(R.string.user_invited)
-                            Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
                             if (status == "invited") {
                                 bPositive.visibility = View.GONE
+                                val message = c.resources.getString(R.string.user_invited)
+                                Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+                            }
+                            if (status == "lobbyFull") {
+                                bPositive.visibility = View.VISIBLE
+                                val message = c.resources.getString(R.string.lobby_full)
+                                Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
                             }
                         }
                     })

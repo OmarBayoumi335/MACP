@@ -306,6 +306,16 @@ class CreatePartyFragment : Fragment(), View.OnClickListener {
         lobby.chat = newLobby.chat
         chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount)
         chatAdapter.notifyDataSetChanged()
+        for (member in lobby.team1 + lobby.team2) {
+            if (member.userId == user.userId) {
+                readyButton.text = if (member.ready) {
+                    resources.getString(R.string.lobby_cancel)
+                } else {
+                    resources.getString(R.string.lobby_ready)
+                }
+                break
+            }
+        }
         team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
         team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
         team1MembersAdapter.notifyDataSetChanged()

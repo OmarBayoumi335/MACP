@@ -193,7 +193,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             R.id.game_button_value_6 -> selectNumberHint("6")
             R.id.game_confirm_hint -> giveClueToMembers()
             R.id.game_pass_hint_member -> passButton()
-            R.id.game_chat_recyclerview -> sendMessage()
+            R.id.game_send_message_image_button -> sendMessage()
         }
     }
 
@@ -345,7 +345,12 @@ class GameFragment : Fragment(), View.OnClickListener{
                 userId = userGame.userId,
                 gameLobbyId = gameLobby.lobbyId,
                 username = userGame.username,
-                chatText = textToSend
+                chatText = textToSend,
+                callBack = object : ServerHandler.VolleyCallBack {
+                    override fun onSuccess(reply: JSONObject?) {
+                        chatImageButton.isClickable = true
+                    }
+                }
             )
         }
         Log.i(Config.GAME_TAG, "message: ->$textToSend<-")
