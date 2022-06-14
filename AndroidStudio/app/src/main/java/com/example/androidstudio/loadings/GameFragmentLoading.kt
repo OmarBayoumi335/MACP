@@ -241,51 +241,12 @@ class GameFragmentLoading : Fragment() {
                             val number = reply?.getInt("number")
                             if (number == lobbyGameMembers) {
                                 Handler(Looper.getMainLooper()).postDelayed({
-                                    joinLobbyGame("setReady")
-                                },
-                                    Config.POLLING_PERIOD)
-                            } else {
-                                Handler(Looper.getMainLooper()).postDelayed({
-                                    joinLobbyGame("waiting")
-                                },
-                                    Config.POLLING_PERIOD)
-                            }
-                        }
-                    }
-                )
-            }
-            "setReady" -> {
-                serverHandler.apiCall(
-                    Config.POST,
-                    Config.POST_READY,
-                    gameLobbyId = gameLobbyId,
-                    userId = userId,
-                    callBack = object : ServerHandler.VolleyCallBack {
-                        override fun onSuccess(reply: JSONObject?) {
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                joinLobbyGame("allReadyWaiting")
-                            },
-                                Config.POLLING_PERIOD)
-                        }
-                    }
-                )
-            }
-            "allReadyWaiting" -> {
-                serverHandler.apiCall(
-                    Config.GET,
-                    Config.GET_ALL_READY_GAME,
-                    gameLobbyId = gameLobbyId,
-                    callBack = object : ServerHandler.VolleyCallBack {
-                        override fun onSuccess(reply: JSONObject?) {
-                            val allReady = reply?.getBoolean("allReady")
-                            if (allReady!!) {
-                                Handler(Looper.getMainLooper()).postDelayed({
                                     joinLobbyGame("allReady")
                                 },
                                     Config.POLLING_PERIOD)
                             } else {
                                 Handler(Looper.getMainLooper()).postDelayed({
-                                    joinLobbyGame("allReadyWaiting")
+                                    joinLobbyGame("waiting")
                                 },
                                     Config.POLLING_PERIOD)
                             }

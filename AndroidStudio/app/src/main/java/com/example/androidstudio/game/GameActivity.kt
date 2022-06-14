@@ -29,10 +29,6 @@ import java.io.IOException
 
 class GameActivity : AppCompatActivity(){
 
-    private lateinit var chatRecyclerView: RecyclerView
-    private lateinit var chatAdapter: ChatGameAdapter
-    private lateinit var chatImageButton: ImageButton
-    private lateinit var chatEditText: EditText
     private lateinit var views: ConstraintLayout
     private lateinit var myTurnCaptain: ConstraintLayout
     private lateinit var myTurnMember: ConstraintLayout
@@ -66,22 +62,6 @@ class GameActivity : AppCompatActivity(){
         myTurnCaptain = findViewById(R.id.game_bottom_part)
         myTurnMember = findViewById(R.id.game_bottom_part_member)
         opponentTurnMember = findViewById(R.id.game_bottom_part_opponent)
-
-        // Chat
-        chatRecyclerView = findViewById(R.id.game_chat_recyclerview)
-        chatAdapter = ChatGameAdapter(myGameLobby, myUserGame, applicationContext)
-        chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
-        chatAdapter.notifyDataSetChanged()
-        chatRecyclerView.adapter = chatAdapter
-        chatRecyclerView.layoutManager = LinearLayoutManager(applicationContext).apply {
-            stackFromEnd = true
-            reverseLayout = false
-        }
-        chatEditText = findViewById(R.id.game_message_edittext)
-        chatImageButton = findViewById(R.id.game_send_message_image_button)
-        chatImageButton.setOnClickListener {
-            sendMessage()
-        }
 
         exampleService = EnigmaService(serverHandler, myGameLobby = myGameLobby)
         intentService = Intent(this, exampleService::class.java)
@@ -162,40 +142,11 @@ class GameActivity : AppCompatActivity(){
         myUserGame = newUserGame
     }
 
-    fun updateChat() {
-        chatAdapter.notifyDataSetChanged()
-    }
-
     override fun onDestroy() {
         val intentOnUnbind = Intent()
         intentOnUnbind.putExtra("userId", myUserGame.userId)
         intentOnUnbind.putExtra("isGameLobby", true)
         exampleService.onUnbind(intentOnUnbind)
         super.onDestroy()
-    }
-
-    private fun sendMessage() {
-        var textToSend = chatEditText.text.toString()
-        var allSpace = true
-        for (i in textToSend.indices) {
-            if (textToSend[i] != ' ') {
-                textToSend = textToSend.substring(i)
-                allSpace = false
-                break
-            }
-        }
-        if (!allSpace) {
-            chatImageButton.isClickable = false
-            serverHandler.apiCall(
-                Config.POST,
-                Config.POST_SEND_MESSAGE_GAMELOBBY,
-                userId = myUserGame.userId,
-                gameLobbyId = myGameLobby.lobbyId,
-                username = myUserGame.username,
-                chatText = textToSend
-            )
-        }
-        Log.i(Config.GAME_TAG, "message: ->$textToSend<-")
-        chatEditText.text.clear()
     }
 }

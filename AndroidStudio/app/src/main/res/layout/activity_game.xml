@@ -175,7 +175,7 @@
                 android:id="@+id/game_chat_recyclerview"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@id/seven_octaves_right"
+                app:layout_constraintBottom_toTopOf="@id/game_message_edittext"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/quarter_right" />
@@ -186,16 +186,19 @@
                 android:layout_height="0dp"
                 android:hint="@string/message"
                 android:inputType="textPersonName"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/game_send_message_image_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/seven_octaves_right" />
+                app:layout_constraintTop_toBottomOf="@id/seven_octaves_right"
+                app:layout_constraintVertical_bias="1.0" />
 
             <ImageButton
                 android:id="@+id/game_send_message_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:src="@android:drawable/ic_menu_send"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/seven_octaves_right" />

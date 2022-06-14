@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.adapters.ChatAdapter
+import com.example.androidstudio.classes.adapters.ChatGameAdapter
 import com.example.androidstudio.classes.types.*
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
@@ -59,6 +60,10 @@ class GameFragment : Fragment(), View.OnClickListener{
     private var selectNumber = false
     private var selectText = false
     private var ended = true
+    private lateinit var chatRecyclerView: RecyclerView
+    private lateinit var chatAdapter: ChatGameAdapter
+    private lateinit var chatImageButton: ImageButton
+    private lateinit var chatEditText: EditText
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -147,6 +152,24 @@ class GameFragment : Fragment(), View.OnClickListener{
         buttonPass = gameActivity.findViewById(R.id.game_pass_hint_member)
         buttonPass.setOnClickListener(this)
 
+        // Chat
+        chatRecyclerView = gameActivity.findViewById(R.id.game_chat_recyclerview)
+        chatAdapter = ChatGameAdapter(gameLobby, userGame, requireContext())
+        chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
+        chatAdapter.notifyDataSetChanged()
+        chatRecyclerView.adapter = chatAdapter
+        chatRecyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
+            stackFromEnd = true
+            reverseLayout = false
+        }
+        chatEditText = gameActivity.findViewById(R.id.game_message_edittext)
+        chatImageButton = gameActivity.findViewById(R.id.game_send_message_image_button)
+        if (gameLobby.captainIndex1 == userGame.userId || gameLobby.captainIndex2 == userGame.userId) {
+            chatEditText.visibility = View.GONE
+            chatImageButton.visibility = View.GONE
+        }
+        chatImageButton.setOnClickListener(this)
+
         // set bottom part view
         updateBottomPart()
 
@@ -170,6 +193,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             R.id.game_button_value_6 -> selectNumberHint("6")
             R.id.game_confirm_hint -> giveClueToMembers()
             R.id.game_pass_hint_member -> passButton()
+            R.id.game_chat_recyclerview -> sendMessage()
         }
     }
 
@@ -303,6 +327,31 @@ class GameFragment : Fragment(), View.OnClickListener{
         }
     }
 
+    private fun sendMessage() {
+        var textToSend = chatEditText.text.toString()
+        var allSpace = true
+        for (i in textToSend.indices) {
+            if (textToSend[i] != ' ') {
+                textToSend = textToSend.substring(i)
+                allSpace = false
+                break
+            }
+        }
+        if (!allSpace) {
+            chatImageButton.isClickable = false
+            serverHandler.apiCall(
+                Config.POST,
+                Config.POST_SEND_MESSAGE_GAMELOBBY,
+                userId = userGame.userId,
+                gameLobbyId = gameLobby.lobbyId,
+                username = userGame.username,
+                chatText = textToSend
+            )
+        }
+        Log.i(Config.GAME_TAG, "message: ->$textToSend<-")
+        chatEditText.text.clear()
+    }
+
     private fun checkClue() {
         giveClue.isClickable = selectNumber && selectText
     }
@@ -368,7 +417,6 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
         }
         if (gameLobby != newGameLobby && ended) {
-            gameActivity.updateChat()
             gameLobby.lobbyId = newGameLobby.lobbyId
             gameLobby.members = newGameLobby.members
             gameLobby.chatTeam1 = newGameLobby.chatTeam1
@@ -382,6 +430,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             gameLobby.hint2 = newGameLobby.hint2
             gameLobby.clue = newGameLobby.clue
             gameLobby.winner = newGameLobby.winner
+            chatAdapter.notifyDataSetChanged()
             for (member in gameLobby.members) {
                 if (member.userId == userGame.userId) {
                     userGame.vote = member.vote
