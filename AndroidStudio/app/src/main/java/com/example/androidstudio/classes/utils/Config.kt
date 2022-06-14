@@ -70,6 +70,8 @@ class Config {
         val DELETE_LOBBY = "delete4"
         val DELETE_LEAVE_GAMELOBBY = "delete5"
 
+        val touchAnimation = {
 
+        }
     }
 }

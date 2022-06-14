@@ -1,5 +1,8 @@
 package com.example.androidstudio.home.profile
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -11,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
@@ -75,7 +79,8 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
         // Set top part views
         nameEditText = rootView.findViewById(R.id.profile_name_edittext)
         idTextView = rootView.findViewById(R.id.profile_id)
-        idTextView.text = resources.getString(R.string.id).plus(user.userId)
+        idTextView.text = resources.getString(R.string.id).plus(" ${user.userId}")
+        idTextView.setOnClickListener(this)
         nameEditText.setText(user.username)
 
         // Set the profile tab menu
@@ -92,7 +97,7 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
         val tabTitles = arrayOf(resources.getString(R.string.profile_friends_tab),
             resources.getString(R.string.profile_friends_request_tab),
             resources.getString(R.string.profile_add_friend_tab))
-        val tabIcons: Array<Int> = arrayOf(R.drawable.ic_profile,
+        val tabIcons: Array<Int> = arrayOf(R.drawable.ic_friends,
             android.R.drawable.checkbox_on_background,
             R.drawable.ic_add_friend)
         TabLayoutMediator(table, pager) {
@@ -146,7 +151,15 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             R.id.profile_change_name_button -> changeName()
             R.id.profile_close_button -> dismiss()
+            R.id.profile_id -> copyId()
         }
+    }
+
+    private fun copyId() {
+        val clipboard: ClipboardManager? = requireActivity().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+        val clip = ClipData.newPlainText("id", user.userId)
+        clipboard?.setPrimaryClip(clip)
+        Toast.makeText(requireContext(), resources.getString(R.string.copied), Toast.LENGTH_SHORT).show()
     }
 
     private fun changeName() {

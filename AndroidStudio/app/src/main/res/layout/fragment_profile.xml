@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="15dp"
+    android:background="@drawable/background"
     tools:context=".home.profile.ProfileFragment">
 
     <LinearLayout
@@ -31,14 +32,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/logout_button"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/button_logout"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="@string/tap_to_copy"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="@id/profile_id"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@id/profile_id"
+                app:layout_constraintTop_toBottomOf="@id/profile_id" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -103,7 +105,7 @@
             android:id="@+id/profile_friends_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:icon="@drawable/ic_profile"
+            android:icon="@drawable/ic_friends"
             android:text="@string/profile_friends_tab" />
 
         <com.google.android.material.tabs.TabItem

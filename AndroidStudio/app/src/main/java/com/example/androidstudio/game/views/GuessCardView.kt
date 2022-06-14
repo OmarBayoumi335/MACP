@@ -16,9 +16,6 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationSet
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withMatrix
@@ -29,7 +26,6 @@ import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.game.GuessCardFragment
-import org.json.JSONObject
 import kotlin.properties.Delegates
 
 
@@ -146,7 +142,7 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
 //        canvas?.drawCircle(leftCenterX, centerY, compassRadius, circlePaint)
 
         // compass image
-        compass = ResourcesCompat.getDrawable(resources, R.drawable.ic_compass1, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
+        compass = ResourcesCompat.getDrawable(resources, R.drawable.ic_compass, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
         val rotation = Matrix()
 
         var roundYaw: Int = if (yaw < -Math.PI + 0.05 || yaw > Math.PI - 0.05) {

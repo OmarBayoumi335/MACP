@@ -1,13 +1,16 @@
 package com.example.androidstudio.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -20,11 +23,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 
-class MenuFragment: Fragment(), View.OnClickListener {
+class MenuFragment: Fragment(), View.OnTouchListener {
 
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private var clientId = Config.CLIENT_ID
     private lateinit var user: User
+    private lateinit var playButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +37,7 @@ class MenuFragment: Fragment(), View.OnClickListener {
         return inflater.inflate(R.layout.fragment_menu, container, false)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -40,23 +45,34 @@ class MenuFragment: Fragment(), View.OnClickListener {
             .requestEmail()
             .build()
 
+        Log.i(Config.LOGIN_TAG, resources.displayMetrics.densityDpi.toString())
         val menuActivity: MenuActivity = requireActivity() as MenuActivity
         user = menuActivity.getUser()
 
         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
 
         val logoutButton = view.findViewById<Button>(R.id.logout_button)
-        logoutButton.setOnClickListener(this)
+        logoutButton.setOnTouchListener(this)
 
-        val playButton = view.findViewById<Button>(R.id.button_play)
-        playButton.setOnClickListener(this)
+        playButton = view.findViewById<Button>(R.id.button_play)
+        playButton.setOnTouchListener(this)
     }
 
-    override fun onClick(v: View?) {
-        when(v?.id) {
-            R.id.logout_button  -> signOut()
-            R.id.button_play    -> openSetupGame()
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean {
+        val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+        when (motionEvent?.action) {
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_UP -> {
+                v?.startAnimation(scaleDown)
+                when(v?.id) {
+                    R.id.logout_button  -> signOut()
+                    R.id.button_play    -> openSetupGame()
+                }
+            }
         }
+        return true
     }
 
     private fun openSetupGame() {

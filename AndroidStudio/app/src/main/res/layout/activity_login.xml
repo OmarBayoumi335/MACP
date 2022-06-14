@@ -4,20 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Login.LoginActivity">
+    tools:context=".Login.LoginActivity"
+    android:background="@drawable/background">
 
     <TextView
         android:id="@+id/login_title_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.07999998" />
+        app:layout_constraintVertical_bias="0.07999998"
+        android:fontFamily="@font/sky_fall_done"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/login_username_textfield"
@@ -26,6 +28,7 @@
         android:hint="@string/username_login"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
+        app:hintTextColor="@color/hint_login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +38,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_username_edittext"
             android:layout_width="match_parent"
-            android:layout_height="48sp" />
+            android:layout_height="48sp"
+            android:fontFamily="@font/booster_next_fy_black"
+            android:textColor="@color/white"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -44,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/hint_username_login"
-        android:textColor="@color/grey"
+        android:textColor="@color/hint_login"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/access_with_google"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/login_sign_in_button"
         app:layout_constraintEnd_toStartOf="@id/login_sign_in_button"

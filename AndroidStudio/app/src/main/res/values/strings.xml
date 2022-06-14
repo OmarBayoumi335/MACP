@@ -90,4 +90,15 @@
     <string name="not_enough_player_my_team_alert_message">You are the last player on the team</string>
     <string name="not_enough_player_opponent_team_alert_message">The opposing team has not enough players</string>
     <string name="lobby_full">Lobby full</string>
+    <string name="copied">Id copied to clipboard</string>
+    <string name="tap_to_copy">Tap to copy</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>
