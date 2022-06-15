@@ -46,7 +46,7 @@ class SelectNameLobbyDialogFragment(private val user: User) : DialogFragment(), 
 
         // Set the fragment dimension to 90% of the device size
         val w = (resources.displayMetrics.widthPixels * 0.90).toInt()
-        val h = (resources.displayMetrics.heightPixels * 0.40).toInt()
+        val h = (resources.displayMetrics.heightPixels * 0.45).toInt()
         val viewResize: View = view.findViewById(R.id.select_name_lobby_dialog)
         val layoutParams: ViewGroup.LayoutParams? = viewResize.layoutParams
         layoutParams?.width = w
@@ -59,9 +59,9 @@ class SelectNameLobbyDialogFragment(private val user: User) : DialogFragment(), 
         val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
         val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
         when (motionEvent?.action) {
-            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
             MotionEvent.ACTION_UP -> {
-                v?.startAnimation(scaleDown)
+                v?.startAnimation(scaleUp)
                 when (v?.id) {
                     R.id.select_lobby_name_cancel_button -> dismiss()
                     R.id.select_lobby_name_confirm_button -> createLobby()

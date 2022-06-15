@@ -164,11 +164,11 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnTouchListener, View
         val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
         val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
         when (motionEvent?.action) {
-            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
             MotionEvent.ACTION_UP -> {
-                v?.startAnimation(scaleDown)
+                v?.startAnimation(scaleUp)
                 when (v?.id) {
-                    R.id.profile_change_name_button -> changeName()
+                    R.id.profile_change_name_button -> changeName(v)
                     R.id.profile_close_button -> dismiss()
                 }
             }
@@ -183,14 +183,14 @@ class ProfileFragment(user: User) : DialogFragment(), View.OnTouchListener, View
         Toast.makeText(requireContext(), resources.getString(R.string.copied), Toast.LENGTH_SHORT).show()
     }
 
-    private fun changeName() {
-        Log.i("prova", "ciao sono entrato")
+    private fun changeName(v: View?) {
         user.username = newName
         serverHandler.apiCall(
             Config.POST,
             Config.POST_CHANGE_NAME,
             userId = user.userId,
             newName = user.username)
+        v?.clearAnimation()
         changeNameButton.visibility = View.GONE
     }
 

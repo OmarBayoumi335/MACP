@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingRight="5dp"
         android:textColor="@color/black"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/friend_item_username_textview"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/friend_item_username_textview"
@@ -40,14 +41,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
-            android:src="@android:drawable/checkbox_on_background" />
+            android:src="@drawable/confirm1" />
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content"/>
 
         <ImageButton
             android:id="@+id/negative_item_image_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
-            android:src="@android:drawable/ic_delete" />
+            android:scaleX="0.82"
+            android:scaleY="0.82"
+            android:src="@drawable/reject" />
 
     </LinearLayout>
 

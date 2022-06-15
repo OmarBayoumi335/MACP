@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
 
-    <solid android:color="@color/friend_not_found" />
+    <solid android:color="@color/notification_circle" />
 
     <size
         android:height="25dp"

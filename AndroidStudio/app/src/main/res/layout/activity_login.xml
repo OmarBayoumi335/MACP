@@ -40,7 +40,8 @@
             android:layout_width="match_parent"
             android:layout_height="48sp"
             android:fontFamily="@font/booster_next_fy_black"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:maxLength="14"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

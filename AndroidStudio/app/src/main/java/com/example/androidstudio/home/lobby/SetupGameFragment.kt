@@ -72,9 +72,9 @@ class SetupGameFragment : Fragment(), View.OnTouchListener {
         val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
         val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
         when (motionEvent?.action) {
-            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
             MotionEvent.ACTION_UP -> {
-                v?.startAnimation(scaleDown)
+                v?.startAnimation(scaleUp)
                 when (v?.id) {
                     R.id.button_back_from_setup_game -> back()
                     R.id.party_creation_button -> createParty()
@@ -114,12 +114,6 @@ class SetupGameFragment : Fragment(), View.OnTouchListener {
                 TODO("Not yet implemented")
             }
         })
-//        if (this.context != null) {
-//            Handler(Looper.getMainLooper()).postDelayed({
-//                update(invitationsNotification)
-//            },
-//                Config.POLLING_PERIOD)
-//        }
     }
 
     override fun onResume() {

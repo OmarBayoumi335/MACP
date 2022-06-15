@@ -6,9 +6,9 @@ import com.example.androidstudio.classes.types.User
 class Config {
     companion object{
         // Server
-//        val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
+        val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
 //                val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
-        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
+//        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
         val POLLING_PERIOD = 800L
 
         // Firebase/Google
@@ -69,9 +69,5 @@ class Config {
         val DELETE_LOBBY_INVITE = "delete3"
         val DELETE_LOBBY = "delete4"
         val DELETE_LEAVE_GAMELOBBY = "delete5"
-
-        val touchAnimation = {
-
-        }
     }
 }

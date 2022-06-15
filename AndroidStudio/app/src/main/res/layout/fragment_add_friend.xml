@@ -19,20 +19,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/find_friend_editText" />
 
+    <Space
+        android:id="@+id/after_edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.7"/>
+
     <EditText
         android:id="@+id/find_friend_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:ems="6"
         android:fontFamily="@font/booster_next_fy_black"
         android:textColor="@color/white"
         android:hint="@string/find_friend_hint"
         android:inputType="textPersonName"
         android:maxLength="7"
+        app:layout_constraintEnd_toStartOf="@id/after_edittext"
+        app:layout_constraintStart_toEndOf="@id/before_edittext"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Space
+        android:id="@+id/before_edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.3"/>
 
     <TextView
         android:id="@+id/add_friend_result_textview"

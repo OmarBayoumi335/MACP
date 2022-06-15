@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="15dp"
     tools:context=".home.lobby.CreatePartyFragment">
 
     <Button
         android:id="@+id/button_leave_lobby"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="@string/leave_lobby_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,17 +22,20 @@
         android:layout_height="wrap_content"
         android:text="@string/lobby_title_textview"
         android:textSize="34sp"
+        android:paddingEnd="25dp"
+        android:paddingStart="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/lobby_title_name_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@id/lobby_title_textview"
+        app:layout_constraintStart_toStartOf="@id/lobby_title_textview"
         app:layout_constraintTop_toBottomOf="@id/lobby_title_textview" />
 
     <Space
@@ -91,21 +95,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:src="@drawable/ic_add_friend"
+        android:background="@color/transparent"
+        android:src="@drawable/invitation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lobby_title_name_textview" />
 
 
     <ImageButton
-            android:id="@+id/change_team_image_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_ff"
-            app:layout_constraintBottom_toTopOf="@id/chat_lobby"
-            app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button"
-            app:layout_constraintEnd_toStartOf="@id/team2_members_recycler"
-            app:layout_constraintStart_toEndOf="@id/team1_members_recycler" />
+        android:id="@+id/change_team_image_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:padding="5dp"
+        android:src="@drawable/switch_team"
+        app:layout_constraintBottom_toTopOf="@id/chat_lobby"
+        app:layout_constraintEnd_toStartOf="@id/team2_members_recycler"
+        app:layout_constraintStart_toEndOf="@id/team1_members_recycler"
+        app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/team1_members_recycler"
@@ -130,22 +137,49 @@
         app:layout_constraintTop_toBottomOf="@id/lobby_invite_friend_image_button"
         app:layout_constraintVertical_bias="0.0" />
 
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/chat_background"
+        app:layout_constraintBottom_toTopOf="@id/lobby_ready_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/team1_members_recycler" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_lobby"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/lobby_chat_edit_text"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/edit_chat_line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/team1_members_recycler" />
+
+    <View
+        android:id="@+id/edit_chat_line"
+        android:layout_width="match_parent"
+        android:layout_height="1.2dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/line_edit_chat"
+        app:layout_constraintBottom_toTopOf="@id/lobby_chat_edit_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/lobby_chat_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:fontFamily="@font/booster_next_fy_black"
         android:hint="@string/message"
+        android:inputType="textPersonName"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/lobby_ready_button"
         app:layout_constraintEnd_toStartOf="@id/lobby_chat_send_button"
         app:layout_constraintHorizontal_bias="0.0"
@@ -155,15 +189,21 @@
         android:id="@+id/lobby_chat_send_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_send"
+        android:layout_marginEnd="8dp"
+        android:background="@color/transparent"
+        android:scaleX="0.9"
+        android:scaleY="0.9"
+        android:src="@drawable/send_message"
         app:layout_constraintBottom_toTopOf="@id/lobby_ready_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chat_lobby" />
 
     <Button
         android:id="@+id/lobby_ready_button"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
         android:text="@string/lobby_ready"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

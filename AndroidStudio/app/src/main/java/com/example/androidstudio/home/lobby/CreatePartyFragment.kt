@@ -3,6 +3,7 @@ package com.example.androidstudio.home.lobby
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -37,7 +38,7 @@ import com.google.gson.Gson
 import org.json.JSONObject
 
 
-class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListener {
+class CreatePartyFragment : Fragment(), View.OnTouchListener {
 
     private val dataBase = FirebaseDatabase.getInstance().reference
 
@@ -55,7 +56,9 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
     private lateinit var chatEditText: EditText
     private lateinit var chatRecyclerView: RecyclerView
     private lateinit var readyButton: Button
+    private lateinit var addFriendToLobby: ImageButton
     private var gameCanStart: Boolean = true
+    private var canSend: Boolean = true
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -90,7 +93,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
         // Change Team Button
         changeTeamImageButton = rootView.findViewById<ImageButton>(R.id.change_team_image_button)
         changeTeamImageButton.setOnTouchListener(this)
-        changeTeamImageButton.isClickable = false
+        changeTeamImageButton.isFocusableInTouchMode = true
 
         // Leave button
         val leaveButton = rootView.findViewById<Button>(R.id.button_leave_lobby)
@@ -99,10 +102,12 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
         // Ready button
         readyButton = rootView.findViewById(R.id.lobby_ready_button)
         readyButton.setOnTouchListener(this)
+        readyButton.isFocusableInTouchMode = true
 
         // Add friend to lobby button
-        val addFriendToLobby = rootView.findViewById<ImageButton>(R.id.lobby_invite_friend_image_button)
-        addFriendToLobby.setOnClickListener(this)
+        addFriendToLobby = rootView.findViewById(R.id.lobby_invite_friend_image_button)
+        addFriendToLobby.setOnTouchListener(this)
+        addFriendToLobby.isFocusableInTouchMode = true
 
         // Android back button
         val callback: OnBackPressedCallback =
@@ -127,7 +132,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
 
         // Chat
         chatRecyclerView = rootView.findViewById(R.id.chat_lobby)
-        chatAdapter = ChatAdapter(lobby, user)
+        chatAdapter = ChatAdapter(requireContext(), lobby, user)
         chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
         chatAdapter.notifyDataSetChanged()
         chatRecyclerView.adapter = chatAdapter
@@ -136,7 +141,8 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
             reverseLayout = false
         }
         chatImageButton = rootView.findViewById(R.id.lobby_chat_send_button)
-        chatImageButton.setOnClickListener(this)
+        chatImageButton.setOnTouchListener(this)
+        chatImageButton.isFocusableInTouchMode = true
         chatEditText = rootView.findViewById(R.id.lobby_chat_edit_text)
 
         // update con get lobby
@@ -144,25 +150,23 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
         return rootView
     }
 
-    override fun onClick(v: View?) {
-        when(v?.id) {
-            R.id.lobby_invite_friend_image_button -> invite()
-            R.id.lobby_chat_send_button -> sendMessage()
-        }
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean {
         val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
         val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
-        when (motionEvent?.action) {
-            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
-            MotionEvent.ACTION_UP -> {
-                v?.startAnimation(scaleDown)
-                when (v?.id) {
-                    R.id.button_leave_lobby -> leave()
-                    R.id.change_team_image_button -> changeTeam()
-                    R.id.lobby_ready_button -> ready()
+        if (v?.isFocusableInTouchMode!!) {
+            when (motionEvent?.action) {
+                MotionEvent.ACTION_DOWN -> v.startAnimation(scaleDown)
+                MotionEvent.ACTION_UP -> {
+                    v.startAnimation(scaleUp)
+                    v.isFocusableInTouchMode = false
+                    when (v.id) {
+                        R.id.button_leave_lobby -> leave()
+                        R.id.change_team_image_button -> changeTeam()
+                        R.id.lobby_ready_button -> ready()
+                        R.id.lobby_invite_friend_image_button -> invite()
+                        R.id.lobby_chat_send_button -> sendMessage()
+                    }
                 }
             }
         }
@@ -170,7 +174,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
     }
 
     private fun leave() {
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(context, R.style.BackgroundDialog)
             .setTitle(R.string.leave_lobby_alert)
             .setMessage(R.string.leave_lobby_alert_message)
             .setPositiveButton(
@@ -185,11 +189,14 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
                 findNavController().popBackStack(R.id.setupGameFragment, false)
             }
             .setNegativeButton(R.string.no, null)
-            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setIcon(R.drawable.alert)
             .show()
+            .findViewById<TextView>(android.R.id.message).typeface =
+            Typeface.createFromAsset(requireContext().assets, "booster_next_fy_black.ttf")
     }
 
     private fun invite() {
+        addFriendToLobby.isFocusableInTouchMode = true
         InviteInPartyFragment(lobby, user).show(
             requireActivity().supportFragmentManager,
             "Lobby->Invite"
@@ -197,7 +204,6 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
     }
 
     private fun changeTeam() {
-        changeTeamImageButton.isClickable = false
         gameCanStart = false
         serverHandler.apiCall(
             Config.POST,
@@ -206,6 +212,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
             lobbyId = lobby.lobbyId,
             callBack = object : ServerHandler.VolleyCallBack{
                 override fun onSuccess(reply: JSONObject?) {
+                    changeTeamImageButton.isFocusableInTouchMode = true
                     val status = reply?.get("status")
                     if (status == "notFullTeam") {
                         val start: Boolean = reply.getBoolean("start")
@@ -238,22 +245,31 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
             }
         }
         if (!allSpace) {
-            chatImageButton.isClickable = false
-            serverHandler.apiCall(
-                Config.POST,
-                Config.POST_SEND_MESSAGE,
-                userId = user.userId,
-                username = user.username,
-                lobbyId = lobby.lobbyId,
-                chatText = textToSend
-            )
+            if (canSend) {
+                canSend = false
+                serverHandler.apiCall(
+                    Config.POST,
+                    Config.POST_SEND_MESSAGE,
+                    userId = user.userId,
+                    username = user.username,
+                    lobbyId = lobby.lobbyId,
+                    chatText = textToSend,
+                    callBack = object : ServerHandler.VolleyCallBack {
+                        override fun onSuccess(reply: JSONObject?) {
+                            chatImageButton.isFocusableInTouchMode = true
+                            canSend = true
+                            chatEditText.text.clear()
+                        }
+                    }
+                )
+            }
+        } else {
+            chatImageButton.isFocusableInTouchMode = true
         }
         Log.i(Config.LOBBY_TAG, "message: ->$textToSend<-")
-        chatEditText.text.clear()
     }
 
     private fun ready() {
-        readyButton.isClickable = false
         if (readyButton.text == resources.getString(R.string.lobby_cancel)) {
             readyButton.text = resources.getString(R.string.lobby_ready)
         } else {
@@ -267,6 +283,7 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
             lobbyId = lobby.lobbyId,
             callBack = object : ServerHandler.VolleyCallBack {
                 override fun onSuccess(reply: JSONObject?) {
+                    readyButton.isFocusableInTouchMode = true
                     val start: Boolean? = reply?.getBoolean("start")
                     if (start!! && !gameCanStart) {
                         val intent = intentToGame(true)
@@ -321,9 +338,18 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
     private fun updateUI(newLobby: Lobby) {
         lobby.team1 = newLobby.team1
         lobby.team2 = newLobby.team2
-        lobby.chat = newLobby.chat
+        if (lobby.chat != newLobby.chat) {
+            lobby.chat = newLobby.chat
+            for (i in 0 until lobby.chat.size) {
+                if (lobby.chat[i].user.userId == user.userId) {
+                    lobby.chat[i].color = "me"
+                } else {
+                    lobby.chat[i].color = "other"
+                }
+            }
+            chatAdapter.notifyDataSetChanged()
+        }
         chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount)
-        chatAdapter.notifyDataSetChanged()
         for (member in lobby.team1 + lobby.team2) {
             if (member.userId == user.userId) {
                 readyButton.text = if (member.ready) {
@@ -338,9 +364,6 @@ class CreatePartyFragment : Fragment(), View.OnClickListener, View.OnTouchListen
         team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
         team1MembersAdapter.notifyDataSetChanged()
         team2MembersAdapter.notifyDataSetChanged()
-        changeTeamImageButton.isClickable = true
-        chatImageButton.isClickable = true
-        readyButton.isClickable = true
     }
 
     private fun updateLobby(requireActivity: FragmentActivity) {

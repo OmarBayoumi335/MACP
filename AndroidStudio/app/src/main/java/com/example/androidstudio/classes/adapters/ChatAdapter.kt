@@ -1,12 +1,14 @@
 package com.example.androidstudio.classes.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -22,14 +24,16 @@ import com.example.androidstudio.home.profile.ProfileFragment
 import com.example.androidstudio.home.profile.RequestsFragment
 import org.json.JSONObject
 
-class ChatAdapter(lobby: Lobby, user: User): RecyclerView.Adapter<ChatAdapter.ViewHolder>(){
+class ChatAdapter(context: Context, lobby: Lobby, user: User): RecyclerView.Adapter<ChatAdapter.ViewHolder>(){
 
     private var lobby: Lobby
     private var user: User
+    private var context: Context
 
     init {
         this.lobby = lobby
         this.user = user
+        this.context = context
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -54,9 +58,6 @@ class ChatAdapter(lobby: Lobby, user: User): RecyclerView.Adapter<ChatAdapter.Vi
         tvUsername.text = message.user.username
         tvId.text = message.user.userId
         tvText.text = message.text
-//        if (user.userId == message.user.userId) {
-//            tvText.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
-//        }
     }
 
     override fun getItemCount(): Int {

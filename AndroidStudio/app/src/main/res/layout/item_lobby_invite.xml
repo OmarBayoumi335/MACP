@@ -4,13 +4,33 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <View
+        android:id="@+id/top_line_invites"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/bot_line_invites"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/text_id_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="3dp"
         android:text="@string/invite_of"
-        android:textColor="@color/black"
+        android:textColor="@color/hint_login"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@id/lobby_invite_item_username_textview"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +42,8 @@
         android:layout_height="wrap_content"
         android:paddingRight="2dp"
         android:text="12h5S8a"
+        android:textSize="12sp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@id/lobby_invite_item_username_textview"
         app:layout_constraintStart_toEndOf="@id/text_id_textview"
         app:layout_constraintTop_toTopOf="@id/lobby_invite_item_username_textview"
@@ -31,23 +53,25 @@
         android:id="@+id/lobby_invite_item_username_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="Cristiano"
-        android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/bot_line_invites"
         app:layout_constraintStart_toEndOf="@id/lobby_invite_item_id_textview"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/top_line_invites"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/text_lobby_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/lobby_name"
-        android:textColor="@color/black"
-        android:textSize="16sp"
+        android:layout_marginBottom="8dp"
         android:paddingEnd="3dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/lobby_name"
+        android:textColor="@color/hint_login"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/bot_line_invites"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lobby_invite_item_username_textview" />
 
@@ -55,10 +79,11 @@
         android:id="@+id/lobby_invite_item_lobby_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="Lobby of Antonio"
-        android:textColor="@color/black"
+        android:textColor="@color/hint_login"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/bot_line_invites"
         app:layout_constraintStart_toEndOf="@id/text_lobby_name_textview"
         app:layout_constraintTop_toBottomOf="@id/lobby_invite_item_username_textview" />
 
@@ -78,14 +103,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
-            android:src="@android:drawable/checkbox_on_background" />
+            android:src="@drawable/confirm1" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="wrap_content"/>
 
         <ImageButton
             android:id="@+id/lobby_invite_negative_item_image_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
-            android:src="@android:drawable/ic_delete" />
+            android:scaleX="0.82"
+            android:scaleY="0.82"
+            android:src="@drawable/reject" />
 
     </LinearLayout>
 

@@ -63,9 +63,9 @@ class MenuFragment: Fragment(), View.OnTouchListener {
         val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
         val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
         when (motionEvent?.action) {
-            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleUp)
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
             MotionEvent.ACTION_UP -> {
-                v?.startAnimation(scaleDown)
+                v?.startAnimation(scaleUp)
                 when(v?.id) {
                     R.id.logout_button  -> signOut()
                     R.id.button_play    -> openSetupGame()

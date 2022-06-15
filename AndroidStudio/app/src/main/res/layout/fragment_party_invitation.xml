@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="15dp"
     tools:context=".home.lobby.PartyInvitationFragment">
 
     <Button
@@ -12,9 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/back"
-        app:layout_constraintBottom_toBottomOf="@+id/invitation_title_textview"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/invitation_title_textview" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/invitation_title_textview"
@@ -24,7 +24,8 @@
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/button_back_from_party_invitation"
+        app:layout_constraintBottom_toBottomOf="@id/button_back_from_party_invitation"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/party_invites_recycler_view"

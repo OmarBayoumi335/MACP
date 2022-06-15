@@ -10,21 +10,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="fasgdadgasdg"
-        app:layout_constraintTop_toTopOf="@id/team2_member_username_textview"
+        android:textColor="@color/black"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/team2_member_username_textview"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/team2_member_username_textview"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/team2_member_username_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="5dp"
-        android:textColor="@color/black"
+        android:paddingRight="3dp"
         android:textSize="16sp"
         android:text="fasgdadgasdg"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/team2_member_id_textview"/>
+        app:layout_constraintEnd_toStartOf="@id/team2_member_id_textview"/>
 
     <ImageView
         android:id="@+id/team2_member_ready"

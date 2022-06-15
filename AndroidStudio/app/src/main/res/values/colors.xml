@@ -8,6 +8,7 @@
     <color name="friend_sent_added">#FF8922</color>
     <color name="hint_login">#FFC8B7</color>
     <color name="friend_not_found">#F44336</color>
+    <color name="notification_circle">#FF1B0A</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
     <color name="light_blue_A200">#FF40C4FF</color>
@@ -17,4 +18,8 @@
     <color name="background_game_green">#C8E6C9</color>
     <color name="background_pass_button">#7FFDBA</color>
     <color name="background_don_t_pass_button">#FD7F7F</color>
+    <color name="top_bar_default">#B33D58</color>
+    <color name="chat_id_other">#595959</color>
+    <color name="chat_background">#32000000</color>
+    <color name="line_edit_chat">#714208</color>
 </resources>

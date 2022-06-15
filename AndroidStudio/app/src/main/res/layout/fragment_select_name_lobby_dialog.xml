@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/select_name_lobby_dialog"
     android:padding="15dp"
-    tools:context=".home.lobby.SelectNameLobbyDialogFragment">
+    tools:context=".home.lobby.SelectNameLobbyDialogFragment"
+    android:background="@drawable/background">
 
 
     <TextView
@@ -21,34 +22,38 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-        <Button
-            android:id="@+id/select_lobby_name_cancel_button"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:maxEms="5"
-            android:maxLines="3"
-            android:text="@string/close"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/select_lobby_name_confirm_button"/>
+    <Button
+        android:id="@+id/select_lobby_name_cancel_button"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:maxEms="5"
+        android:maxLines="3"
+        android:text="@string/close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/select_lobby_name_confirm_button"/>
 
-        <Button
-            android:id="@+id/select_lobby_name_confirm_button"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
-            android:text="@string/confirm"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/select_lobby_name_cancel_button"/>
+    <Button
+        android:id="@+id/select_lobby_name_confirm_button"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="@string/confirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/select_lobby_name_cancel_button"/>
 
     <EditText
         android:id="@+id/select_lobby_name_edittext"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ems="13"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:fontFamily="@font/booster_next_fy_black"
         android:hint="@string/lobby_name_hint"
         android:inputType="textPersonName"
         android:maxLength="20"
+        android:textAlignment="center"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/select_lobby_name_cancel_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

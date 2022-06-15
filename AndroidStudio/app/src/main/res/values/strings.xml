@@ -40,7 +40,7 @@
     <string name="party_creation_button">Create party</string>
 
     <!--Lobby-->>
-    <string name="invitations_title">Invitations</string>
+    <string name="invitations_title">Invites</string>
     <string name="party_invitations">Party invitations</string>
     <string name="invites_friends">Invites friends</string>
     <string name="lobby_title_textview">Lobby</string>
@@ -55,7 +55,7 @@
     <string name="invite_of">Invite of:</string>
     <string name="lobby_name">Lobby name:</string>
     <string name="title_select_lobby_name">Choose the lobby name</string>
-    <string name="confirm">Create lobby</string>
+    <string name="confirm">Create</string>
     <string name="lobby_name_hint">Type the name</string>
     <string name="default_lobby_name">New lobby</string>
     <string name="user_invited">User invited</string>
