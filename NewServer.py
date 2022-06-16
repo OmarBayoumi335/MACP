@@ -10,11 +10,10 @@ firebaseConfig = {"apiKey": "AIzaSyB6wGev6Pt1EfDvUkl-5EjwDtZwRlPHduc",
                   "projectId": "enigma-350909",
                   "storageBucket": "enigma-350909.appspot.com",
                   "messagingSenderId": "8984037607",
-                  "appId": "1:8984037607:web:21a9620b78aca906337a42"}
+                  "appId": "1:8984037607:web:21a9620b78aca906337a42",
+                  "serviceAccount": "./auth.json"}
 firebase = pyrebase.initialize_app(firebaseConfig)
 db = firebase.database()
-
-
 
 #request codes and parser arguments
 MAX_LOBBY_MEMBERS = 16
@@ -82,6 +81,7 @@ parser.add_argument('captainIndex1', type = str, required = False)
 parser.add_argument('captainIndex2', type = str, required = False)
 parser.add_argument('clue', type = str, required = False)
 parser.add_argument('voteIndex', type = str, required = False)
+parser.add_argument('idToken', type = str, required = False)
 
 # Api call handler
 class EnigmaServer(Resource):
@@ -106,6 +106,10 @@ class EnigmaServer(Resource):
         self.captainIndex2 = args["captainIndex2"]
         self.clue = args["clue"]
         self.voteIndex = args["voteIndex"]
+        self.idToken = args["idToken"]
+        # if self.idToken != None:
+        #     data = {"name": "Mortimer 'Morty' Smith"}
+        #     db.child("prova").push(data, self.idToken)
     
     def get(self):       
          
