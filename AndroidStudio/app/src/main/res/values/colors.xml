@@ -22,4 +22,6 @@
     <color name="chat_id_other">#595959</color>
     <color name="chat_background">#32000000</color>
     <color name="line_edit_chat">#714208</color>
+    <color name="team2_background_lobby">#65FF0000</color>
+    <color name="team1_background_lobby">#6600FF00</color>
 </resources>

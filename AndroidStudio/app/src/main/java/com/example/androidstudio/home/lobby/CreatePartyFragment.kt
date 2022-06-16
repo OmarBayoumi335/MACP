@@ -56,6 +56,7 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
     private lateinit var chatEditText: EditText
     private lateinit var chatRecyclerView: RecyclerView
     private lateinit var readyButton: Button
+    private lateinit var leaveButton: Button
     private lateinit var addFriendToLobby: ImageButton
     private var gameCanStart: Boolean = true
     private var canSend: Boolean = true
@@ -96,8 +97,9 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
         changeTeamImageButton.isFocusableInTouchMode = true
 
         // Leave button
-        val leaveButton = rootView.findViewById<Button>(R.id.button_leave_lobby)
+        leaveButton = rootView.findViewById<Button>(R.id.button_leave_lobby)
         leaveButton.setOnTouchListener(this)
+        leaveButton.isFocusableInTouchMode = true
 
         // Ready button
         readyButton = rootView.findViewById(R.id.lobby_ready_button)
@@ -174,6 +176,7 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
     }
 
     private fun leave() {
+        leaveButton.isFocusableInTouchMode = true
         AlertDialog.Builder(context, R.style.BackgroundDialog)
             .setTitle(R.string.leave_lobby_alert)
             .setMessage(R.string.leave_lobby_alert_message)

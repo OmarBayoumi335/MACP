@@ -89,12 +89,6 @@ class PartyInvitationFragment : Fragment(), View.OnTouchListener {
                 TODO("Not yet implemented")
             }
         })
-//        if (this.context != null) {
-//            Handler(Looper.getMainLooper()).postDelayed({
-//                update(lobbyInvitesAdapter)
-//            },
-//                Config.POLLING_PERIOD)
-//        }
     }
 
 }

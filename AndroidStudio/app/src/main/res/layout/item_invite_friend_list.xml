@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1.2dp"
+        android:background="@color/line_edit_chat"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/invite_friend_item_id_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="5dp"
+        android:paddingRight="3dp"
+        android:textSize="12sp"
+        android:text="asdfagssagda"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@id/invite_friend_item_username_textview"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/invite_friend_item_username_textview"
@@ -18,8 +29,8 @@
         android:id="@+id/invite_friend_item_username_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
         android:textSize="16sp"
+        android:text="asgasdfas"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/invite_friend_item_id_textview"
         app:layout_constraintTop_toTopOf="parent" />

@@ -1,9 +1,12 @@
 package com.example.androidstudio.classes.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -43,6 +46,7 @@ class InviteFriendListAdapter(user: User,
         return ViewHolder(contactView)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val friend: UserInvitable = userList.userList[position]
         // Set item views based on your views and data model
@@ -55,31 +59,40 @@ class InviteFriendListAdapter(user: User,
             bPositive.visibility = View.GONE
         } else {
             bPositive.visibility = View.VISIBLE
-            bPositive.setOnClickListener {
-                bPositive.visibility = View.GONE
-                serverHandler.apiCall(
-                    Config.POST,
-                    Config.POST_SEND_LOBBY_INVITE,
-                    userId = user.userId,
-                    username = user.username,
-                    friendId = friend.userId,
-                    lobbyId = lobby.lobbyId,
-                    lobbyName = lobby.lobbyName,
-                    callBack = object : ServerHandler.VolleyCallBack {
-                        override fun onSuccess(reply: JSONObject?) {
-                            val status = reply?.get("status")
-                            if (status == "invited") {
-                                bPositive.visibility = View.GONE
-                                val message = c.resources.getString(R.string.user_invited)
-                                Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
-                            }
-                            if (status == "lobbyFull") {
-                                bPositive.visibility = View.VISIBLE
-                                val message = c.resources.getString(R.string.lobby_full)
-                                Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    })
+            bPositive.setOnTouchListener { v, event ->
+                val scaleUp = AnimationUtils.loadAnimation(c, R.anim.scale_up)
+                val scaleDown = AnimationUtils.loadAnimation(c, R.anim.scale_down)
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
+                    MotionEvent.ACTION_UP -> {
+                        v?.startAnimation(scaleUp)
+                        bPositive.visibility = View.GONE
+                        serverHandler.apiCall(
+                            Config.POST,
+                            Config.POST_SEND_LOBBY_INVITE,
+                            userId = user.userId,
+                            username = user.username,
+                            friendId = friend.userId,
+                            lobbyId = lobby.lobbyId,
+                            lobbyName = lobby.lobbyName,
+                            callBack = object : ServerHandler.VolleyCallBack {
+                                override fun onSuccess(reply: JSONObject?) {
+                                    val status = reply?.get("status")
+                                    if (status == "invited") {
+                                        bPositive.visibility = View.GONE
+                                        val message = c.resources.getString(R.string.user_invited)
+                                        Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+                                    }
+                                    if (status == "lobbyFull") {
+                                        bPositive.visibility = View.VISIBLE
+                                        val message = c.resources.getString(R.string.lobby_full)
+                                        Toast.makeText(c, message, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            })
+                    }
+                }
+                v?.onTouchEvent(event) ?: true
             }
         }
 

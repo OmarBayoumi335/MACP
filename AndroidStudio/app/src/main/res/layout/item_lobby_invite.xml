@@ -5,21 +5,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <View
-        android:id="@+id/top_line_invites"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="8dp"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <View
         android:id="@+id/bot_line_invites"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1.2dp"
         android:layout_marginBottom="8dp"
-        android:background="@android:color/darker_gray"
+        android:background="@color/line_edit_chat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -59,7 +49,7 @@
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@id/bot_line_invites"
         app:layout_constraintStart_toEndOf="@id/lobby_invite_item_id_textview"
-        app:layout_constraintTop_toTopOf="@id/top_line_invites"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
