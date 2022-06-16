@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import org.json.JSONObject
 
@@ -46,6 +47,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
 
         // Setting the name if you have already logged in in the past
         sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
+
         val lastId : String = sharedPreferences.getString("ID", "").toString()
         usernameEditText = findViewById(R.id.login_username_edittext)
         serverHandler.apiCall(

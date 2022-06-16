@@ -100,8 +100,8 @@
         <View
             android:id="@+id/profile_division_line1"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:layout_height="1.2dp"
+            android:background="@color/line_edit_chat" />
 
     </LinearLayout>
 
@@ -150,9 +150,9 @@
     <View
         android:id="@+id/profile_division_line2"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1.2dp"
         android:layout_marginBottom="8dp"
-        android:background="@android:color/darker_gray"
+        android:background="@color/line_edit_chat"
         app:layout_constraintBottom_toTopOf="@id/profile_close_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

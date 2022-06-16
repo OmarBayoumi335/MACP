@@ -11,7 +11,12 @@ firebaseConfig = {"apiKey": "AIzaSyB6wGev6Pt1EfDvUkl-5EjwDtZwRlPHduc",
                   "storageBucket": "enigma-350909.appspot.com",
                   "messagingSenderId": "8984037607",
                   "appId": "1:8984037607:web:21a9620b78aca906337a42",
-                  "serviceAccount": "./auth.json"}
+                  "serviceAccount": "./private_key.json",
+                  "databaseAuthVariableOverride": {
+                      "uid": "my-service-worker-or-user-uid"
+                      }
+                  }
+
 firebase = pyrebase.initialize_app(firebaseConfig)
 db = firebase.database()
 
@@ -107,12 +112,8 @@ class EnigmaServer(Resource):
         self.clue = args["clue"]
         self.voteIndex = args["voteIndex"]
         self.idToken = args["idToken"]
-        # if self.idToken != None:
-        #     data = {"name": "Mortimer 'Morty' Smith"}
-        #     db.child("prova").push(data, self.idToken)
     
-    def get(self):       
-         
+    def get(self):      
         #0 return the username given the user id. Input(req, userId)
         if self.req == GET_USERNAME:
             userId = "" if self.userId == None else self.userId
