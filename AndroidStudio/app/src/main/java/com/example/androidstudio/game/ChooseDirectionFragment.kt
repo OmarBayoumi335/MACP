@@ -118,7 +118,7 @@ class ChooseDirectionFragment(remainingHint: Int) : DialogFragment(), View.OnCli
 
     private fun confirmDirections(){
         val gameActivity = requireActivity() as GameActivity
-        val buttonDirection = gameActivity.findViewById<Button>(R.id.game_direction_hint)
+        val buttonDirection = gameActivity.findViewById<TextView>(R.id.game_direction_hint)
         var text = ""
         val directions = mutableListOf(buttonDirection1, buttonDirection2, buttonDirection3)
         for (direction in directions){

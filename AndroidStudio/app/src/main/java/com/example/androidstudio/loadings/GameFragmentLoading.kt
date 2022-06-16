@@ -44,43 +44,43 @@ class GameFragmentLoading : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_game_loading, container, false)
-//        findNavController().navigate(R.id.action_gameFragmentLoading_to_gameFragment)
-//        val gameActivity: GameActivity = requireActivity() as GameActivity
-//        gameActivity.setViewVisible()
-        serverHandler = ServerHandler(requireContext())
-
-        val lobbyString = requireActivity().intent.extras?.getString("lobby")!!
-        val gson = Gson()
-        lobby = gson.fromJson(lobbyString, Lobby::class.java)
-
-        // If i click ready last
-        starter = requireActivity().intent.extras?.getBoolean("starter")!!
-
-        // Game lobby id
-        gameLobbyId = requireActivity().intent.extras?.getString("gameLobbyId")!!
-        var gameLobbyIds = gameLobbyId.split("-")
-        gameLobbyIds = gameLobbyIds.sorted()
-        gameLobbyId = gameLobbyIds.joinToString("")
-
-        // User ID
-        userId = requireActivity().intent.extras?.getString("userId")!!
-
-        // Lobby ID
-        lobbyId = requireActivity().intent.extras?.getString("lobbyId")!!
-
-        // Number of players
-        lobbyGameMembers = requireActivity().intent.extras?.getInt("lobbyGameMembers")!!
-        captainIndex1 = requireActivity().intent.extras?.getString("captainIndex1")!!
-        captainIndex2 = requireActivity().intent.extras?.getString("captainIndex2")!!
-
-        // My team
-        myTeam = requireActivity().intent.extras?.getString("team")!!
-
-        // Words in game
-        words = getWords(requireContext())
-//        Log.i(Config.LOADING_GAME_TAG, words.toString())
-
-        joinLobbyGame("getUser")
+        findNavController().navigate(R.id.action_gameFragmentLoading_to_gameFragment)
+        val gameActivity: GameActivity = requireActivity() as GameActivity
+        gameActivity.setViewVisible()
+//        serverHandler = ServerHandler(requireContext())
+//
+//        val lobbyString = requireActivity().intent.extras?.getString("lobby")!!
+//        val gson = Gson()
+//        lobby = gson.fromJson(lobbyString, Lobby::class.java)
+//
+//        // If i click ready last
+//        starter = requireActivity().intent.extras?.getBoolean("starter")!!
+//
+//        // Game lobby id
+//        gameLobbyId = requireActivity().intent.extras?.getString("gameLobbyId")!!
+//        var gameLobbyIds = gameLobbyId.split("-")
+//        gameLobbyIds = gameLobbyIds.sorted()
+//        gameLobbyId = gameLobbyIds.joinToString("")
+//
+//        // User ID
+//        userId = requireActivity().intent.extras?.getString("userId")!!
+//
+//        // Lobby ID
+//        lobbyId = requireActivity().intent.extras?.getString("lobbyId")!!
+//
+//        // Number of players
+//        lobbyGameMembers = requireActivity().intent.extras?.getInt("lobbyGameMembers")!!
+//        captainIndex1 = requireActivity().intent.extras?.getString("captainIndex1")!!
+//        captainIndex2 = requireActivity().intent.extras?.getString("captainIndex2")!!
+//
+//        // My team
+//        myTeam = requireActivity().intent.extras?.getString("team")!!
+//
+//        // Words in game
+//        words = getWords(requireContext())
+////        Log.i(Config.LOADING_GAME_TAG, words.toString())
+//
+//        joinLobbyGame("getUser")
         return rootView
     }
 

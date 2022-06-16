@@ -251,11 +251,11 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
         super.onDraw(canvas)
         // background turn
         cards = mutableListOf()
-        if (gameLobby.turn == resources.getString(R.string.team2)) {
-            canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_red))
-        } else {
-            canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_green))
-        }
+//        if (gameLobby.turn == resources.getString(R.string.team2)) {
+//            canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_red))
+//        } else {
+//            canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_green))
+//        }
         val coordinates = setKeyPoints()
         drawCards(coordinates, canvas)
 
@@ -263,19 +263,19 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
 
         // I will comment the grid lines. They are only a support
         // border
-        canvas?.drawLine(startGridX, bottomGridY, endGridx, bottomGridY, linePaint)
-        canvas?.drawLine(startGridX, topGridY, endGridx, topGridY, linePaint)
-        canvas?.drawLine(startGridX, bottomGridY, startGridX, topGridY, linePaint)
+//        canvas?.drawLine(startGridX, bottomGridY, endGridx, bottomGridY, linePaint)
+//        canvas?.drawLine(startGridX, topGridY, endGridx, topGridY, linePaint)
+//        canvas?.drawLine(startGridX, bottomGridY, startGridX, topGridY, linePaint)
         canvas?.drawLine(endGridx, bottomGridY, endGridx, topGridY, linePaint)
-        // center
-        canvas?.drawLine(startGridX, centerGridY, endGridx, centerGridY, linePaint)
-        canvas?.drawLine(centerGridX, bottomGridY, centerGridX, topGridY, linePaint)
-        // center of quadrants
-        canvas?.drawLine(startGridX, upY, endGridx, upY, linePaint)
-        canvas?.drawLine(startGridX, downY, endGridx, downY, linePaint)
-        canvas?.drawLine(leftX, bottomGridY, leftX, topGridY, linePaint)
-        canvas?.drawLine(rightX, bottomGridY, rightX, topGridY, linePaint)
-        // right part
+//        // center
+//        canvas?.drawLine(startGridX, centerGridY, endGridx, centerGridY, linePaint)
+//        canvas?.drawLine(centerGridX, bottomGridY, centerGridX, topGridY, linePaint)
+//        // center of quadrants
+//        canvas?.drawLine(startGridX, upY, endGridx, upY, linePaint)
+//        canvas?.drawLine(startGridX, downY, endGridx, downY, linePaint)
+//        canvas?.drawLine(leftX, bottomGridY, leftX, topGridY, linePaint)
+//        canvas?.drawLine(rightX, bottomGridY, rightX, topGridY, linePaint)
+//        // right part
         canvas?.drawLine(endGridx, topGridY, endRightPartX, topGridY, linePaint)
         canvas?.drawLine(endGridx, bottomGridY, endRightPartX, bottomGridY, linePaint)
         canvas?.drawLine(endRightPartX, bottomGridY, endRightPartX, topGridY, linePaint)
