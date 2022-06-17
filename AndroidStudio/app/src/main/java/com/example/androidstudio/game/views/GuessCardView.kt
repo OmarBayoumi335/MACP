@@ -16,6 +16,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withMatrix
@@ -61,34 +62,54 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         color = Color.BLACK
         style = Paint.Style.FILL
     }
-    private val trianglePaint = Paint().apply {
+    private val triangleTeam1Paint = Paint().apply {
+        color = Color.GREEN
+        style = Paint.Style.FILL
+    }
+    private val triangleTeam2Paint = Paint().apply {
         color = Color.RED
+        style = Paint.Style.FILL
     }
     private val titleBackgroundPaint = Paint().apply {
         color = Color.LTGRAY
         style = Paint.Style.FILL
     }
     private val titleTextPaint = Paint().apply {
-        color = Color.DKGRAY
-        textSize = 40f * resources.displayMetrics.density
-        isFakeBoldText = true
+        color = Color.BLACK
+        textSize = 20f * resources.displayMetrics.density
+        typeface = Typeface.createFromAsset(context!!.assets, "booster_next_fy_black.ttf")
     }
     private val descriptionTextPaint = Paint().apply {
-        color = Color.BLACK
+        color = ContextCompat.getColor(context!!, R.color.card_vote_description)
         textSize = 25f * resources.displayMetrics.density
+        typeface = Typeface.createFromAsset(context!!.assets, "booster_next_fy_black.ttf")
     }
     private val buttonBackgroundPaint = Paint().apply {
-        color = Color.DKGRAY
+        color = ContextCompat.getColor(context!!, R.color.card_vote_description)
         style = Paint.Style.FILL
     }
     private val buttonBorderPaint = Paint().apply {
-        color = Color.LTGRAY
+        color = ContextCompat.getColor(context!!, R.color.button_inside_card_background)
         style = Paint.Style.STROKE
         strokeWidth = 4f * resources.displayMetrics.density
     }
     private val buttonTextPaint = Paint().apply {
-        color = Color.LTGRAY
+        color = ContextCompat.getColor(context!!, R.color.button_inside_card_text)
+        typeface = Typeface.createFromAsset(context!!.assets, "booster_next_fy_black.ttf")
         textSize = 28f * resources.displayMetrics.density
+    }
+    private val chatBoxTeam1Paint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.chat_game_background_team1)
+        style = Paint.Style.FILL
+    }
+    private val chatBoxTeam2Paint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.chat_game_background_team2)
+        style = Paint.Style.FILL
+    }
+    private val chatBoxBorderPaint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.white)
+        style = Paint.Style.STROKE
+        strokeWidth = 1.2f * resources.displayMetrics.density
     }
 
     private var divisionX by Delegates.notNull<Float>()
@@ -136,13 +157,43 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         super.onDraw(canvas)
         vibrationOff = System.currentTimeMillis()
         setKeyPoints(canvas)
+        if (userGame.team == resources.getString(R.string.team1)) {
+            val background = ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.background_game_team1,
+                null
+            )?.toBitmap(width, height)!!
+            canvas?.drawBitmap(background, 0f, 0f, null)
+        } else {
+            val background = ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.background_game_team2,
+                null
+            )?.toBitmap(width, height)!!
+            canvas?.drawBitmap(background, 0f, 0f, null)
+        }
 
-//        val compass = BitmapFactory.decodeStream(context.assets.open("compass.png"))
-//        circlePaint.shader = BitmapShader(compass, Shader.TileMode.MIRROR, Shader.TileMode.MIRROR)
-//        canvas?.drawCircle(leftCenterX, centerY, compassRadius, circlePaint)
+//        val backGroundRequest = RectF()
+//        backGroundRequest.top = height.toFloat() * 0.02f
+//        backGroundRequest.bottom = height.toFloat() * 0.94f
+//        backGroundRequest.left = width.toFloat() * 0.52f
+//        backGroundRequest.right = width.toFloat() * 0.98f
+//        canvas?.drawRoundRect(
+//            backGroundRequest,
+//            10f * resources.displayMetrics.density,
+//            10f * resources.displayMetrics.density,
+//            chatBoxTeam2Paint
+//        )
+//        canvas?.drawRoundRect(
+//            backGroundRequest,
+//            10f * resources.displayMetrics.density,
+//            10f * resources.displayMetrics.density,
+//            chatBoxBorderPaint
+//        )
+
 
         // compass image
-        compass = ResourcesCompat.getDrawable(resources, R.drawable.ic_compass, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
+        compass = ResourcesCompat.getDrawable(resources, R.drawable.compass, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
         val rotation = Matrix()
 
         var roundYaw: Int = if (yaw < -Math.PI + 0.05 || yaw > Math.PI - 0.05) {
@@ -201,7 +252,11 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         s.setScale(leftCenterX * (1f/10f), (height - centerY - compassDiameter/2f) * 0.5f)
         s.postTranslate(leftCenterX, 1.5f*centerY - 0.5f*compassDiameter/2f - 0.5f*height)
         canvas?.withMatrix(s){
-            drawPath(path, trianglePaint)
+            if (userGame.team == resources.getString(R.string.team1)) {
+                drawPath(path, triangleTeam1Paint)
+            } else {
+                drawPath(path, triangleTeam2Paint)
+            }
         }
 
         // title
@@ -212,17 +267,24 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             card.word.text.length,
             textBound
         )
-        canvas?.drawRoundRect(
-            centerRightX - textBound.exactCenterX() - padding*2,
-            centerY/2f + textBound.top - padding*2,
-            centerRightX + textBound.exactCenterX() + padding*2,
-            centerY/2f + textBound.bottom + padding*2,
-            10f * resources.displayMetrics.density,
-            10f * resources.displayMetrics.density,
-            titleBackgroundPaint
+        val cardBackgroundWidth = width * 0.33f
+        val cardBackgroundHeight = height * 0.33f
+        val cardBackground = ResourcesCompat.getDrawable(
+            resources,
+            R.drawable.gray_card_front,
+            null
+        )?.toBitmap((cardBackgroundWidth).toInt(), cardBackgroundHeight.toInt())!!
+        setKeyPoints(canvas)
+        val cardBackgroundX = centerRightX - cardBackgroundWidth/2f
+        val cardBackgroundY = centerY * 0.45f - cardBackgroundHeight/2f
+        canvas?.drawBitmap(
+            cardBackground,
+            cardBackgroundX,
+            cardBackgroundY,
+            null
         )
-        var textX = centerRightX - textBound.exactCenterX()
-        var textY = centerY/2f
+        var textX = cardBackgroundX + 0.5f*(centerRightX + cardBackgroundWidth/2f - cardBackgroundX) - textBound.exactCenterX()
+        var textY = cardBackgroundY + 0.72f*(centerY * 0.45f + cardBackgroundHeight/2f - cardBackgroundY) - textBound.exactCenterY()
         // draw the text
         canvas?.drawText(
             card.word.text,

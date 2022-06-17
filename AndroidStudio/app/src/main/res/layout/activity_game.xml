@@ -172,13 +172,12 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/game_select_number_hint"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:translationZ="100dp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/game_bottom_part"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/game_start_padding_space"
+            app:layout_constraintEnd_toEndOf="@id/game_bottom_part"
+            app:layout_constraintStart_toStartOf="@id/game_bottom_part"
             app:layout_constraintTop_toTopOf="@id/game_number_words_padding_space">
 
             <LinearLayout
@@ -195,36 +194,42 @@
                     android:id="@+id/game_button_value_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/game_clue_button3"
                     android:text="1" />
 
                 <Button
                     android:id="@+id/game_button_value_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/game_clue_button3"
                     android:text="2" />
 
                 <Button
                     android:id="@+id/game_button_value_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/game_clue_button3"
                     android:text="3" />
 
                 <Button
                     android:id="@+id/game_button_value_4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/game_clue_button3"
                     android:text="4" />
 
                 <Button
                     android:id="@+id/game_button_value_5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/game_clue_button3"
                     android:text="5" />
 
                 <Button
                     android:id="@+id/game_button_value_6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/game_clue_button3"
                     android:text="6" />
             </LinearLayout>
 
@@ -300,7 +305,10 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/game_clue_button2"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/button_give_clue"
                 android:gravity="center"
                 android:text="@string/give_clue"
                 android:textAlignment="center"
@@ -313,7 +321,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/game_bottom_padding_space"
             app:layout_constraintEnd_toStartOf="@id/game_end_padding_space"
             app:layout_constraintStart_toEndOf="@id/game_start_padding_space"
@@ -366,10 +374,13 @@
                 android:id="@+id/game_pass_hint_member"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginStart="32dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:layout_marginStart="32dp"
-                android:background="@drawable/game_clue_button2"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/button_give_clue"
                 android:gravity="center"
                 android:text="@string/pass_button"
                 android:textAlignment="center"

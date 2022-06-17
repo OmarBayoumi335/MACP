@@ -3,18 +3,24 @@ package com.example.androidstudio.game
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.example.androidstudio.R
 
-class ChooseDirectionFragment(remainingHint: Int) : DialogFragment(), View.OnClickListener{
+class ChooseDirectionFragment(remainingHint: Int, team: String) : DialogFragment(), View.OnTouchListener{
 
     private var remainingHint: Int
+    private var team: String
     init {
         this.remainingHint = remainingHint
+        this.team = team
     }
     private lateinit var buttonDirection1: Button
     private lateinit var buttonDirection2: Button
@@ -26,40 +32,47 @@ class ChooseDirectionFragment(remainingHint: Int) : DialogFragment(), View.OnCli
     private lateinit var textViewEast: TextView
     private lateinit var textViewSouth: TextView
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_choose_direction, container, false)
+
+        val view = rootView.findViewById<ConstraintLayout>(R.id.choose_direction_fragment)
+        if (team == resources.getString(R.string.team1)) {
+            view.background = ContextCompat.getDrawable(requireContext(), R.drawable.background_game_team1)
+        } else {
+            view.background = ContextCompat.getDrawable(requireContext(), R.drawable.background_game_team2)
+        }
+
         val remainingHintTextView = rootView.findViewById<TextView>(R.id.remaining_hints_textview_choose_direction)
         remainingHintTextView.text = "${resources.getString(R.string.remaining_hints)} $remainingHint"
 
         buttonDirection1 = rootView.findViewById(R.id.direction1_button_choose_direction)
-        buttonDirection1.setOnClickListener(this)
+        buttonDirection1.setOnTouchListener(this)
         buttonDirection2 = rootView.findViewById(R.id.direction2_button_choose_direction)
-        buttonDirection2.setOnClickListener(this)
+        buttonDirection2.setOnTouchListener(this)
         buttonDirection3 = rootView.findViewById(R.id.direction3_button_choose_direction)
-        buttonDirection3.setOnClickListener(this)
-
+        buttonDirection3.setOnTouchListener(this)
 
         buttonCancel = rootView.findViewById(R.id.cancel_button_choose_direction)
-        buttonCancel.setOnClickListener(this)
+        buttonCancel.setOnTouchListener(this)
 
         buttonConfirm = rootView.findViewById(R.id.confirm_button_choose_direction)
-        buttonConfirm.setOnClickListener(this)
+        buttonConfirm.setOnTouchListener(this)
 
         textViewNorth = rootView.findViewById(R.id.textview_north_choose_direction)
-        textViewNorth.setOnClickListener(this)
+        textViewNorth.setOnTouchListener(this)
 
         textViewWest = rootView.findViewById(R.id.textview_west_choose_direction)
-        textViewWest.setOnClickListener(this)
+        textViewWest.setOnTouchListener(this)
 
         textViewEast = rootView.findViewById(R.id.textview_east_choose_direction)
-        textViewEast.setOnClickListener(this)
+        textViewEast.setOnTouchListener(this)
 
         textViewSouth = rootView.findViewById(R.id.textview_south_choose_direction)
-        textViewSouth.setOnClickListener(this)
+        textViewSouth.setOnTouchListener(this)
 
         return rootView
     }
@@ -77,18 +90,28 @@ class ChooseDirectionFragment(remainingHint: Int) : DialogFragment(), View.OnCli
         viewResize.layoutParams = layoutParams
     }
 
-    override fun onClick(v: View?) {
-        when(v?.id){
-            R.id.direction1_button_choose_direction -> deleteDirection(0)
-            R.id.direction2_button_choose_direction -> deleteDirection(1)
-            R.id.direction3_button_choose_direction -> deleteDirection(2)
-            R.id.textview_north_choose_direction -> addDirection(resources.getString(R.string.north))
-            R.id.textview_west_choose_direction -> addDirection(resources.getString(R.string.west))
-            R.id.textview_east_choose_direction -> addDirection(resources.getString(R.string.east))
-            R.id.textview_south_choose_direction -> addDirection(resources.getString(R.string.south))
-            R.id.confirm_button_choose_direction -> confirmDirections()
-            R.id.cancel_button_choose_direction -> dismiss()
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
+            MotionEvent.ACTION_UP -> {
+                v?.startAnimation(scaleUp)
+                when (v?.id) {
+                    R.id.direction1_button_choose_direction -> deleteDirection(0)
+                    R.id.direction2_button_choose_direction -> deleteDirection(1)
+                    R.id.direction3_button_choose_direction -> deleteDirection(2)
+                    R.id.textview_north_choose_direction -> addDirection(resources.getString(R.string.north))
+                    R.id.textview_west_choose_direction -> addDirection(resources.getString(R.string.west))
+                    R.id.textview_east_choose_direction -> addDirection(resources.getString(R.string.east))
+                    R.id.textview_south_choose_direction -> addDirection(resources.getString(R.string.south))
+                    R.id.confirm_button_choose_direction -> confirmDirections()
+                    R.id.cancel_button_choose_direction -> dismiss()
+                }
+            }
         }
+        return true
     }
 
     private fun deleteDirection(direction: Int){

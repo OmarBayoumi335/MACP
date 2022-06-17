@@ -20,7 +20,8 @@
         <activity
             android:name=".game.GameActivity"
             android:exported="true"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="landscape"
+            android:theme="@style/ColorSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

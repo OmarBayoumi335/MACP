@@ -8,6 +8,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.FragmentActivity
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.Card
@@ -35,14 +37,24 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
         isAntiAlias = true
     }
     private val cardTextPaint = Paint().apply {
-        color = Color.WHITE
-        textSize = 14f * resources.displayMetrics.density
-        isFakeBoldText = true
+        color = Color.BLACK
+        typeface = Typeface.createFromAsset(context!!.assets, "booster_next_fy_black.ttf")
+        textSize = 10f * resources.displayMetrics.density
     }
     private val cardDirectionPaint = Paint().apply {
+        color = Color.BLACK
+        typeface = Typeface.createFromAsset(context!!.assets, "booster_next_fy_black.ttf")
+        textSize = 9f * resources.displayMetrics.density
+    }
+    private val cardBlackTextPaint = Paint().apply {
         color = Color.WHITE
-        textSize = 12f * resources.displayMetrics.density
-        isFakeBoldText = true
+        typeface = Typeface.createFromAsset(context!!.assets, "booster_next_fy_black.ttf")
+        textSize = 10f * resources.displayMetrics.density
+    }
+    private val cardBlackDirectionPaint = Paint().apply {
+        color = Color.WHITE
+        typeface = Typeface.createFromAsset(context!!.assets, "booster_next_fy_black.ttf")
+        textSize = 9f * resources.displayMetrics.density
     }
     private val cardCircleVotePaint = Paint().apply {
         color = Color.BLUE
@@ -137,6 +149,7 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
                 roundRectCard.top = coordinates[1][j] + padding
                 roundRectCard.right = coordinates[0][i + 1] - padding
                 roundRectCard.bottom = coordinates[1][j + 1] - padding
+                var cardStyle: Bitmap? = null
                 cards.add(
                     Card(
                         gameLobby.words[i * 4 + j],
@@ -146,28 +159,90 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
                     )
                 )
                 // set the color of the card
-                if (userGame.userId == gameLobby.captainIndex1
-                    || userGame.userId == gameLobby.captainIndex2
-                    || gameLobby.words[i * 4 + j].turned
+                if ((userGame.userId == gameLobby.captainIndex1
+                    || userGame.userId == gameLobby.captainIndex2)
+                    && !gameLobby.words[i * 4 + j].turned // captain and not turned cards
                 ) {
-//                val cardGreen = BitmapFactory.decodeStream(context.assets.open("greenBackCard.jpg"))
-//                roundRectPaint.shader = BitmapShader(cardGreen, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
                     when (gameLobby.words[i * 4 + j].color) {
-                        "green" -> roundRectPaint.color = Color.GREEN
-                        "gray" -> roundRectPaint.color = Color.GRAY
-                        "black" -> roundRectPaint.color = Color.BLACK
-                        "red" -> roundRectPaint.color = Color.RED
+                        "green" -> cardStyle = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.green_card_front,
+                            null
+                        )?.toBitmap(
+                            (roundRectCard.right - roundRectCard.left).toInt(),
+                            (roundRectCard.bottom - roundRectCard.top).toInt()
+                        )!!
+                        "gray" -> cardStyle = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.gray_card_front,
+                            null
+                        )?.toBitmap(
+                            (roundRectCard.right - roundRectCard.left).toInt(),
+                            (roundRectCard.bottom - roundRectCard.top).toInt()
+                        )!!
+                        "black" -> cardStyle = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.black_card_front,
+                            null
+                        )?.toBitmap(
+                            (roundRectCard.right - roundRectCard.left).toInt(),
+                            (roundRectCard.bottom - roundRectCard.top).toInt()
+                        )!!
+                        "red" -> cardStyle = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.red_card_front,
+                            null
+                        )?.toBitmap(
+                            (roundRectCard.right - roundRectCard.left).toInt(),
+                            (roundRectCard.bottom - roundRectCard.top).toInt()
+                        )!!
                     }
-                } else {
-                    roundRectPaint.color = Color.LTGRAY
+                } else if (!gameLobby.words[i * 4 + j].turned){ // member and not turned cards
+                    cardStyle = ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.gray_card_front,
+                        null
+                    )?.toBitmap(
+                        (roundRectCard.right - roundRectCard.left).toInt(),
+                        (roundRectCard.bottom - roundRectCard.top).toInt()
+                    )!!
+                } else { // turned cards
+                    when (gameLobby.words[i * 4 + j].color) {
+                        "green" -> cardStyle = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.green_card_back,
+                            null
+                        )?.toBitmap(
+                            (roundRectCard.right - roundRectCard.left).toInt(),
+                            (roundRectCard.bottom - roundRectCard.top).toInt()
+                        )!!
+                        "gray" -> cardStyle = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.gray_card_back,
+                            null
+                        )?.toBitmap(
+                            (roundRectCard.right - roundRectCard.left).toInt(),
+                            (roundRectCard.bottom - roundRectCard.top).toInt()
+                        )!!
+                        "black" -> cardStyle = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.black_card_back,
+                            null
+                        )?.toBitmap(
+                            (roundRectCard.right - roundRectCard.left).toInt(),
+                            (roundRectCard.bottom - roundRectCard.top).toInt()
+                        )!!
+                        "red" -> cardStyle = ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.red_card_back,
+                            null
+                        )?.toBitmap(
+                            (roundRectCard.right - roundRectCard.left).toInt(),
+                            (roundRectCard.bottom - roundRectCard.top).toInt()
+                        )!!
+                    }
                 }
-                // draw the card
-                canvas?.drawRoundRect(
-                    roundRectCard,
-                    20f * resources.displayMetrics.density,
-                    15f * resources.displayMetrics.density,
-                    roundRectPaint
-                )
+                canvas?.drawBitmap(cardStyle!!, roundRectCard.left, roundRectCard.top, null)
                 // if the card is not turned
                 if (!gameLobby.words[i * 4 + j].turned) {
                     // set coordinates for the text word
@@ -179,9 +254,14 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
                         textBound
                     )
                     var textX = roundRectCard.centerX() - textBound.exactCenterX()
-                    var textY = roundRectCard.centerY() - textBound.exactCenterY()
+                    var textY = roundRectCard.top + 0.72f*(roundRectCard.bottom - roundRectCard.top) - textBound.exactCenterY()
                     // draw the text
-                    canvas?.drawText(gameLobby.words[i * 4 + j].text, textX, textY, cardTextPaint)
+                    if ((userGame.userId == gameLobby.captainIndex1
+                                || userGame.userId == gameLobby.captainIndex2) && gameLobby.words[i * 4 + j].color == "black") {
+                        canvas?.drawText(gameLobby.words[i * 4 + j].text, textX, textY, cardBlackTextPaint)
+                    } else {
+                        canvas?.drawText(gameLobby.words[i * 4 + j].text, textX, textY, cardTextPaint)
+                    }
 
                     // if the turn phase is not "captain choosing the clue"
                     if (gameLobby.turnPhase != 0) {
@@ -240,15 +320,24 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
                             gameLobby.words[i * 4 + j].direction.length,
                             textBound
                         )
-                        textX = roundRectCard.left + padding
-                        textY = roundRectCard.bottom - padding
+                        textX = roundRectCard.left + 0.13f*(roundRectCard.right - roundRectCard.left)
+                        textY = roundRectCard.top + 0.445f*(roundRectCard.bottom - roundRectCard.top) - textBound.exactCenterY()
                         // draw the direction word
-                        canvas?.drawText(
-                            gameLobby.words[i * 4 + j].direction,
-                            textX,
-                            textY,
-                            cardDirectionPaint
-                        )
+                        if (gameLobby.words[i * 4 + j].color == "black") {
+                            canvas?.drawText(
+                                gameLobby.words[i * 4 + j].direction,
+                                textX,
+                                textY,
+                                cardBlackDirectionPaint
+                            )
+                        } else {
+                            canvas?.drawText(
+                                gameLobby.words[i * 4 + j].direction,
+                                textX,
+                                textY,
+                                cardDirectionPaint
+                            )
+                        }
                     }
                 }
             }

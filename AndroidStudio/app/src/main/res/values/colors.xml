@@ -30,4 +30,8 @@
     <color name="chat_game_border">#444444</color>
     <color name="chat_game_team1_title">#007500</color>
     <color name="chat_game_team2_title">#750000</color>
+    <color name="choose_direction_text">#FBEFDE</color>
+    <color name="card_vote_description">#F2D7B4</color>
+    <color name="button_inside_card_background">#B19578</color>
+    <color name="button_inside_card_text">#675748</color>
 </resources>

@@ -101,4 +101,8 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="east_">E</string>
+    <string name="west_">W</string>
+    <string name="north_">N</string>
+    <string name="south_">S</string>
 </resources>

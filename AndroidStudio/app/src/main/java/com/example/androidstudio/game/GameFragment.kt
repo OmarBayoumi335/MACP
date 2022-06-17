@@ -9,8 +9,10 @@ import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -37,7 +39,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import org.json.JSONObject
 
-class GameFragment : Fragment(), View.OnClickListener{
+class GameFragment : Fragment(), View.OnTouchListener{
 
     private val dataBase = FirebaseDatabase.getInstance().reference
     private lateinit var serverHandler: ServerHandler
@@ -64,8 +66,9 @@ class GameFragment : Fragment(), View.OnClickListener{
     private lateinit var chatAdapter: ChatGameAdapter
     private lateinit var chatImageButton: ImageButton
     private lateinit var chatEditText: EditText
+    private var canSend: Boolean = true
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -121,24 +124,24 @@ class GameFragment : Fragment(), View.OnClickListener{
             turnPhase=1,
             words=mutableListOf(
                 Word("importer", "green", "SOUTH", false),
-                Word("esok", "gray", "NORTH", false),
+                Word("esok", "gray", "NORTH", true),
                 Word("morbidity", "green", "EAST", false),
                 Word("kitsch", "red", "WEST", false),
-                Word("tune", "green", "SOUTH", false),
+                Word("tune", "green", "SOUTH", true),
                 Word("haddock", "red", "SOUTH", false),
                 Word("zookeeper", "green", "WEST", false),
                 Word("ecologist", "gray", "NORTH", false),
                 Word("fruitbat", "green", "SOUTH", false),
-                Word("hen", "red", "NORTH", false),
+                Word("hen", "red", "NORTH", true),
                 Word("zigzag salamander", "red", "EAST", false),
                 Word("apatosaur", "gray", "SOUTH", false),
                 Word("kerosene", "green", "SOUTH", false),
                 Word("glowworm", "red", "NORTH", false),
                 Word("factotum", "red", "SOUTH", false),
-                Word("city", "black", "SOUTH", false)
+                Word("city", "black", "SOUTH", true)
             ),
-            captainIndex1="",
-            captainIndex2="",
+            captainIndex1="mad3DLH1",
+            captainIndex2="mad3DLH1",
             hint1=3,
             hint2=3,
             clue=Clue("ciao", 3, mutableListOf("SOUTH")),
@@ -167,30 +170,30 @@ class GameFragment : Fragment(), View.OnClickListener{
 
         // button to choose direction for the clue
         buttonDirection = gameActivity.findViewById(R.id.game_direction_hint)
-        buttonDirection.setOnClickListener(this)
+        buttonDirection.setOnTouchListener(this)
 
         // buttons to choose the number for the clue
         selectNumberHintLayout = gameActivity.findViewById(R.id.game_select_number_hint)
         buttonNumberHint = gameActivity.findViewById(R.id.game_number_hint)
-        buttonNumberHint.setOnClickListener(this)
+        buttonNumberHint.setOnTouchListener(this)
         // hint number 1
         buttonValue1 = gameActivity.findViewById(R.id.game_button_value_1)
-        buttonValue1.setOnClickListener(this)
+        buttonValue1.setOnTouchListener(this)
         // hint number 2
         buttonValue2 = gameActivity.findViewById(R.id.game_button_value_2)
-        buttonValue2.setOnClickListener(this)
+        buttonValue2.setOnTouchListener(this)
         // hint number 3
         buttonValue3 = gameActivity.findViewById(R.id.game_button_value_3)
-        buttonValue3.setOnClickListener(this)
+        buttonValue3.setOnTouchListener(this)
         // hint number 4
         buttonValue4 = gameActivity.findViewById(R.id.game_button_value_4)
-        buttonValue4.setOnClickListener(this)
+        buttonValue4.setOnTouchListener(this)
         // hint number 5
         buttonValue5 = gameActivity.findViewById(R.id.game_button_value_5)
-        buttonValue5.setOnClickListener(this)
+        buttonValue5.setOnTouchListener(this)
         // hint number 6
         buttonValue6 = gameActivity.findViewById(R.id.game_button_value_6)
-        buttonValue6.setOnClickListener(this)
+        buttonValue6.setOnTouchListener(this)
 
         // edit text to choose the word for the clue
         gameWordHint = gameActivity.findViewById(R.id.game_word_hint)
@@ -207,12 +210,12 @@ class GameFragment : Fragment(), View.OnClickListener{
 
         // button that give the clue for the members
         giveClue = gameActivity.findViewById(R.id.game_confirm_hint)
-        giveClue.setOnClickListener(this)
-        giveClue.isClickable = false
+        giveClue.setOnTouchListener(this)
+        giveClue.isFocusableInTouchMode = true
 
         // button for pass the game phase without voting
         buttonPass = gameActivity.findViewById(R.id.game_pass_hint_member)
-        buttonPass.setOnClickListener(this)
+        buttonPass.setOnTouchListener(this)
 
         // Chat
         chatRecyclerView = gameActivity.findViewById(R.id.game_chat_recyclerview)
@@ -230,7 +233,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             chatEditText.visibility = View.GONE
             chatImageButton.visibility = View.GONE
         }
-        chatImageButton.setOnClickListener(this)
+        chatImageButton.setOnTouchListener(this)
 
         // title, send button of the team chat box
         val chatBoxTitle = gameActivity.findViewById<TextView>(R.id.game_chat_team_title_textview)
@@ -253,20 +256,32 @@ class GameFragment : Fragment(), View.OnClickListener{
         return gameView
     }
 
-    override fun onClick(v: View?) {
-        when(v?.id){
-            R.id.game_direction_hint -> showDirectionHintFragment()
-            R.id.game_number_hint -> showNumbersHint()
-            R.id.game_button_value_1 -> selectNumberHint("1")
-            R.id.game_button_value_2 -> selectNumberHint("2")
-            R.id.game_button_value_3 -> selectNumberHint("3")
-            R.id.game_button_value_4 -> selectNumberHint("4")
-            R.id.game_button_value_5 -> selectNumberHint("5")
-            R.id.game_button_value_6 -> selectNumberHint("6")
-            R.id.game_confirm_hint -> giveClueToMembers()
-            R.id.game_pass_hint_member -> passButton()
-            R.id.game_send_message_image_button -> sendMessage()
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+        val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+        if (!v?.isFocusableInTouchMode!!) {
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> v.startAnimation(scaleDown)
+                MotionEvent.ACTION_UP -> {
+                    v.startAnimation(scaleUp)
+                    when (v.id) {
+                        R.id.game_direction_hint -> showDirectionHintFragment()
+                        R.id.game_number_hint -> showNumbersHint()
+                        R.id.game_button_value_1 -> selectNumberHint("1")
+                        R.id.game_button_value_2 -> selectNumberHint("2")
+                        R.id.game_button_value_3 -> selectNumberHint("3")
+                        R.id.game_button_value_4 -> selectNumberHint("4")
+                        R.id.game_button_value_5 -> selectNumberHint("5")
+                        R.id.game_button_value_6 -> selectNumberHint("6")
+                        R.id.game_confirm_hint -> giveClueToMembers()
+                        R.id.game_pass_hint_member -> passButton()
+                        R.id.game_send_message_image_button -> sendMessage()
+                    }
+                }
+            }
         }
+        return true
     }
 
     private fun leave(notEnoughPlayer: Boolean = false, teamNotEnoughPlayer: String = "") {
@@ -357,9 +372,9 @@ class GameFragment : Fragment(), View.OnClickListener{
 
     private fun showDirectionHintFragment(){
         val chooseDirectionsFragment = if (userGame.team == resources.getString(R.string.team1)) {
-            ChooseDirectionFragment(gameLobby.hint1)
+            ChooseDirectionFragment(gameLobby.hint1, userGame.team)
         } else {
-            ChooseDirectionFragment(gameLobby.hint2)
+            ChooseDirectionFragment(gameLobby.hint2, userGame.team)
         }
         chooseDirectionsFragment.show(gameActivity.supportFragmentManager, "GameFragment->ChooseDirectionFragment")
     }
@@ -372,7 +387,6 @@ class GameFragment : Fragment(), View.OnClickListener{
             directions = buttonDirection.text.toString().split(" ").toMutableList()
         }
         val clue = Clue(text, number, directions)
-        giveClue.isClickable = false
         serverHandler.apiCall(
             Config.POST,
             Config.POST_SEND_CLUE,
@@ -384,9 +398,9 @@ class GameFragment : Fragment(), View.OnClickListener{
 
     private fun passButton() {
         if (userGame.vote != 16) {
-            buttonPass.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey))
+            buttonPass.setTextColor(ContextCompat.getColor(requireContext(), R.color.button_inside_card_text))
             buttonPass.text = resources.getString(R.string.don_t_pass_button)
-            buttonPass.isClickable = false
+            buttonPass.isFocusableInTouchMode = true
             serverHandler.apiCall(
                 Config.POST,
                 Config.POST_VOTE,
@@ -410,27 +424,32 @@ class GameFragment : Fragment(), View.OnClickListener{
             }
         }
         if (!allSpace) {
-            chatImageButton.isClickable = false
-            serverHandler.apiCall(
-                Config.POST,
-                Config.POST_SEND_MESSAGE_GAMELOBBY,
-                userId = userGame.userId,
-                gameLobbyId = gameLobby.lobbyId,
-                username = userGame.username,
-                chatText = textToSend,
-                callBack = object : ServerHandler.VolleyCallBack {
-                    override fun onSuccess(reply: JSONObject?) {
-                        chatImageButton.isClickable = true
+            if (canSend) {
+                canSend = false
+                buttonPass.isFocusableInTouchMode = true
+                serverHandler.apiCall(
+                    Config.POST,
+                    Config.POST_SEND_MESSAGE_GAMELOBBY,
+                    userId = userGame.userId,
+                    gameLobbyId = gameLobby.lobbyId,
+                    username = userGame.username,
+                    chatText = textToSend,
+                    callBack = object : ServerHandler.VolleyCallBack {
+                        override fun onSuccess(reply: JSONObject?) {
+                            buttonPass.isFocusableInTouchMode = false
+                            canSend = true
+                            chatEditText.text.clear()
+                        }
                     }
-                }
-            )
+                )
+            }
         }
         Log.i(Config.GAME_TAG, "message: ->$textToSend<-")
         chatEditText.text.clear()
     }
 
     private fun checkClue() {
-        giveClue.isClickable = selectNumber && selectText
+        giveClue.isFocusableInTouchMode = !selectNumber || !selectText
     }
 
     private fun updateBottomPart() {
@@ -455,7 +474,7 @@ class GameFragment : Fragment(), View.OnClickListener{
         if (userGame.vote != 16) {
             buttonPass.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             buttonPass.text = resources.getString(R.string.pass_button)
-            buttonPass.isClickable = true
+            buttonPass.isFocusableInTouchMode = false
         }
     }
 
