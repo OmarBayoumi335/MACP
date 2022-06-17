@@ -80,74 +80,74 @@ class GameFragment : Fragment(), View.OnTouchListener{
         val gson = Gson()
 
         // Game lobby info
-//        val gameLobbyString = arguments?.getString("gameLobby")
-//        gameLobby = gson.fromJson(gameLobbyString, GameLobby::class.java)
+        val gameLobbyString = arguments?.getString("gameLobby")
+        gameLobby = gson.fromJson(gameLobbyString, GameLobby::class.java)
 
         // User in game info
-//        val userGameString = arguments?.getString("userGame")
-//        userGame = gson.fromJson(userGameString, UserGame::class.java)
+        val userGameString = arguments?.getString("userGame")
+        userGame = gson.fromJson(userGameString, UserGame::class.java)
 
-        gameLobby = GameLobby(lobbyId="79emietECeNnUaGuPw88fHjdCvKDeBJbpcJmad3DLH",
-            members=mutableListOf(UserGame(userId="mad3DLH",
-                username="5",
-                team="Team Green",
-                vote=100,
-                ready=false),
-                UserGame(userId="HjdCvKD",
-                    username="4",
-                    team="Team Green",
-                    vote=100,
-                    ready=false),
-                UserGame(userId="79emiet",
-                    username="senza numero",
-                    team="Team Green",
-                    vote=100,
-                    ready=false),
-                UserGame(userId="ECeNnUa",
-                    username="polloooo",
-                    team="Team Red",
-                    vote=100,
-                    ready=false),
-                UserGame(userId="eBJbpcJ",
-                    username="gugu",
-                    team="Team Red",
-                    vote=100,
-                    ready=false),
-                UserGame(userId="GuPw88f",
-                    username="dADdd",
-                    team="Team Red",
-                    vote=100,
-                    ready=false)),
-            chatTeam1=mutableListOf(),
-            chatTeam2=mutableListOf(),
-            turn="Team Red",
-            turnPhase=1,
-            words=mutableListOf(
-                Word("importer", "green", "SOUTH", false),
-                Word("esok", "gray", "NORTH", true),
-                Word("morbidity", "green", "EAST", false),
-                Word("kitsch", "red", "WEST", false),
-                Word("tune", "green", "SOUTH", true),
-                Word("haddock", "red", "SOUTH", false),
-                Word("zookeeper", "green", "WEST", false),
-                Word("ecologist", "gray", "NORTH", false),
-                Word("fruitbat", "green", "SOUTH", false),
-                Word("hen", "red", "NORTH", true),
-                Word("zigzag salamander", "red", "EAST", false),
-                Word("apatosaur", "gray", "SOUTH", false),
-                Word("kerosene", "green", "SOUTH", false),
-                Word("glowworm", "red", "NORTH", false),
-                Word("factotum", "red", "SOUTH", false),
-                Word("city", "black", "SOUTH", true)
-            ),
-            captainIndex1="mad3DLH1",
-            captainIndex2="mad3DLH1",
-            hint1=3,
-            hint2=3,
-            clue=Clue("ciao", 3, mutableListOf("SOUTH")),
-            winner="no")
+//        gameLobby = GameLobby(lobbyId="79emietECeNnUaGuPw88fHjdCvKDeBJbpcJmad3DLH",
+//            members=mutableListOf(UserGame(userId="mad3DLH",
+//                username="5",
+//                team="Team Green",
+//                vote=100,
+//                ready=false),
+//                UserGame(userId="HjdCvKD",
+//                    username="4",
+//                    team="Team Green",
+//                    vote=100,
+//                    ready=false),
+//                UserGame(userId="79emiet",
+//                    username="senza numero",
+//                    team="Team Green",
+//                    vote=100,
+//                    ready=false),
+//                UserGame(userId="ECeNnUa",
+//                    username="polloooo",
+//                    team="Team Red",
+//                    vote=100,
+//                    ready=false),
+//                UserGame(userId="eBJbpcJ",
+//                    username="gugu",
+//                    team="Team Red",
+//                    vote=100,
+//                    ready=false),
+//                UserGame(userId="GuPw88f",
+//                    username="dADdd",
+//                    team="Team Red",
+//                    vote=100,
+//                    ready=false)),
+//            chatTeam1=mutableListOf(),
+//            chatTeam2=mutableListOf(),
+//            turn="Team Red",
+//            turnPhase=1,
+//            words=mutableListOf(
+//                Word("importer", "green", "SOUTH", false),
+//                Word("esok", "gray", "NORTH", true),
+//                Word("morbidity", "green", "EAST", false),
+//                Word("kitsch", "red", "WEST", false),
+//                Word("tune", "green", "SOUTH", true),
+//                Word("haddock", "red", "SOUTH", false),
+//                Word("zookeeper", "green", "WEST", false),
+//                Word("ecologist", "gray", "NORTH", false),
+//                Word("fruitbat", "green", "SOUTH", false),
+//                Word("hen", "red", "NORTH", true),
+//                Word("zigzag salamander", "red", "EAST", false),
+//                Word("apatosaur", "gray", "SOUTH", false),
+//                Word("kerosene", "green", "SOUTH", false),
+//                Word("glowworm", "red", "NORTH", false),
+//                Word("factotum", "red", "SOUTH", false),
+//                Word("city", "black", "SOUTH", true)
+//            ),
+//            captainIndex1="mad3DLH1",
+//            captainIndex2="mad3DLH1",
+//            hint1=3,
+//            hint2=3,
+//            clue=Clue("ciao", 3, mutableListOf("SOUTH")),
+//            winner="no")
 
-        userGame = UserGame(userId="mad3DLH", username="5", team="Team Red", vote=100, ready=false)
+//        userGame = UserGame(userId="mad3DLH", username="5", team="Team Red", vote=100, ready=false)
 
         Log.i(Config.GAME_TAG, "\ngameLobby: $gameLobby\nuserGame: $userGame")
 
@@ -252,7 +252,7 @@ class GameFragment : Fragment(), View.OnTouchListener{
         updateRightPart()
 
         // update game status
-//        updateGameLobby()
+        updateGameLobby()
         return gameView
     }
 

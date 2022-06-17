@@ -173,25 +173,6 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
             canvas?.drawBitmap(background, 0f, 0f, null)
         }
 
-//        val backGroundRequest = RectF()
-//        backGroundRequest.top = height.toFloat() * 0.02f
-//        backGroundRequest.bottom = height.toFloat() * 0.94f
-//        backGroundRequest.left = width.toFloat() * 0.52f
-//        backGroundRequest.right = width.toFloat() * 0.98f
-//        canvas?.drawRoundRect(
-//            backGroundRequest,
-//            10f * resources.displayMetrics.density,
-//            10f * resources.displayMetrics.density,
-//            chatBoxTeam2Paint
-//        )
-//        canvas?.drawRoundRect(
-//            backGroundRequest,
-//            10f * resources.displayMetrics.density,
-//            10f * resources.displayMetrics.density,
-//            chatBoxBorderPaint
-//        )
-
-
         // compass image
         compass = ResourcesCompat.getDrawable(resources, R.drawable.compass, null)?.toBitmap(compassDiameter.toInt(), compassDiameter.toInt())!!
         val rotation = Matrix()
