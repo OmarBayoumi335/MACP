@@ -4,3 +4,4 @@ Notifiche firebase per richieste di amicizia e richieste di partita
 bottoni su lista inviti
 item nelle recycler dei team (non entrano bene) + icona ready
 sfondo loading lobby -> game
+schermata fine partita (pop up) estetica
