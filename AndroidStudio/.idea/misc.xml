@@ -29,7 +29,7 @@
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout-port/activity_splash_screen.xml" value="0.3859375" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.1" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout-w936dp/activity_login.xml" value="0.11041666666666666" />
-        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_game.xml" value="0.21270452358036573" />
+        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_game.xml" value="0.67" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_menu.xml" value="0.33" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/activity_splash_screen.xml" value="0.2359375" />
@@ -40,7 +40,6 @@
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_accept_invite_to_lobby_loading.xml" value="0.17037037037037037" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_add_friend.xml" value="0.38697916666666665" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_blank.xml" value="0.38697916666666665" />
-        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_choose_direction.xml" value="0.75" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_create_party.xml" value="0.5" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_end_game.xml" value="0.38697916666666665" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_friends.xml" value="0.24635416666666668" />
@@ -64,7 +63,6 @@
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/fragment_splash_screen.xml" value="0.1" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/invite_friend_alert.xml" value="0.34418604651162793" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/item_chat.xml" value="0.33" />
-        <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/item_chat_game.xml" value="0.1" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/item_invite_friend_list.xml" value="0.25" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/item_lobby_invite.xml" value="0.38697916666666665" />
         <entry key="..\:/Android/MACP/AndroidStudio/app/src/main/res/layout/item_profile_friend_list.xml" value="1.125" />
@@ -85,8 +83,12 @@
         <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/fragment_choose_direction.xml" value="0.5" />
         <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/fragment_create_party.xml" value="0.4244791666666667" />
         <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/fragment_menu.xml" value="0.1" />
+        <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/fragment_party_invitation.xml" value="0.41794871794871796" />
         <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/fragment_profile.xml" value="0.5744791666666667" />
         <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/fragment_setup_game.xml" value="0.5744791666666667" />
+        <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/item_chat_game.xml" value="0.34479166666666666" />
+        <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/item_invite_friend_list.xml" value="0.41794871794871796" />
+        <entry key="..\:/Users/Cristiano Bellucci/Desktop/Università/Magistrale/MACP/AndroidStudio/app/src/main/res/layout/item_lobby_invite.xml" value="0.41794871794871796" />
       </map>
     </option>
   </component>

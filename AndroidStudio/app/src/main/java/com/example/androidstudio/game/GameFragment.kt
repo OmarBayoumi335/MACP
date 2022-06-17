@@ -220,13 +220,13 @@ class GameFragment : Fragment(), View.OnTouchListener{
         // Chat
         chatRecyclerView = gameActivity.findViewById(R.id.game_chat_recyclerview)
         chatAdapter = ChatGameAdapter(gameLobby, userGame, requireContext())
-//        chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
+        chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
         chatAdapter.notifyDataSetChanged()
         chatRecyclerView.adapter = chatAdapter
-        chatRecyclerView.layoutManager = LinearLayoutManager(requireContext())//.apply {
-//            stackFromEnd = true
-//            reverseLayout = false
-//        }
+        chatRecyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {
+            stackFromEnd = true
+            reverseLayout = false
+        }
         chatEditText = gameActivity.findViewById(R.id.game_message_edittext)
         chatImageButton = gameActivity.findViewById(R.id.game_send_message_image_button)
         if (gameLobby.captainIndex1 == userGame.userId || gameLobby.captainIndex2 == userGame.userId) {
@@ -523,11 +523,14 @@ class GameFragment : Fragment(), View.OnTouchListener{
             if (userGame.team == resources.getString(R.string.team1)) {
                 if (gameLobby.chatTeam1 != newGameLobby.chatTeam1) {
                     gameLobby.chatTeam1 = newGameLobby.chatTeam1
+                    chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
                     chatAdapter.notifyDataSetChanged()
+
                 }
             } else {
                 if (gameLobby.chatTeam2 != newGameLobby.chatTeam2) {
                     gameLobby.chatTeam2 = newGameLobby.chatTeam2
+                    chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount-1)
                     chatAdapter.notifyDataSetChanged()
                 }
             }

@@ -150,8 +150,8 @@
                 android:inputType="textPersonName"
                 android:visibility="visible"
                 android:fontFamily="@font/booster_next_fy_black"
-                android:textColor="@color/chat_game_team2_title"
-                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:textSize="11sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/game_send_message_image_button"
                 app:layout_constraintStart_toStartOf="parent"/>
