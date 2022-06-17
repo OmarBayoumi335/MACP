@@ -1,14 +1,12 @@
 package com.example.androidstudio.game.views
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.graphics.*
-import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.example.androidstudio.R
@@ -16,9 +14,7 @@ import com.example.androidstudio.classes.types.Card
 import com.example.androidstudio.classes.types.GameLobby
 import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
-import com.example.androidstudio.game.ChooseDirectionFragment
 import com.example.androidstudio.game.GuessCardFragment
-import com.example.androidstudio.home.profile.ProfileFragment
 import kotlin.properties.Delegates
 
 class GameView(context: Context?) : View(context), View.OnTouchListener{
@@ -55,6 +51,19 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
     private val cardTextVotePaint = Paint().apply {
         color = Color.CYAN
         textSize = 9f * resources.displayMetrics.density
+    }
+    private val chatBoxTeam1Paint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.chat_game_background_team1)
+        style = Paint.Style.FILL
+    }
+    private val chatBoxTeam2Paint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.chat_game_background_team2)
+        style = Paint.Style.FILL
+    }
+    private val chatBoxBorderPaint = Paint().apply {
+        color = ContextCompat.getColor(context!!, R.color.chat_game_border)
+        style = Paint.Style.STROKE
+        strokeWidth = 1.2f * resources.displayMetrics.density
     }
 
     // border
@@ -249,47 +258,42 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
     @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        // background turn
         cards = mutableListOf()
-//        if (gameLobby.turn == resources.getString(R.string.team2)) {
-//            canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_red))
-//        } else {
-//            canvas?.drawColor(ContextCompat.getColor(context, R.color.background_game_green))
-//        }
         val coordinates = setKeyPoints()
         drawCards(coordinates, canvas)
-
-
-
-        // I will comment the grid lines. They are only a support
-        // border
-//        canvas?.drawLine(startGridX, bottomGridY, endGridx, bottomGridY, linePaint)
-//        canvas?.drawLine(startGridX, topGridY, endGridx, topGridY, linePaint)
-//        canvas?.drawLine(startGridX, bottomGridY, startGridX, topGridY, linePaint)
-        canvas?.drawLine(endGridx, bottomGridY, endGridx, topGridY, linePaint)
-//        // center
-//        canvas?.drawLine(startGridX, centerGridY, endGridx, centerGridY, linePaint)
-//        canvas?.drawLine(centerGridX, bottomGridY, centerGridX, topGridY, linePaint)
-//        // center of quadrants
-//        canvas?.drawLine(startGridX, upY, endGridx, upY, linePaint)
-//        canvas?.drawLine(startGridX, downY, endGridx, downY, linePaint)
-//        canvas?.drawLine(leftX, bottomGridY, leftX, topGridY, linePaint)
-//        canvas?.drawLine(rightX, bottomGridY, rightX, topGridY, linePaint)
-//        // right part
-        canvas?.drawLine(endGridx, topGridY, endRightPartX, topGridY, linePaint)
-        canvas?.drawLine(endGridx, bottomGridY, endRightPartX, bottomGridY, linePaint)
-        canvas?.drawLine(endRightPartX, bottomGridY, endRightPartX, topGridY, linePaint)
-        canvas?.drawLine(endGridx, turnChatY, endRightPartX, turnChatY, linePaint)
-        canvas?.drawLine(endGridx, upY, endRightPartX, upY, linePaint)
-        canvas?.drawLine(endGridx, chatTextY, endRightPartX, chatTextY, linePaint)
-        // bottom part
-//        canvas?.drawLine(startGridX, bottomPartY, endRightPartX, bottomPartY, linePaint)
-//        canvas?.drawLine(startGridX, bottomGridY, startGridX, bottomPartY, linePaint)
-//        canvas?.drawLine(endRightPartX, bottomGridY, endRightPartX, bottomPartY, linePaint)
-//        canvas?.drawLine(rightX, bottomGridY, rightX, bottomPartY, linePaint)
-//        canvas?.drawLine(centerGridX, bottomGridY, centerGridX, bottomPartY, linePaint)
-//        canvas?.drawLine(directionNumberY, bottomGridY, directionNumberY, bottomPartY, linePaint)
-//        invalidate()
+        val chatBox = RectF()
+        chatBox.left = endGridx
+        chatBox.right = endRightPartX
+        chatBox.top = topGridY
+        chatBox.bottom = bottomGridY
+        if (userGame.team == resources.getString(R.string.team1)) {
+            canvas?.drawRoundRect(
+                chatBox,
+                10f * resources.displayMetrics.density,
+                10f * resources.displayMetrics.density,
+                chatBoxTeam1Paint
+            )
+        } else {
+            canvas?.drawRoundRect(
+                chatBox,
+                10f * resources.displayMetrics.density,
+                10f * resources.displayMetrics.density,
+                chatBoxTeam2Paint
+            )
+        }
+        canvas?.drawRoundRect(
+            chatBox,
+            10f * resources.displayMetrics.density,
+            10f * resources.displayMetrics.density,
+            chatBoxBorderPaint
+        )
+//        canvas?.drawLine(endGridx, bottomGridY, endGridx, topGridY, linePaint)
+//        canvas?.drawLine(endGridx, topGridY, endRightPartX, topGridY, linePaint)
+//        canvas?.drawLine(endGridx, bottomGridY, endRightPartX, bottomGridY, linePaint)
+//        canvas?.drawLine(endRightPartX, bottomGridY, endRightPartX, topGridY, linePaint)
+//        canvas?.drawLine(endGridx, turnChatY, endRightPartX, turnChatY, chatBoxTeam1BorderPaint)
+//        canvas?.drawLine(endGridx, upY, endRightPartX, upY, chatBoxTeam1BorderPaint)
+//        canvas?.drawLine(endGridx, chatTextY, endRightPartX, chatTextY, chatBoxTeam1BorderPaint)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {

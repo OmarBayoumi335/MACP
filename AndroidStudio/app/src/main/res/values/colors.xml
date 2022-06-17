@@ -24,4 +24,10 @@
     <color name="line_edit_chat">#714208</color>
     <color name="team2_background_lobby">#65FF0000</color>
     <color name="team1_background_lobby">#6600FF00</color>
+<!--    <color name="chat_game_background_team1">#59FF8686</color>-->
+    <color name="chat_game_background_team1">#B0A6FF86</color>
+    <color name="chat_game_background_team2">#B0FF8686</color>
+    <color name="chat_game_border">#444444</color>
+    <color name="chat_game_team1_title">#007500</color>
+    <color name="chat_game_team2_title">#750000</color>
 </resources>

@@ -117,7 +117,7 @@ class GameFragment : Fragment(), View.OnClickListener{
                     ready=false)),
             chatTeam1=mutableListOf(),
             chatTeam2=mutableListOf(),
-            turn="Team Green",
+            turn="Team Red",
             turnPhase=1,
             words=mutableListOf(
                 Word("importer", "green", "SOUTH", false),
@@ -144,7 +144,7 @@ class GameFragment : Fragment(), View.OnClickListener{
             clue=Clue("ciao", 3, mutableListOf("SOUTH")),
             winner="no")
 
-        userGame = UserGame(userId="mad3DLH", username="5", team="Team Green", vote=100, ready=false)
+        userGame = UserGame(userId="mad3DLH", username="5", team="Team Red", vote=100, ready=false)
 
         Log.i(Config.GAME_TAG, "\ngameLobby: $gameLobby\nuserGame: $userGame")
 
@@ -231,6 +231,16 @@ class GameFragment : Fragment(), View.OnClickListener{
             chatImageButton.visibility = View.GONE
         }
         chatImageButton.setOnClickListener(this)
+
+        // title, send button of the team chat box
+        val chatBoxTitle = gameActivity.findViewById<TextView>(R.id.game_chat_team_title_textview)
+        if (userGame.team == resources.getString(R.string.team1)) {
+            chatImageButton.setImageResource(R.drawable.send_message_game1)
+            chatBoxTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.chat_game_team1_title))
+        } else {
+            chatImageButton.setImageResource(R.drawable.send_message_game2)
+            chatBoxTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.chat_game_team2_title))
+        }
 
         // set bottom part view
         updateBottomPart()
@@ -457,6 +467,11 @@ class GameFragment : Fragment(), View.OnClickListener{
             resources.getString(R.string.phase1)
         } else {
             resources.getString(R.string.phase2)
+        }
+        if (gameLobby.turn == resources.getString(R.string.team1)) {
+            turn.setTextColor(ContextCompat.getColor(requireContext(), R.color.chat_game_team1_title))
+        } else {
+            turn.setTextColor(ContextCompat.getColor(requireContext(), R.color.chat_game_team2_title))
         }
         turn.text = "${gameLobby.turn}: $phase"
 
