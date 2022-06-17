@@ -1,10 +1,9 @@
 package com.example.androidstudio.classes.types
 
 data class Message(var user: UserIdentification,
-                   var text: String,
-                   var color: String){
+                   var text: String){
 
-    constructor(): this(UserIdentification(), "", "")
+    constructor(): this(UserIdentification(), "")
     override fun toString(): String {
         return "Message(user=$user, text='$text')"
     }
@@ -17,7 +16,6 @@ data class Message(var user: UserIdentification,
 
         if (user != other.user) return false
         if (text != other.text) return false
-        if (color != other.color) return false
 
         return true
     }
@@ -25,7 +23,6 @@ data class Message(var user: UserIdentification,
     override fun hashCode(): Int {
         var result = user.hashCode()
         result = 31 * result + text.hashCode()
-        result = 31 * result + color.hashCode()
         return result
     }
 

@@ -73,29 +73,6 @@ class GameActivity : AppCompatActivity(){
     }
 
     private fun updateBottomView(text: TextView, number: TextView, directions: TextView, clue: Clue, team: String) {
-        // text
-        text.text = clue.text
-        // number
-        number.text = if (clue.number == 0) {
-            ""
-        } else {
-            clue.number.toString()
-        }
-        // directions
-        var directionsText = ""
-        for (direction in clue.directions) {
-            directionsText = directionsText.plus(" $direction")
-        }
-        directions.text = if (directionsText == "") {
-            directionsText
-        } else {
-            directionsText.substring(1)
-        }
-        directions.visibility = if (directionsText == "") {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
         // backgrounds
         if (team == resources.getString(R.string.team1)) {
             text.background = ContextCompat.getDrawable(applicationContext, R.drawable.game_clue_button4)
@@ -105,6 +82,30 @@ class GameActivity : AppCompatActivity(){
             text.background = ContextCompat.getDrawable(applicationContext, R.drawable.game_clue_button4a)
             number.background = ContextCompat.getDrawable(applicationContext, R.drawable.game_clue_button5a)
             directions.background = ContextCompat.getDrawable(applicationContext, R.drawable.game_clue_button4a)
+        }
+        if (clue != Clue()) {
+            // text
+            text.text = clue.text
+            // number
+            number.text = if (clue.number == 0) {
+                ""
+            } else {
+                clue.number.toString()
+            }
+            // directions
+            var directionsText = ""
+            for (direction in clue.directions) {
+                directionsText = directionsText.plus(" $direction")
+            }
+            directions.text = if (directionsText == "") {
+                directionsText
+            } else {
+                directionsText.substring(1)
+            }
+        } else {
+            text.visibility = View.GONE
+            number.visibility = View.GONE
+            directions.visibility = View.GONE
         }
     }
 

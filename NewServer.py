@@ -202,8 +202,9 @@ class EnigmaServer(Resource):
         #7 returns information on: game lobby and the 'user game' that called this API. Input(req, userId, gameLobbyId)
         if self.req == GET_GAME_INFORMATION:
             gameLobby = db.child("GameLobbies").child(self.gameLobbyId).get().val()
+            members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             userGame = {}
-            for member in gameLobby["members"]:
+            for member in members:
                 if member["userId"] == self.userId:
                     userGame = member
                     break

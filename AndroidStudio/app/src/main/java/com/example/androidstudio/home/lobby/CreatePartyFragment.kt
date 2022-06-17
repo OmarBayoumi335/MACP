@@ -3,6 +3,7 @@ package com.example.androidstudio.home.lobby
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -60,6 +61,7 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
     private lateinit var addFriendToLobby: ImageButton
     private var gameCanStart: Boolean = true
     private var canSend: Boolean = true
+    private lateinit var res: Resources
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -69,6 +71,7 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_create_party, container, false)
         serverHandler = ServerHandler(requireContext())
+        res  = resources
 
         val lobbyString = arguments?.getString("lobby").toString()
         val gson = Gson()
@@ -343,22 +346,15 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
         lobby.team2 = newLobby.team2
         if (lobby.chat != newLobby.chat) {
             lobby.chat = newLobby.chat
-            for (i in 0 until lobby.chat.size) {
-                if (lobby.chat[i].user.userId == user.userId) {
-                    lobby.chat[i].color = "me"
-                } else {
-                    lobby.chat[i].color = "other"
-                }
-            }
             chatAdapter.notifyDataSetChanged()
         }
         chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount)
         for (member in lobby.team1 + lobby.team2) {
             if (member.userId == user.userId) {
                 readyButton.text = if (member.ready) {
-                    resources.getString(R.string.lobby_cancel)
+                    res.getString(R.string.lobby_cancel)
                 } else {
-                    resources.getString(R.string.lobby_ready)
+                    res.getString(R.string.lobby_ready)
                 }
                 break
             }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -22,26 +23,28 @@ import com.example.androidstudio.home.profile.ProfileFragment
 import com.example.androidstudio.home.profile.RequestsFragment
 import org.json.JSONObject
 
-class ChatGameAdapter(gameLobby: GameLobby, userGame: UserGame, private val context: Context): RecyclerView.Adapter<ChatGameAdapter.ViewHolder>(){
+class ChatGameAdapter(gameLobby: GameLobby, userGame: UserGame, context: Context): RecyclerView.Adapter<ChatGameAdapter.ViewHolder>(){
 
     private var gameLobby: GameLobby
     private var userGame: UserGame
+    private var context: Context
 
     init {
         this.gameLobby = gameLobby
         this.userGame = userGame
+        this.context = context
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var tvUsername: TextView = itemView.findViewById(R.id.item_chat_username)
-        var tvId: TextView = itemView.findViewById(R.id.item_chat_id)
-        var tvText: TextView = itemView.findViewById(R.id.item_chat_text)
+        var tvUsername: TextView = itemView.findViewById(R.id.item_chat_username_game)
+        var tvId: TextView = itemView.findViewById(R.id.item_chat_id_game)
+        var tvText: TextView = itemView.findViewById(R.id.item_chat_text_game)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
-        val contactView = inflater.inflate(R.layout.item_chat, parent, false)
+        val contactView = inflater.inflate(R.layout.item_chat_game, parent, false)
         return ViewHolder(contactView)
     }
 
@@ -58,9 +61,11 @@ class ChatGameAdapter(gameLobby: GameLobby, userGame: UserGame, private val cont
         tvUsername.text = message.user.username
         tvId.text = message.user.userId
         tvText.text = message.text
-//        if (user.userId == message.user.userId) {
-//            tvText.textAlignment = View.TEXT_ALIGNMENT_TEXT_END
-//        }
+        if (userGame.team == context.resources.getString(R.string.team1)) {
+            tvUsername.setTextColor(ContextCompat.getColor(context, R.color.chat_game_team1_title))
+        } else {
+            tvUsername.setTextColor(ContextCompat.getColor(context, R.color.chat_game_team2_title))
+        }
     }
 
     override fun getItemCount(): Int {

@@ -19,7 +19,7 @@
         <service android:name=".classes.utils.EnigmaService" />
         <activity
             android:name=".game.GameActivity"
-            android:exported="true"
+            android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@style/ColorSplash">
 <!--            <intent-filter>-->
