@@ -1,11 +1,14 @@
 package com.example.androidstudio.game
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,6 +25,7 @@ import org.json.JSONObject
 
 class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame, private val gameLobby: GameLobby) : DialogFragment() {
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,35 +37,44 @@ class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame,
         val image = rootView.findViewById<ImageView>(R.id.end_game_image)
         if(iWon) {
             titleTextView.text = resources.getString(R.string.you_win)
-            end_game_image.background = ContextCompat.getDrawable(requireContext(), R.drawable.win)
+            image.background = ContextCompat.getDrawable(requireContext(), R.drawable.win)
         } else {
             titleTextView.text = resources.getString(R.string.you_lose)
-            end_game_image.background = ContextCompat.getDrawable(requireContext(), R.drawable.lose)
+            image.background = ContextCompat.getDrawable(requireContext(), R.drawable.lose)
         }
         isCancelable = false
 
         val buttonEnd = rootView.findViewById<Button>(R.id.go_to_home_end_game_button)
-        buttonEnd.setOnClickListener{
-            serverHandler.apiCall(
-                Config.GET,
-                Config.GET_USER,
-                userId = userGame.userId,
-                callBack = object : ServerHandler.VolleyCallBack {
-                    override fun onSuccess(reply: JSONObject?) {
-                        val userJsonString = reply.toString()
-                        val intent = Intent(requireContext(), MenuActivity::class.java)
-                        intent.putExtra("user", userJsonString)
-                        startActivity(intent)
-                        requireActivity().overridePendingTransition(0, 0);
-                        requireActivity().finish()
-                        serverHandler.apiCall(
-                            Config.DELETE,
-                            Config.DELETE_LEAVE_GAMELOBBY,
-                            userId = userGame.userId,
-                            gameLobbyId = gameLobby.lobbyId
-                        )
-                    }
-                })
+        buttonEnd.setOnTouchListener { v, event ->
+            val scaleUp = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_up)
+            val scaleDown = AnimationUtils.loadAnimation(requireContext(), R.anim.scale_down)
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
+                MotionEvent.ACTION_UP -> {
+                    v?.startAnimation(scaleUp)
+                    serverHandler.apiCall(
+                        Config.GET,
+                        Config.GET_USER,
+                        userId = userGame.userId,
+                        callBack = object : ServerHandler.VolleyCallBack {
+                            override fun onSuccess(reply: JSONObject?) {
+                                val userJsonString = reply.toString()
+                                val intent = Intent(requireContext(), MenuActivity::class.java)
+                                intent.putExtra("user", userJsonString)
+                                startActivity(intent)
+                                requireActivity().overridePendingTransition(0, 0);
+                                requireActivity().finish()
+                                serverHandler.apiCall(
+                                    Config.DELETE,
+                                    Config.DELETE_LEAVE_GAMELOBBY,
+                                    userId = userGame.userId,
+                                    gameLobbyId = gameLobby.lobbyId
+                                )
+                            }
+                        })
+                }
+            }
+            v?.onTouchEvent(event) ?: true
         }
 
         return rootView

@@ -1,8 +1,6 @@
 package com.example.androidstudio.home.lobby
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,12 +15,18 @@ import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.adapters.InviteFriendListAdapter
 import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.types.User
-import com.example.androidstudio.classes.types.UserInvitableList
+import com.example.androidstudio.classes.types.UserIdentification
 import com.example.androidstudio.classes.utils.Config
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import org.json.JSONObject
 
 class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.OnClickListener {
+
+    private val dataBase = FirebaseDatabase.getInstance().reference
 
     private var lobby: Lobby
     private var user: User
@@ -33,8 +37,6 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
     }
 
     private lateinit var serverHandler: ServerHandler
-    private lateinit var userInvitableList: UserInvitableList
-    private lateinit var inviteInPartyFragment: InviteInPartyFragment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,34 +47,46 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
         serverHandler = ServerHandler(requireContext())
 
         val closeButton = rootView.findViewById<Button>(R.id.invite_friend_close_button)
-        inviteInPartyFragment = this
-        closeButton.setOnClickListener(this)
-        serverHandler.apiCall(
-            Config.GET,
-            Config.GET_INVITABLE_USER,
-            user.userId,
-            lobbyId = lobby.lobbyId,
-            callBack = object: ServerHandler.VolleyCallBack{
-                override fun onSuccess(reply: JSONObject?) {
-                    val userInvitableJsonString = reply?.get("userInvitableList").toString()
-                    val gson = Gson()
-                    userInvitableList = gson.fromJson(
-                        userInvitableJsonString,
-                        UserInvitableList::class.java
-                    )
-                    rootView.findViewById<ProgressBar>(R.id.progressBarInvite).visibility = View.GONE
-                    closeButton.visibility = View.VISIBLE
-                    rootView.findViewById<TextView>(R.id.invite_friend_title_textview).visibility = View.VISIBLE
 
-                    // Recycler view with update every sec
-                    val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
-                    inviteFriendListRecyclerView.visibility = View.VISIBLE
-                    val inviteFriendListAdapter = InviteFriendListAdapter(user, userInvitableList, lobby, serverHandler, requireContext())
-                    inviteFriendListRecyclerView.adapter = inviteFriendListAdapter
-                    inviteFriendListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-                    update(inviteFriendListAdapter, inviteInPartyFragment)
-                }
-        })
+        closeButton.setOnClickListener(this)
+
+//        rootView.findViewById<ProgressBar>(R.id.progressBarInvite).visibility = View.GONE
+//        closeButton.visibility = View.VISIBLE
+//        rootView.findViewById<TextView>(R.id.invite_friend_title_textview).visibility = View.VISIBLE
+
+        // Recycler view with update every sec
+        val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
+        inviteFriendListRecyclerView.visibility = View.VISIBLE
+        val inviteFriendListAdapter = InviteFriendListAdapter(user, lobby, serverHandler, requireContext())
+        inviteFriendListRecyclerView.adapter = inviteFriendListAdapter
+        inviteFriendListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        update(inviteFriendListAdapter)
+//        serverHandler.apiCall(
+//            Config.GET,
+//            Config.GET_INVITABLE_USER,
+//            user.userId,
+//            lobbyId = lobby.lobbyId,
+//            callBack = object: ServerHandler.VolleyCallBack{
+//                override fun onSuccess(reply: JSONObject?) {
+//                    val userInvitableJsonString = reply?.get("userInvitableList").toString()
+//                    val gson = Gson()
+//                    userInvitableList = gson.fromJson(
+//                        userInvitableJsonString,
+//                        UserInvitableList::class.java
+//                    )
+//                    rootView.findViewById<ProgressBar>(R.id.progressBarInvite).visibility = View.GONE
+//                    closeButton.visibility = View.VISIBLE
+//                    rootView.findViewById<TextView>(R.id.invite_friend_title_textview).visibility = View.VISIBLE
+//
+//                    // Recycler view with update every sec
+//                    val inviteFriendListRecyclerView = rootView.findViewById<RecyclerView>(R.id.invite_friend_recyclerview)
+//                    inviteFriendListRecyclerView.visibility = View.VISIBLE
+//                    val inviteFriendListAdapter = InviteFriendListAdapter(user, userInvitableList, lobby, serverHandler, requireContext())
+//                    inviteFriendListRecyclerView.adapter = inviteFriendListAdapter
+//                    inviteFriendListRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+//                    update(inviteFriendListAdapter, inviteInPartyFragment)
+//                }
+//        })
         return rootView
     }
 
@@ -96,31 +110,47 @@ class InviteInPartyFragment(lobby: Lobby, user: User) : DialogFragment(), View.O
     }
 
     private fun update(
-        inviteFriendListAdapter: InviteFriendListAdapter,
-        inviteInPartyFragment: InviteInPartyFragment
+        inviteFriendListAdapter: InviteFriendListAdapter
     ) {
-        serverHandler.apiCall(
-            Config.GET,
-            Config.GET_INVITABLE_USER,
-            user.userId,
-            lobbyId = lobby.lobbyId,
-            callBack = object: ServerHandler.VolleyCallBack{
-                override fun onSuccess(reply: JSONObject?) {
-                    val userInvitableJsonString = reply?.get("userInvitableList").toString()
-                    val gson = Gson()
-                    val userInvitableListNew = gson.fromJson(
-                        userInvitableJsonString,
-                        UserInvitableList::class.java
-                    )
-                    userInvitableList.userList = userInvitableListNew.userList
-                    inviteFriendListAdapter.notifyDataSetChanged()
-                    if (inviteInPartyFragment.context != null) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            update(inviteFriendListAdapter, inviteInPartyFragment)
-                        },
-                            Config.POLLING_PERIOD)
+        dataBase.child("Users").child(user.userId).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val newUser = snapshot.getValue(User::class.java)
+                if (newUser != null) {
+                    if (newUser.friends != null) {
+                        if (newUser.friends != user.friends)
+                        user.friends = newUser.friends
+                        inviteFriendListAdapter.notifyDataSetChanged()
                     }
                 }
-            })
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+//        serverHandler.apiCall(
+//            Config.GET,
+//            Config.GET_INVITABLE_USER,
+//            user.userId,
+//            lobbyId = lobby.lobbyId,
+//            callBack = object: ServerHandler.VolleyCallBack{
+//                override fun onSuccess(reply: JSONObject?) {
+//                    val userInvitableJsonString = reply?.get("userInvitableList").toString()
+//                    val gson = Gson()
+//                    val userInvitableListNew = gson.fromJson(
+//                        userInvitableJsonString,
+//                        UserInvitableList::class.java
+//                    )
+//                    userInvitableList.userList = userInvitableListNew.userList
+//                    inviteFriendListAdapter.notifyDataSetChanged()
+//                    if (inviteInPartyFragment.context != null) {
+//                        Handler(Looper.getMainLooper()).postDelayed({
+//                            update(inviteFriendListAdapter, inviteInPartyFragment)
+//                        },
+//                            Config.POLLING_PERIOD)
+//                    }
+//                }
+//            })
     }
 }

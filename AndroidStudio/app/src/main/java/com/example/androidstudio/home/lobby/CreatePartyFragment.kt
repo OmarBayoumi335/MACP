@@ -365,6 +365,16 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
                 break
             }
         }
+        for (i in 0 until user.friends!!.size) {
+            for (member in lobby.team1 + lobby.team2) {
+                if (user.friends!![i].userId == member.userId) {
+                    user.friends!![i].invitable = false
+                    break
+                } else {
+                    user.friends!![i].invitable = true
+                }
+            }
+        }
         team1NumEditText.text = lobby.team1.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
         team2NumEditText.text = lobby.team2.size.toString().plus("/"+Config.MAX_TEAM_MEMBERS)
         team1MembersAdapter.notifyDataSetChanged()

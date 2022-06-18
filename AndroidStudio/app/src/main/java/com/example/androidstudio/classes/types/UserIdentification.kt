@@ -1,12 +1,13 @@
 package com.example.androidstudio.classes.types
 
 data class UserIdentification(var username: String,
-                              var userId: String){
+                              var userId: String,
+                              var invitable: Boolean){
 
-    constructor(): this("","")
+    constructor(): this("","", true)
 
     override fun toString(): String {
-        return "UserIdentification(username='$username', userId='$userId')"
+        return "UserIdentification(username='$username', userId='$userId', invitable=$invitable)"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -17,6 +18,7 @@ data class UserIdentification(var username: String,
 
         if (username != other.username) return false
         if (userId != other.userId) return false
+        if (invitable != other.invitable) return false
 
         return true
     }
@@ -24,6 +26,7 @@ data class UserIdentification(var username: String,
     override fun hashCode(): Int {
         var result = username.hashCode()
         result = 31 * result + userId.hashCode()
+        result = 31 * result + invitable.hashCode()
         return result
     }
 }

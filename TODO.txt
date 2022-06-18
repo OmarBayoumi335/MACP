@@ -1,8 +1,4 @@
 Notifiche firebase per richieste di amicizia e richieste di partita
 
-schermata fine partita (pop up) estetica
-popup non abbastanza membri
-togliere ready da userGame
 fixare invita amico perché puoi spammare invito
-turno avversario team guessing non vedo la clue
-se la clue non ha direzione si vede quadrato vuoto
+close button invita amico

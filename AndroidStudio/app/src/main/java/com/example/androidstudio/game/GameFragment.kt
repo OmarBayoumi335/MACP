@@ -3,6 +3,7 @@ package com.example.androidstudio.game
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -292,7 +293,7 @@ class GameFragment : Fragment(), View.OnTouchListener{
             } else {
                 resources.getString(R.string.not_enough_player_opponent_team_alert_message)
             }
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(context, R.style.BackgroundDialog)
                 .setTitle(R.string.not_enough_player)
                 .setMessage(message)
                 .setPositiveButton(
@@ -319,9 +320,12 @@ class GameFragment : Fragment(), View.OnTouchListener{
                             }
                         })
                 }
+                .setIcon(R.drawable.alert)
                 .show()
+                .findViewById<TextView>(android.R.id.message).typeface =
+                Typeface.createFromAsset(requireContext().assets, "booster_next_fy_black.ttf")
         } else {
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(context, R.style.BackgroundDialog)
                 .setTitle(R.string.leave_game_lobby_alert)
                 .setMessage(R.string.leave_game_lobby_alert_message)
                 .setPositiveButton(
@@ -350,8 +354,10 @@ class GameFragment : Fragment(), View.OnTouchListener{
                         })
                 }
                 .setNegativeButton(R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(R.drawable.alert)
                 .show()
+                .findViewById<TextView>(android.R.id.message).typeface =
+                Typeface.createFromAsset(requireContext().assets, "booster_next_fy_black.ttf")
         }
     }
 
