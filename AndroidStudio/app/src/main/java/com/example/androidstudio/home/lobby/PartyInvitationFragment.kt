@@ -50,7 +50,7 @@ class PartyInvitationFragment : Fragment(), View.OnTouchListener {
         // Recycler view for invites with update every sec
         val lobbyInviteRecyclerView = rootView.findViewById<RecyclerView>(R.id.party_invites_recycler_view)
 //        UpdateUI.updateInviteList(requireContext(), this, serverHandler, userid, lobbyInviteAdapter)
-        val lobbyInvitesAdapter = LobbyInvitesAdapter(user, this, serverHandler)
+        val lobbyInvitesAdapter = LobbyInvitesAdapter(user, this, serverHandler, requireContext())
         lobbyInviteRecyclerView.adapter = lobbyInvitesAdapter
         lobbyInviteRecyclerView.layoutManager = LinearLayoutManager(context)
 

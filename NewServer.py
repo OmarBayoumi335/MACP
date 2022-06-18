@@ -22,7 +22,7 @@ db = firebase.database()
 
 #request codes and parser arguments
 MAX_LOBBY_MEMBERS = 16
-MIN_START_MEMBER = 2
+MIN_START_MEMBER = 1
 MAX_HINT = 3
 TEAM_RED = "Team Red"
 TEAM_GREEN = "Team Green"
@@ -34,8 +34,7 @@ GET_USER = "get2"
 GET_SEARCH_FRIEND = "get3"
 GET_INVITABLE_USER = "get4"
 GET_GAME_LOBBY_NUMBER_OF_MEMBERS = "get5"
-GET_ALL_READY_GAME = "get6"
-GET_GAME_INFORMATION = "get7"
+GET_GAME_INFORMATION = "get6"
 
 # PUT
 PUT_NEW_USER = "put0"
@@ -54,8 +53,7 @@ POST_CHANGE_READY_STATUS = "post7"
 POST_JOIN_GAME_LOBBY = "post8"
 POST_SEND_CLUE = "post9"
 POST_VOTE = "post10"
-POST_READY = "post11"
-POST_SEND_MESSAGE_GAMELOBBY = "post12"
+POST_SEND_MESSAGE_GAMELOBBY = "post11"
 POST_PROVA = "prova"
 
 # DELETE
@@ -191,15 +189,7 @@ class EnigmaServer(Resource):
             members = [] if members == None else members
             return {"message": "number of members", "number": len(members), "error": False}
         
-        #6 return true if all member are joined, false otherwise. Input(req, gameLobbyId)
-        if self.req == GET_ALL_READY_GAME:
-            members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
-            for member in members:
-                if member["ready"] == False:
-                    return {"message": "not everyone is ready to start", "allReady": False, "error": False}
-            return {"message": "all are ready to start", "allReady": True, "error": False}
-        
-        #7 returns information on: game lobby and the 'user game' that called this API. Input(req, userId, gameLobbyId)
+        #6 returns information on: game lobby and the 'user game' that called this API. Input(req, userId, gameLobbyId)
         if self.req == GET_GAME_INFORMATION:
             gameLobby = db.child("GameLobbies").child(self.gameLobbyId).get().val()
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
@@ -427,10 +417,13 @@ class EnigmaServer(Resource):
                             return{"message": "the other team is full", "status": "fullTeam", "error": False}
             teams = team1 + team2
             canStart = True
-            for member in teams:
-                if not member["ready"]:
-                    canStart = False
-                    break
+            if len(team1) >= MIN_START_MEMBER and len(team2) >= MIN_START_MEMBER:
+                for member in teams:
+                    if not member["ready"]:
+                        canStart = False
+                        break
+            else:
+                canStart = False
             db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
             db.child("Lobbies").child(self.lobbyId).update({"team2": team2})
             if canStart and len(team1) >= MIN_START_MEMBER and len(team2) >= MIN_START_MEMBER:
@@ -483,7 +476,6 @@ class EnigmaServer(Resource):
             userGame = {"userId": self.userId,
                         "username": user["username"],
                         "team": self.team,
-                        "ready": False,
                         "vote": 100}
             members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             members = [] if members == None else members
@@ -575,19 +567,8 @@ class EnigmaServer(Resource):
                     db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(i)).update({"vote": 100})            
             return {"message": "vote inserted and turn/phase changed", "error": False}
         
-        #11 set ready for the game. Input(req, userId, gameLobbyId)
-        if self.req == POST_READY:
-            members = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
-            me = 0
-            for i, member in enumerate(members):
-                if member["userId"] == self.userId:
-                    me = i
-                    break
-            db.child("GameLobbies").child(self.gameLobbyId).child("members").child(str(me)).update({"ready": True})
-            return {"message": "ready status changed", "error": False}
         
-        
-        #12 send message to display in the gamelobby chat. Input(req, userId, gameLobbyId, username, chatText)
+        #11 send message to display in the gamelobby chat. Input(req, userId, gameLobbyId, username, chatText)
         if self.req == POST_SEND_MESSAGE_GAMELOBBY:
             usersGameLobby = db.child("GameLobbies").child(self.gameLobbyId).child("members").get().val()
             user = {}

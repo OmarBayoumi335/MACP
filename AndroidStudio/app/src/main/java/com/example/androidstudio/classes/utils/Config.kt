@@ -6,9 +6,9 @@ import com.example.androidstudio.classes.types.User
 class Config {
     companion object{
         // Server
-//        val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
+        val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
 //                val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
-        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
+//        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
         val POLLING_PERIOD = 800L
 
         // Firebase/Google
@@ -39,8 +39,7 @@ class Config {
         val GET_SEARCH_FRIEND = "get3"
         val GET_INVITABLE_USER = "get4"
         val GET_GAME_LOBBY_NUMBER_OF_MEMBERS = "get5"
-        val GET_ALL_READY_GAME = "get6"
-        val GET_GAME_INFORMATION = "get7"
+        val GET_GAME_INFORMATION = "get6"
 
         val PUT = "put"
         val PUT_NEW_USER = "put0"
@@ -59,8 +58,7 @@ class Config {
         val POST_JOIN_GAME_LOBBY = "post8"
         val POST_SEND_CLUE = "post9"
         val POST_VOTE = "post10"
-        val POST_READY = "post11"
-        val POST_SEND_MESSAGE_GAMELOBBY = "post12"
+        val POST_SEND_MESSAGE_GAMELOBBY = "post11"
 
         val DELETE = "delete"
         val DELETE_REMOVE_FRIEND = "delete0"

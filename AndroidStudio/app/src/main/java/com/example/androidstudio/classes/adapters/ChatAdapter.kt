@@ -58,6 +58,11 @@ class ChatAdapter(context: Context, lobby: Lobby, user: User): RecyclerView.Adap
         tvUsername.text = message.user.username
         tvId.text = message.user.userId
         tvText.text = message.text
+        if (message.user.userId == user.userId) {
+            tvUsername.setTextColor(ContextCompat.getColor(context, R.color.lobby_me_chat))
+        } else {
+            tvUsername.setTextColor(ContextCompat.getColor(context, R.color.black))
+        }
     }
 
     override fun getItemCount(): Int {

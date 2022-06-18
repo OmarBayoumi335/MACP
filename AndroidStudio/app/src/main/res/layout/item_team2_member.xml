@@ -11,33 +11,33 @@
         android:layout_height="wrap_content"
         android:text="fasgdadgasdg"
         android:textColor="@color/black"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/team2_member_username_textview"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toTopOf="@id/team2_member_username_textview"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/team2_member_username_textview"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/team2_member_username_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="3dp"
-        android:textSize="16sp"
+        android:textSize="12sp"
         android:text="fasgdadgasdg"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/team2_member_id_textview"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
         android:id="@+id/team2_member_ready"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:scaleX="0.9"
+        android:scaleY="0.9"
         android:textColor="@color/black"
         android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/googleg_standard_color_18" />
+        app:srcCompat="@drawable/ready" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.example.androidstudio.R
 import com.example.androidstudio.classes.types.GameLobby
@@ -15,6 +17,7 @@ import com.example.androidstudio.classes.types.UserGame
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.home.MenuActivity
+import kotlinx.android.synthetic.main.fragment_end_game.*
 import org.json.JSONObject
 
 class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame, private val gameLobby: GameLobby) : DialogFragment() {
@@ -27,12 +30,14 @@ class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame,
         val serverHandler = ServerHandler(requireContext())
         val rootView = inflater.inflate(R.layout.fragment_end_game, container, false)
         val titleTextView = rootView.findViewById<TextView>(R.id.title_end_game_textview)
-        titleTextView.text = if(iWon) {
-            resources.getString(R.string.you_win)
+        val image = rootView.findViewById<ImageView>(R.id.end_game_image)
+        if(iWon) {
+            titleTextView.text = resources.getString(R.string.you_win)
+            end_game_image.background = ContextCompat.getDrawable(requireContext(), R.drawable.win)
         } else {
-            resources.getString(R.string.you_lose)
+            titleTextView.text = resources.getString(R.string.you_lose)
+            end_game_image.background = ContextCompat.getDrawable(requireContext(), R.drawable.lose)
         }
-
         isCancelable = false
 
         val buttonEnd = rootView.findViewById<Button>(R.id.go_to_home_end_game_button)

@@ -50,7 +50,7 @@ class GameActivity : AppCompatActivity(){
         Clue(),
         ""
     )
-    private var myUserGame: UserGame = UserGame("", "", "", 0, false)
+    private var myUserGame: UserGame = UserGame("", "", "", 0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +84,9 @@ class GameActivity : AppCompatActivity(){
             directions.background = ContextCompat.getDrawable(applicationContext, R.drawable.game_clue_button4a)
         }
         if (clue != Clue()) {
+            text.visibility = View.VISIBLE
+            number.visibility = View.VISIBLE
+            directions.visibility = View.VISIBLE
             // text
             text.text = clue.text
             // number
@@ -101,6 +104,11 @@ class GameActivity : AppCompatActivity(){
                 directionsText
             } else {
                 directionsText.substring(1)
+            }
+            directions.visibility = if (directionsText == "") {
+                View.GONE
+            } else {
+                View.VISIBLE
             }
         } else {
             text.visibility = View.GONE

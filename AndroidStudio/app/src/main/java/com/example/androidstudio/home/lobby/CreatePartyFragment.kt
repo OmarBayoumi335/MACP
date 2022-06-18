@@ -266,6 +266,12 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
                             canSend = true
                             chatEditText.text.clear()
                         }
+                    },
+                    callBackError = object : ServerHandler.VolleyCallBackError {
+                        override fun onError() {
+                            chatImageButton.isFocusableInTouchMode = true
+                            canSend = true
+                        }
                     }
                 )
             }
@@ -346,9 +352,9 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
         lobby.team2 = newLobby.team2
         if (lobby.chat != newLobby.chat) {
             lobby.chat = newLobby.chat
+            chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
             chatAdapter.notifyDataSetChanged()
         }
-        chatRecyclerView.smoothScrollToPosition(chatAdapter.itemCount)
         for (member in lobby.team1 + lobby.team2) {
             if (member.userId == user.userId) {
                 readyButton.text = if (member.ready) {

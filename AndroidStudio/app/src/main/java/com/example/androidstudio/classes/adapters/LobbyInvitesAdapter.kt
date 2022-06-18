@@ -1,8 +1,12 @@
 package com.example.androidstudio.classes.adapters
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.os.bundleOf
@@ -14,11 +18,13 @@ import com.example.androidstudio.classes.types.UserInvite
 import com.example.androidstudio.classes.types.User
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.lobby.PartyInvitationFragment
+import kotlin.coroutines.coroutineContext
 
 class LobbyInvitesAdapter(
     user: User,
     private val partyInvitationFragment: PartyInvitationFragment,
-    private val serverHandler: ServerHandler
+    private val serverHandler: ServerHandler,
+    private val context: Context
     ): RecyclerView.Adapter<LobbyInvitesAdapter.ViewHolder>(){
 
     private var user: User
@@ -42,6 +48,7 @@ class LobbyInvitesAdapter(
         return ViewHolder(contactView)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val friend: UserInvite = user.pendingInviteRequests!![position]
         val tvUsername = holder.tvUsername
@@ -54,23 +61,43 @@ class LobbyInvitesAdapter(
         tvId.text = friend.userId
         tvLobbyName.text = friend.lobbyName
 
-        acceptButton.setOnClickListener {
-            user.pendingInviteRequests!!.remove(user.pendingInviteRequests!![position])
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, user.pendingInviteRequests!!.size)
-            val bundle = bundleOf("lobbyId" to friend.lobbyId)
-            partyInvitationFragment.findNavController().navigate(R.id.action_partyInvitationFragment_to_acceptInviteToLobbyLoadingFragment, bundle)
+        acceptButton.setOnTouchListener { v, event ->
+            val scaleUp = AnimationUtils.loadAnimation(context, R.anim.scale_up)
+            val scaleDown = AnimationUtils.loadAnimation(context, R.anim.scale_down)
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
+                MotionEvent.ACTION_UP -> {
+                    v?.startAnimation(scaleUp)
+                    user.pendingInviteRequests!!.remove(user.pendingInviteRequests!![position])
+                    notifyItemRemoved(position)
+                    notifyItemRangeChanged(position, user.pendingInviteRequests!!.size)
+                    val bundle = bundleOf("lobbyId" to friend.lobbyId)
+                    partyInvitationFragment.findNavController().navigate(
+                        R.id.action_partyInvitationFragment_to_acceptInviteToLobbyLoadingFragment,
+                        bundle
+                    )
+                }
+            }
+            v?.onTouchEvent(event) ?: true
         }
 
-        declineButton.setOnClickListener {
-            val numItem = itemCount - 1
-            declineRequests(friend.lobbyId)
-            serverHandler.apiCall(
-                Config.DELETE,
-                Config.DELETE_LOBBY_INVITE,
-                userId = user.userId,
-                lobbyId = friend.lobbyId
-            )
+        declineButton.setOnTouchListener { v, event ->
+            val scaleUp = AnimationUtils.loadAnimation(context, R.anim.scale_up)
+            val scaleDown = AnimationUtils.loadAnimation(context, R.anim.scale_down)
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> v?.startAnimation(scaleDown)
+                MotionEvent.ACTION_UP -> {
+                    v?.startAnimation(scaleUp)
+                    declineRequests(friend.lobbyId)
+                    serverHandler.apiCall(
+                        Config.DELETE,
+                        Config.DELETE_LOBBY_INVITE,
+                        userId = user.userId,
+                        lobbyId = friend.lobbyId
+                    )
+                }
+            }
+            v?.onTouchEvent(event) ?: true
         }
     }
 

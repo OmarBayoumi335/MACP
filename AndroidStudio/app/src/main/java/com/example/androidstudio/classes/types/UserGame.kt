@@ -3,13 +3,12 @@ package com.example.androidstudio.classes.types
 data class UserGame(var userId: String,
                     var username: String,
                     var team: String,
-                    var vote: Int,
-                    var ready: Boolean){
+                    var vote: Int){
 
-    constructor() : this("", "", "", 0, false)
+    constructor() : this("", "", "", 0)
 
     override fun toString(): String {
-        return "UserGame(userId='$userId', username='$username', team='$team', vote=$vote, ready=$ready)"
+        return "UserGame(userId='$userId', username='$username', team='$team', vote=$vote)"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -22,7 +21,6 @@ data class UserGame(var userId: String,
         if (username != other.username) return false
         if (team != other.team) return false
         if (vote != other.vote) return false
-        if (ready != other.ready) return false
 
         return true
     }
@@ -32,7 +30,6 @@ data class UserGame(var userId: String,
         result = 31 * result + username.hashCode()
         result = 31 * result + team.hashCode()
         result = 31 * result + vote
-        result = 31 * result + ready.hashCode()
         return result
     }
 

@@ -34,4 +34,5 @@
     <color name="card_vote_description">#F2D7B4</color>
     <color name="button_inside_card_background">#B19578</color>
     <color name="button_inside_card_text">#675748</color>
+    <color name="lobby_me_chat">#A400BF</color>
 </resources>
