@@ -4,10 +4,10 @@
     <color name="white">#FFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="grey">#9B9B9B</color>
-    <color name="friend_found">#4CAF50</color>
-    <color name="friend_sent_added">#FF8922</color>
+    <color name="friend_found">#316C33</color>
+    <color name="friend_sent_added">#1B4B9C</color>
     <color name="hint_login">#FFC8B7</color>
-    <color name="friend_not_found">#F44336</color>
+    <color name="friend_not_found">#A52B22</color>
     <color name="notification_circle">#FF1B0A</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
@@ -35,4 +35,5 @@
     <color name="button_inside_card_background">#B19578</color>
     <color name="button_inside_card_text">#675748</color>
     <color name="lobby_me_chat">#A400BF</color>
+    <color name="loading">#9E6C20</color>
 </resources>

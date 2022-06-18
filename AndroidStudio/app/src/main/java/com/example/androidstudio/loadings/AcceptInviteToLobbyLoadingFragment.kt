@@ -10,9 +10,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.types.Lobby
 import com.example.androidstudio.classes.utils.ServerHandler
 import com.example.androidstudio.classes.utils.Config
 import com.example.androidstudio.home.MenuActivity
+import com.google.gson.Gson
 import org.json.JSONObject
 
 class AcceptInviteToLobbyLoadingFragment : Fragment() {
@@ -49,8 +51,21 @@ class AcceptInviteToLobbyLoadingFragment : Fragment() {
                 override fun onSuccess(reply: JSONObject?) {
                     Log.i(Config.LOBBY_TAG, reply.toString())
                     val lobbyJsonString = reply?.get("lobby").toString()
-                    val bundle = bundleOf("lobby" to lobbyJsonString)
-                    findNavController().navigate(R.id.action_acceptInviteToLobbyLoadingFragment_to_createPartyFragment, bundle)
+                    val gson = Gson()
+                    val lobby = gson.fromJson(lobbyJsonString, Lobby::class.java)
+                    serverHandler.apiCall(
+                        Config.POST,
+                        Config.POST_SETUP_INVITABLE,
+                        userId = user.userId,
+                        lobbyId = lobby.lobbyId,
+                        callBack = object : ServerHandler.VolleyCallBack {
+                            override fun onSuccess(reply: JSONObject?) {
+                                val bundle = bundleOf("lobby" to lobbyJsonString)
+                                findNavController().navigate(R.id.action_acceptInviteToLobbyLoadingFragment_to_createPartyFragment,bundle
+                                )
+                            }
+                        }
+                    )
                 }
             })
         return rootView

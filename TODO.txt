@@ -1,4 +1,0 @@
-Notifiche firebase per richieste di amicizia e richieste di partita
-
-fixare invita amico perché puoi spammare invito
-close button invita amico

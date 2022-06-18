@@ -7,8 +7,8 @@ class Config {
     companion object{
         // Server
 //        val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
-//                val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
-        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
+                val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
+//        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
         val POLLING_PERIOD = 800L
 
         // Firebase/Google
@@ -59,6 +59,7 @@ class Config {
         val POST_SEND_CLUE = "post9"
         val POST_VOTE = "post10"
         val POST_SEND_MESSAGE_GAMELOBBY = "post11"
+        val POST_SETUP_INVITABLE = "post12"
 
         val DELETE = "delete"
         val DELETE_REMOVE_FRIEND = "delete0"

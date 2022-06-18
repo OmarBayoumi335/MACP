@@ -105,4 +105,5 @@
     <string name="west_">W</string>
     <string name="north_">N</string>
     <string name="south_">S</string>
+    <string name="loading">Loading…</string>
 </resources>

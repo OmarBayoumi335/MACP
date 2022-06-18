@@ -54,6 +54,7 @@ POST_JOIN_GAME_LOBBY = "post8"
 POST_SEND_CLUE = "post9"
 POST_VOTE = "post10"
 POST_SEND_MESSAGE_GAMELOBBY = "post11"
+POST_SETUP_INVITABLE = "post12"
 POST_PROVA = "prova"
 
 # DELETE
@@ -337,7 +338,6 @@ class EnigmaServer(Resource):
             db.child("Users").child(self.friendId).update({"pendingFriendRequests": pendingReceiverFriendRequestsList})
             return{"message": "friend request sent and added to pending friend requests", "error": False}
       
-        #-------------
         #3 send invite to lobby. Input(req, userId, username, friendId, lobbyId, lobbyName)
         if self.req == POST_SEND_LOBBY_INVITE:
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
@@ -355,6 +355,12 @@ class EnigmaServer(Resource):
                 friendPendingInviteRequests = []
             friendPendingInviteRequests.append(friendCheckInvited)
             db.child("Users").child(self.friendId).update({"pendingInviteRequests":friendPendingInviteRequests})
+            friendList = db.child("Users").child(self.userId).child("friends").get().val()
+            friendList = [] if friendList == None else friendList
+            for i, friend in enumerate(friendList):
+                if friend["userId"] == self.friendId:
+                    db.child("Users").child(self.userId).child("friends").child(str(i)).update({"invitable": False})
+                    break
             return {"message": "user invited", "status": "invited", "error": False}
             
         #4 accept lobby invite and enter into it. Input(req, userId, lobbyId)
@@ -387,6 +393,7 @@ class EnigmaServer(Resource):
             chat = db.child("Lobbies").child(self.lobbyId).child("chat").get().val()
             chat = [] if chat == None else chat
             lobby["chat"] = chat
+            
             return {"message": "connected to lobby", "lobby":lobby, "error": False}
         
         #5 change team. Input(req, userId, lobbyId)
@@ -590,6 +597,24 @@ class EnigmaServer(Resource):
                 db.child("GameLobbies").child(self.gameLobbyId).update({"chatTeam2": chatTeam2})
             return {"message": "message sent", "error": False}
         
+        #12 setup invitable flag of the friends. Input(req, userId, lobbyId)
+        if self.req == POST_SETUP_INVITABLE:
+            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
+            team1 = [] if team1 == None else team1
+            team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
+            team2 = [] if team2 == None else team2
+            friendList = db.child("Users").child(self.userId).child("friends").get().val()
+            friendList = [] if friendList == None else friendList
+            for i, friend in enumerate(friendList):
+                invitable = True
+                for member in team1 + team2:
+                    # return {"message": str(friend), "error": False}
+                    if member["userId"] == friend["userId"]:
+                        invitable = False
+                        break
+                db.child("Users").child(self.userId).child("friends").child(str(i)).update({"invitable": invitable})
+            return {"message": "all friend's invitable flag are set upped", "error": False}
+        
         
         if self.req == POST_PROVA:
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
@@ -637,7 +662,7 @@ class EnigmaServer(Resource):
             return {"message": "friend request removed", "error": False}
         
         #2 user leaves lobby and if there are no users the lobby will be removed. Input(req, userId, lobbyId)
-        if self.req == DELETE_LEAVE_LOBBY:
+        if self.req == DELETE_LEAVE_LOBBY:            
             inTeam1 = False
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
             team2 = db.child("Lobbies").child(self.lobbyId).child("team2").get().val()
@@ -646,6 +671,7 @@ class EnigmaServer(Resource):
                 team1 = []
             if team2 == None:
                 team2 = []
+                
             if chat == None:
                 chat = []
             #user leaves lobby
@@ -659,6 +685,21 @@ class EnigmaServer(Resource):
                     if user["userId"] == self.userId:
                         team2.remove(user)
                         break
+                    
+            for member in team1:
+                friendFriendList = db.child("Users").child(member["userId"]).child("friends").get().val()
+                friendFriendList = [] if friendFriendList == None else friendFriendList
+                for i, friendFriend in enumerate(friendFriendList):
+                    if friendFriend["userId"] == self.userId:
+                        db.child("Users").child(member["userId"]).child("friends").child(str(i)).update({"invitable": True})
+                        break 
+            for member in team2:
+                friendFriendList = db.child("Users").child(member["userId"]).child("friends").get().val()
+                friendFriendList = [] if friendFriendList == None else friendFriendList
+                for i, friendFriend in enumerate(friendFriendList):
+                    if friendFriend["userId"] == self.userId:
+                        db.child("Users").child(member["userId"]).child("friends").child(str(i)).update({"invitable": True})
+                        break 
        
             #last user leaves lobby
             if len(team1) + len(team2) == 0:
@@ -678,7 +719,7 @@ class EnigmaServer(Resource):
             db.child("Lobbies").child(self.lobbyId).update({"team2": team2})
             return{"message": "user leave lobby", "error": False}
         
-        #3 user decline a lobby invite. Input(req, userId, lobbyId)
+        #3 user decline a lobby invite. Input(req, userId, friendId, lobbyId)
         if self.req == DELETE_LOBBY_INVITE:
             pendingInviteRequests = db.child("Users").child(self.userId).child("pendingInviteRequests").get().val()
             pendingInviteRequests = [] if pendingInviteRequests == None else pendingInviteRequests
@@ -687,6 +728,13 @@ class EnigmaServer(Resource):
                 if pending["lobbyId"] != self.lobbyId:
                     newPendingInviteRequests.append(pending)
             db.child("Users").child(self.userId).update({"pendingInviteRequests":newPendingInviteRequests})
+            
+            friendFriendList = db.child("Users").child(self.friendId).child("friends").get().val()
+            friendFriendList = [] if friendFriendList == None else friendFriendList
+            for i, friendFriend in enumerate(friendFriendList):
+                if friendFriend["userId"] == self.userId:
+                    db.child("Users").child(self.friendId).child("friends").child(str(i)).update({"invitable": True})
+                    break
             return{"message": "invites removed", "error": False}
         
         #4 delete the party lobby and set ready for the game lobby. Input(req, lobbyId)

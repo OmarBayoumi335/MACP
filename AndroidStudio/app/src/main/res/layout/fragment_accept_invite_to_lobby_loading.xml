@@ -6,14 +6,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".loadings.AcceptInviteToLobbyLoadingFragment">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/party_creation_gif"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/loading1"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/party_creation_gif"
+        app:layout_constraintEnd_toEndOf="@id/party_creation_gif"
+        app:layout_constraintStart_toStartOf="@id/party_creation_gif"
+        android:text="@string/loading"
+        android:textSize="20sp"
+        android:textColor="@color/loading"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

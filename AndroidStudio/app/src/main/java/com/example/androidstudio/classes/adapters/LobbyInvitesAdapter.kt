@@ -93,6 +93,7 @@ class LobbyInvitesAdapter(
                         Config.DELETE,
                         Config.DELETE_LOBBY_INVITE,
                         userId = user.userId,
+                        friendId = friend.userId,
                         lobbyId = friend.lobbyId
                     )
                 }
