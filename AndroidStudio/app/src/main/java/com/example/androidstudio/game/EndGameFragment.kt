@@ -64,12 +64,12 @@ class EndGameFragment(private val iWon: Boolean, private val userGame: UserGame,
                                 startActivity(intent)
                                 requireActivity().overridePendingTransition(0, 0);
                                 requireActivity().finish()
-                                serverHandler.apiCall(
-                                    Config.DELETE,
-                                    Config.DELETE_LEAVE_GAMELOBBY,
-                                    userId = userGame.userId,
-                                    gameLobbyId = gameLobby.lobbyId
-                                )
+//                                serverHandler.apiCall(
+//                                    Config.DELETE,
+//                                    Config.DELETE_LEAVE_GAMELOBBY,
+//                                    userId = userGame.userId,
+//                                    gameLobbyId = gameLobby.lobbyId
+//                                )
                             }
                         })
                 }
