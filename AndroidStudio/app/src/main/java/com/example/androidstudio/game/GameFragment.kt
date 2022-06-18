@@ -321,6 +321,7 @@ class GameFragment : Fragment(), View.OnTouchListener{
                         })
                 }
                 .setIcon(R.drawable.alert)
+                .setCancelable(false)
                 .show()
                 .findViewById<TextView>(android.R.id.message).typeface =
                 Typeface.createFromAsset(requireContext().assets, "booster_next_fy_black.ttf")
@@ -541,8 +542,8 @@ class GameFragment : Fragment(), View.OnTouchListener{
                 }
             }
             if (gameLobby.turn != newGameLobby.turn) {
-                gameActivity.changeBackGround()
                 gameLobby.turn = newGameLobby.turn
+                gameActivity.changeBackGround()
             }
             gameLobby.turnPhase = newGameLobby.turnPhase
             gameLobby.words = newGameLobby.words

@@ -6,7 +6,6 @@ import android.graphics.*
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -61,7 +60,7 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
         style = Paint.Style.FILL
     }
     private val cardTextVotePaint = Paint().apply {
-        color = Color.CYAN
+        color = Color.BLACK
         textSize = 9f * resources.displayMetrics.density
     }
     private val chatBoxTeam1Paint = Paint().apply {
@@ -275,11 +274,19 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
                         // if the number of votes is greater than 0 show the votes
                         if (numberVoteCard != 0) {
                             // draw the circle that contain the number of votes
-                            canvas?.drawCircle(
-                                roundRectCard.right - padding,
-                                roundRectCard.top + padding,
-                                10f * resources.displayMetrics.density,
-                                cardCircleVotePaint
+                            val voteCircle = ResourcesCompat.getDrawable(
+                                resources,
+                                R.drawable.vote_circle,
+                                null
+                            )?.toBitmap(
+                                (10f * resources.displayMetrics.density * 2f).toInt(),
+                                (10f * resources.displayMetrics.density * 2f).toInt()
+                            )!!
+                            canvas?.drawBitmap(
+                                voteCircle,
+                                roundRectCard.right - padding - 10f * resources.displayMetrics.density + 1f * resources.displayMetrics.density,
+                                roundRectCard.top + padding - 10f * resources.displayMetrics.density + 1f * resources.displayMetrics.density,
+                                null
                             )
                             // set coordinate for votes word
                             textBound = Rect()
@@ -302,12 +309,31 @@ class GameView(context: Context?) : View(context), View.OnTouchListener{
                         // if my vote is on this card show it with a symbol
                         if (userGame.vote == i * 4 + j) {
                             // draw the symbol
-                            canvas?.drawCircle(
-                                roundRectCard.left + padding,
-                                roundRectCard.top + padding,
-                                10f * resources.displayMetrics.density,
-                                cardCircleVotePaint
+                            val iconMyVote = if (userGame.team == resources.getString(R.string.team1)) {
+                                R.drawable.my_vote1
+                            } else {
+                                R.drawable.my_vote2
+                            }
+                            val myVote = ResourcesCompat.getDrawable(
+                                resources,
+                                iconMyVote,
+                                null
+                            )?.toBitmap(
+                                (10f * resources.displayMetrics.density * 2f).toInt(),
+                                (10f * resources.displayMetrics.density * 2f).toInt()
+                            )!!
+                            canvas?.drawBitmap(
+                                myVote,
+                                roundRectCard.left + padding - 10f * resources.displayMetrics.density,
+                                roundRectCard.top + padding - 10f * resources.displayMetrics.density,
+                                null
                             )
+//                            canvas?.drawCircle(
+//                                roundRectCard.left + padding,
+//                                roundRectCard.top + padding,
+//                                10f * resources.displayMetrics.density,
+//                                cardCircleVotePaint
+//                            )
                         }
                     }
                     // if im the captain show the direction of the card

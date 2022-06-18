@@ -227,11 +227,11 @@
 
     <Button
         android:id="@+id/direction1_button_choose_direction"
-        android:layout_height="0dp"
         android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:background="@drawable/game_clue_button1"
         android:text="OVEST"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/selection"
         app:layout_constraintEnd_toStartOf="@id/center_left"
         app:layout_constraintStart_toEndOf="@id/left"
@@ -239,11 +239,11 @@
 
     <Button
         android:id="@+id/direction2_button_choose_direction"
-        android:layout_height="0dp"
         android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:background="@drawable/game_clue_button1"
         android:text="NORD"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/selection"
         app:layout_constraintEnd_toStartOf="@id/center_right"
         app:layout_constraintStart_toEndOf="@id/center_left"
@@ -251,11 +251,11 @@
 
     <Button
         android:id="@+id/direction3_button_choose_direction"
-        android:layout_height="0dp"
         android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:background="@drawable/game_clue_button1"
         android:text="SUD"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/selection"
         app:layout_constraintEnd_toStartOf="@id/right"
         app:layout_constraintStart_toEndOf="@id/center_right"

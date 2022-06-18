@@ -50,11 +50,17 @@ class ChooseDirectionFragment(remainingHint: Int, team: String) : DialogFragment
         remainingHintTextView.text = "${resources.getString(R.string.remaining_hints)} $remainingHint"
 
         buttonDirection1 = rootView.findViewById(R.id.direction1_button_choose_direction)
-        buttonDirection1.setOnTouchListener(this)
+        buttonDirection1.setOnClickListener{
+            deleteDirection(0)
+        }
         buttonDirection2 = rootView.findViewById(R.id.direction2_button_choose_direction)
-        buttonDirection2.setOnTouchListener(this)
+        buttonDirection2.setOnClickListener{
+            deleteDirection(1)
+        }
         buttonDirection3 = rootView.findViewById(R.id.direction3_button_choose_direction)
-        buttonDirection3.setOnTouchListener(this)
+        buttonDirection3.setOnClickListener{
+            deleteDirection(2)
+        }
 
         buttonCancel = rootView.findViewById(R.id.cancel_button_choose_direction)
         buttonCancel.setOnTouchListener(this)
@@ -99,9 +105,9 @@ class ChooseDirectionFragment(remainingHint: Int, team: String) : DialogFragment
             MotionEvent.ACTION_UP -> {
                 v?.startAnimation(scaleUp)
                 when (v?.id) {
-                    R.id.direction1_button_choose_direction -> deleteDirection(0)
-                    R.id.direction2_button_choose_direction -> deleteDirection(1)
-                    R.id.direction3_button_choose_direction -> deleteDirection(2)
+//                    R.id.direction1_button_choose_direction -> deleteDirection(0)
+//                    R.id.direction2_button_choose_direction -> deleteDirection(1)
+//                    R.id.direction3_button_choose_direction -> deleteDirection(2)
                     R.id.textview_north_choose_direction -> addDirection(resources.getString(R.string.north))
                     R.id.textview_west_choose_direction -> addDirection(resources.getString(R.string.west))
                     R.id.textview_east_choose_direction -> addDirection(resources.getString(R.string.east))
