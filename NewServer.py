@@ -323,7 +323,7 @@ class EnigmaServer(Resource):
             user = db.child("Users").child(self.userId).get().val()
             if friendsList == None:
                 friendsList = []
-            friendsList.append({"username": user["username"], "userId": user["userId"]})
+            friendsList.append({"username": user["username"], "userId": user["userId"], "invitable": True})
             db.child("Users").child(self.friendId).update({"friends": friendsList})
             return {"message": "friend added to friends list from pending friends requests", "error": False}
         
@@ -333,10 +333,11 @@ class EnigmaServer(Resource):
             sender = db.child("Users").child(self.userId).get().val()
             if pendingReceiverFriendRequestsList == None:
                 pendingReceiverFriendRequestsList = []
-            pendingReceiverFriendRequestsList.append({"userId": sender["userId"], "username": sender["username"]})
+            pendingReceiverFriendRequestsList.append({"userId": sender["userId"], "username": sender["username"], "invitable": True})
             db.child("Users").child(self.friendId).update({"pendingFriendRequests": pendingReceiverFriendRequestsList})
             return{"message": "friend request sent and added to pending friend requests", "error": False}
-        
+      
+        #-------------
         #3 send invite to lobby. Input(req, userId, username, friendId, lobbyId, lobbyName)
         if self.req == POST_SEND_LOBBY_INVITE:
             team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
