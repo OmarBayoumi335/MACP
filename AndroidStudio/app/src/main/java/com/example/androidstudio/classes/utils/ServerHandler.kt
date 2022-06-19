@@ -119,7 +119,7 @@ class ServerHandler(context: Context?) {
         }, {
                 error: VolleyError? ->
             Log.e(Config.API_TAG, "onError ${stringMethod}, ${reqCode}: " + error.toString())
-//            call(requestMethod, stringMethod, reqCode, req, callBack, callBackError)
+            call(requestMethod, stringMethod, reqCode, req, callBack, callBackError)
             callBackError?.onError()
         })
         // Add the request to the RequestQueue.
