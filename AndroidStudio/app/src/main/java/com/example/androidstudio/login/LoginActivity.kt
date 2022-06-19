@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -26,6 +27,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import org.json.JSONObject
+import pl.droidsonroids.gif.GifImageView
 
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener{
@@ -58,18 +60,19 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         // Setting the name if you have already logged in in the past
         sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
 
-        val lastId : String = sharedPreferences.getString("ID", "").toString()
-        Log.i(Config.LOGIN_TAG, lastId)
+        val lastUsername : String = sharedPreferences.getString("ID", "").toString()
+        Log.i(Config.LOGIN_TAG, lastUsername)
         usernameEditText = findViewById(R.id.login_username_edittext)
-        serverHandler.apiCall(
-            Config.GET,
-            Config.GET_USERNAME,
-            userId = lastId,
-            callBack = object : ServerHandler.VolleyCallBack {
-                override fun onSuccess(reply: JSONObject?) {
-                    usernameEditText.setText(reply?.get("username").toString())
-                }
-            })
+        usernameEditText.setText(lastUsername)
+//        serverHandler.apiCall(
+//            Config.GET,
+//            Config.GET_USERNAME,
+//            userId = lastId,
+//            callBack = object : ServerHandler.VolleyCallBack {
+//                override fun onSuccess(reply: JSONObject?) {
+//                    usernameEditText.setText(reply?.get("username").toString())
+//                }
+//            })
 
         // Google button
         val signInButton = findViewById<SignInButton>(R.id.login_sign_in_button)
@@ -142,6 +145,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun signIn(currentUser: FirebaseUser?, fromOnStart: Boolean = false) {
+        loading()
         if (currentUser != null) {
             serverHandler.apiCall(
                 Config.GET,
@@ -162,13 +166,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                                 callBack = object : ServerHandler.VolleyCallBack{
                                     override fun onSuccess(reply: JSONObject?) {
                                         val newUserId = reply?.get("userId").toString()
-                                        sharedPreferences.edit().putString("ID", newUserId).apply()
+                                        sharedPreferences.edit().putString("ID", username).apply()
                                         launchMenu(newUserId)
                                     }
                                 })
                         } else if (!fromOnStart) {  // User exist but login
-                            sharedPreferences.edit().putString("ID", userId).apply()
                             val username = findViewById<EditText>(R.id.login_username_edittext).text.toString()
+                            sharedPreferences.edit().putString("ID", username).apply()
                             serverHandler.apiCall(
                                 Config.POST,
                                 Config.POST_CHANGE_NAME,
@@ -178,8 +182,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
 
                             launchMenu(userId)
                         } else {  // User exist and logged in automatically
-                            val lastId = sharedPreferences.getString("ID", "").toString()
-                            launchMenu(lastId)
+//                            val lastId = sharedPreferences.getString("ID", "").toString()
+                            launchMenu(userId)
                         }
                     }
             })
@@ -200,6 +204,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                     overridePendingTransition(0, 0);
                     finish()
                 }
+            },
+            callBackError = object : ServerHandler.VolleyCallBackError {
+                override fun onError() {
+                    launchMenu(userId)
+                }
         })
     }
 
@@ -216,5 +225,20 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         }
     }
 
-    // TODO connection and server check and if already connected
+    private fun loading() {
+        val loginTitleTextview = findViewById<TextView>(R.id.login_title_textview)
+        val loginUsernameTextField = findViewById<TextInputLayout>(R.id.login_username_textfield)
+        val loginHintTextview = findViewById<TextView>(R.id.login_hint_textview)
+        val loginSignInButton = findViewById<SignInButton>(R.id.login_sign_in_button)
+        val accessWithGoogleTextview = findViewById<TextView>(R.id.access_with_google_textview)
+        val loginGif = findViewById<GifImageView>(R.id.login_gif)
+        val loginLoading = findViewById<TextView>(R.id.login_loading)
+        loginTitleTextview.visibility = View.GONE
+        loginUsernameTextField.visibility = View.GONE
+        loginHintTextview.visibility = View.GONE
+        loginSignInButton.visibility = View.GONE
+        accessWithGoogleTextview.visibility = View.GONE
+        loginGif.visibility = View.VISIBLE
+        loginLoading.visibility = View.VISIBLE
+    }
 }
