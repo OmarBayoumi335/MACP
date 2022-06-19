@@ -22,7 +22,7 @@ db = firebase.database()
 
 #request codes and parser arguments
 MAX_LOBBY_MEMBERS = 16
-MIN_START_MEMBER = 1
+MIN_START_MEMBER = 2
 MAX_HINT = 3
 TEAM_RED = "Team Red"
 TEAM_GREEN = "Team Green"
@@ -55,7 +55,7 @@ POST_SEND_CLUE = "post9"
 POST_VOTE = "post10"
 POST_SEND_MESSAGE_GAMELOBBY = "post11"
 POST_SETUP_INVITABLE = "post12"
-POST_PROVA = "prova"
+POST_UPDATE_INVITABLE = "post13"
 
 # DELETE
 DELETE_REMOVE_FRIEND ="delete0"
@@ -543,7 +543,9 @@ class EnigmaServer(Resource):
             if passVotes > otherVotes:
                 cardToTurn = 16
             else:
-                cardToTurn = votes.index(max(votes[:-1]))
+                maxs = [i for i,j in enumerate(votes[:-1]) if j==max(votes[:-1])]
+                cardToTurn = random.choice(maxs)
+                # cardToTurn = votes.index(max(votes[:-1]))
             changeTurn = False
             if cardToTurn != 16:
                 colorCard = db.child("GameLobbies").child(self.gameLobbyId).child("words").child(str(cardToTurn)).child("color").get().val()
@@ -613,17 +615,17 @@ class EnigmaServer(Resource):
                         invitable = False
                         break
                 db.child("Users").child(self.userId).child("friends").child(str(i)).update({"invitable": invitable})
-            return {"message": "all friend's invitable flag are set upped", "error": False}
+            return {"message": "all friend's invitable flag are set upped", "error": False}  
         
-        
-        if self.req == POST_PROVA:
-            team1 = db.child("Lobbies").child(self.lobbyId).child("team1").get().val()
-            for i in range(7):
-                obj = {"userId":self.userId + str(i), "username": self.username + str(i)}
-                team1.append(obj)
-            db.child("Lobbies").child(self.lobbyId).update({"team1": team1})
-            return "ok"
-        return {"message": "post request failed", "error": True}      
+        #13 update invitable flag of a friend. Input(req, userId, friendId)
+        if self.req == POST_UPDATE_INVITABLE:
+            friends = db.child("Users").child(self.userId).child("friends").get().val()
+            friends = [] if friends == None else friends
+            for i, friend in enumerate(friends):
+                if friend["userId"] == self.friendId:
+                    db.child("Users").child(self.userId).child("friends").child(str(i)).update({"invitable": False})
+                    return {"message": "invitable flag of your friend is set upped", "error": False}   
+            return {"message": "this is not your friend", "error": False}   
             
     def delete(self):
         
@@ -807,30 +809,6 @@ class EnigmaServerUtils():
             return True
         return False
     
-    def checkifAlreadySent(self, userIdValue, friendIdValue):
-        userId = db.child("Users").child(userIdValue).get().val()["id"]
-        pendingFriendRequestsList = db.child("Users").child(friendIdValue).child("pendingFriendRequests").get().val()
-        myPendingFriendRequestsList = db.child("Users").child(userIdValue).child("pendingFriendRequests").get().val()
-        if myPendingFriendRequestsList != None:
-            for myPending in myPendingFriendRequestsList:
-                if myPending["uid"] == friendIdValue:
-                    return 0 # Already in pending
-        if pendingFriendRequestsList != None:
-            for friendRequest in pendingFriendRequestsList:
-                requestUserId = db.child("Users").child(friendRequest["uid"]).get().val()["id"]
-                if userId == requestUserId:
-                    return 1 # Already sent
-        return 2 # Found
-    
-    def checkIfAlreadyAdded(self, userIdValue, friendId):
-        friendList = db.child("Users").child(userIdValue).child("friends").get().val()
-        if friendList != None:
-            for friend in friendList:
-                userFriendId = db.child("Users").child(friend["uid"]).get().val()["id"]
-                if friendId == userFriendId:
-                    return True
-        return False
-    
     def createId(self):
         output = ""
         for i in range(7):
@@ -851,18 +829,18 @@ class EnigmaServerUtils():
                     output = self.createIdLobby()
         return output
 
-    # def decodeId(self, c):
-    #     hashcode = ord(c)
-    #     n = 0
-    #     if hashcode in range(48, 58, 1): # numbers
-    #         n = hashcode - 48
+    def decodeId(self, c):
+        hashcode = ord(c)
+        n = 0
+        if hashcode in range(48, 58, 1): # numbers
+            n = hashcode - 48
     
-    #     if hashcode in range(97, 123, 1): # lowercase
-    #         n = hashcode - 97 + 10
+        if hashcode in range(97, 123, 1): # lowercase
+            n = hashcode - 97 + 10
     
-    #     if hashcode in range(65, 91, 1): # uppercase
-    #         n = hashcode - 65 + 10 + 26
-    #     return n
+        if hashcode in range(65, 91, 1): # uppercase
+            n = hashcode - 65 + 10 + 26
+        return n
     
     def encodeId(self, n):
         index = 0

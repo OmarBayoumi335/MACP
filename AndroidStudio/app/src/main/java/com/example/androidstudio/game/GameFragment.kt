@@ -464,19 +464,35 @@ class GameFragment : Fragment(), View.OnTouchListener{
         if (gameLobby.turn == userGame.team) { // my turn
             if ((userGame.userId != gameLobby.captainIndex1 && userGame.userId != gameLobby.captainIndex2)) { // not captain
                 if (gameLobby.turnPhase == 0) {
-                    gameActivity.setViewOpponentTurn(gameLobby.clue, gameLobby.turnPhase, gameLobby.turn)
+                    gameActivity.setViewOpponentTurn(
+                        gameLobby.clue,
+                        gameLobby.turnPhase,
+                        gameLobby.turn
+                    )
                 } else {
-                    gameActivity.setViewMyTurnMember(gameLobby.clue, gameLobby.turnPhase, gameLobby.turn)
+                    gameActivity.setViewMyTurnMember(
+                        gameLobby.clue,
+                        gameLobby.turnPhase,
+                        gameLobby.turn
+                    )
                 }
             } else { // captain
-                if (gameLobby.turnPhase == 1) {
-                    gameActivity.setViewOpponentTurn(gameLobby.clue, gameLobby.turnPhase, gameLobby.turn)
+                if (gameLobby.turnPhase >= 1) {
+                    gameActivity.setViewOpponentTurn(
+                        gameLobby.clue,
+                        gameLobby.turnPhase,
+                        gameLobby.turn
+                    )
                 } else {
                     gameActivity.setViewMyTurnCaptain()
                 }
             }
         } else { // opponent turn
-            gameActivity.setViewOpponentTurn(gameLobby.clue, gameLobby.turnPhase, gameLobby.turn)
+            gameActivity.setViewOpponentTurn(
+                gameLobby.clue,
+                gameLobby.turnPhase,
+                gameLobby.turn
+            )
         }
         if (userGame.vote != 16) {
             buttonPass.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
@@ -541,17 +557,22 @@ class GameFragment : Fragment(), View.OnTouchListener{
                     chatAdapter.notifyDataSetChanged()
                 }
             }
+            gameLobby.captainIndex1 = newGameLobby.captainIndex1
+            gameLobby.captainIndex2 = newGameLobby.captainIndex2
+            gameLobby.clue = newGameLobby.clue
             if (gameLobby.turn != newGameLobby.turn) {
                 gameLobby.turn = newGameLobby.turn
                 gameActivity.changeBackGround()
+                updateBottomPart()
             }
-            gameLobby.turnPhase = newGameLobby.turnPhase
+            else if (gameLobby.turnPhase != newGameLobby.turnPhase) {
+                gameLobby.turnPhase = newGameLobby.turnPhase
+                updateBottomPart()
+            }
+
             gameLobby.words = newGameLobby.words
-            gameLobby.captainIndex1 = newGameLobby.captainIndex1
-            gameLobby.captainIndex2 = newGameLobby.captainIndex2
             gameLobby.hint1 = newGameLobby.hint1
             gameLobby.hint2 = newGameLobby.hint2
-            gameLobby.clue = newGameLobby.clue
             gameLobby.winner = newGameLobby.winner
             for (member in gameLobby.members) {
                 if (member.userId == userGame.userId) {
@@ -564,7 +585,6 @@ class GameFragment : Fragment(), View.OnTouchListener{
                 val endGameFragment = EndGameFragment(iWon, userGame, gameLobby)
                 endGameFragment.show(gameActivity.supportFragmentManager, "GameFragment->EndGameFragment")
             }
-            updateBottomPart()
             updateRightPart()
             gameView.invalidate()
         }

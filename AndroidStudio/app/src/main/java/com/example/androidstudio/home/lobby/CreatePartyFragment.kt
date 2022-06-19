@@ -348,6 +348,29 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
     }
 
     private fun updateUI(newLobby: Lobby) {
+        for (newMember in newLobby.team1 + newLobby.team2) {
+            var isNewMember = true
+            if (newMember.userId == user.userId) {
+                continue
+            }
+            for (member in lobby.team1 + lobby.team2) {
+                if (member.userId == user.userId ) {
+                    continue
+                }
+                if (member.userId == newMember.userId) {
+                    isNewMember = false
+                    break
+                }
+            }
+            if (isNewMember) {
+                serverHandler.apiCall(
+                    Config.POST,
+                    Config.POST_UPDATE_INVITABLE,
+                    userId = user.userId,
+                    friendId = newMember.userId
+                )
+            }
+        }
         lobby.team1 = newLobby.team1
         lobby.team2 = newLobby.team2
         if (lobby.chat != newLobby.chat) {

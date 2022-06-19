@@ -1,3 +1,0 @@
-disabilitare il login,
-random su voto
-profilo visibile durante il caricamento lobby

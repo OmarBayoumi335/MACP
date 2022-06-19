@@ -34,6 +34,7 @@ class PartyCreationLoadingFragment : Fragment() {
         val menuActivity: MenuActivity = requireActivity() as MenuActivity
         menuActivity.setProfileImageButtonVisibility(View.GONE)
         user = menuActivity.getUser()
+        menuActivity.setProfileImageButtonVisibility(View.GONE)
 
         // Android back button
         val callback: OnBackPressedCallback =

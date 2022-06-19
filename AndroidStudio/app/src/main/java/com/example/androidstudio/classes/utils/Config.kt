@@ -60,6 +60,7 @@ class Config {
         val POST_VOTE = "post10"
         val POST_SEND_MESSAGE_GAMELOBBY = "post11"
         val POST_SETUP_INVITABLE = "post12"
+        val POST_UPDATE_INVITABLE = "post13"
 
         val DELETE = "delete"
         val DELETE_REMOVE_FRIEND = "delete0"
