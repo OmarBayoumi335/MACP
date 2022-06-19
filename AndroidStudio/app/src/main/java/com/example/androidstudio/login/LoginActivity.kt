@@ -45,21 +45,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
         setContentView(R.layout.activity_login)
         serverHandler = ServerHandler(applicationContext)
 
-        // Setting the name if you have already logged in in the past
-        sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
-
-        val lastId : String = sharedPreferences.getString("ID", "").toString()
-        usernameEditText = findViewById(R.id.login_username_edittext)
-        serverHandler.apiCall(
-            Config.GET,
-            Config.GET_USERNAME,
-            userId = lastId,
-            callBack = object : ServerHandler.VolleyCallBack {
-                override fun onSuccess(reply: JSONObject?) {
-                    usernameEditText.setText(reply?.get("username").toString())
-            }
-        })
-
         // Firebase authentication
         auth = Firebase.auth
 
@@ -70,11 +55,27 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        // Setting the name if you have already logged in in the past
+        sharedPreferences = getSharedPreferences("lastId", MODE_PRIVATE)
+
+        val lastId : String = sharedPreferences.getString("ID", "").toString()
+        Log.i(Config.LOGIN_TAG, lastId)
+        usernameEditText = findViewById(R.id.login_username_edittext)
+        serverHandler.apiCall(
+            Config.GET,
+            Config.GET_USERNAME,
+            userId = lastId,
+            callBack = object : ServerHandler.VolleyCallBack {
+                override fun onSuccess(reply: JSONObject?) {
+                    usernameEditText.setText(reply?.get("username").toString())
+                }
+            })
+
         // Google button
         val signInButton = findViewById<SignInButton>(R.id.login_sign_in_button)
         signInButton.setSize(SignInButton.SIZE_STANDARD)
         signInButton.setOnClickListener(this);
-        for (i in 0 until signInButton.getChildCount()) {
+        for (i in 0 until signInButton.childCount) {
             val v: View = signInButton.getChildAt(i)
             if (v is TextView) {
                 v.setText(R.string.google_button)
@@ -172,12 +173,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                                 Config.POST,
                                 Config.POST_CHANGE_NAME,
                                 userId = userId,
-                                newName = username,
-                                callBack = object : ServerHandler.VolleyCallBack{
-                                    override fun onSuccess(reply: JSONObject?) {
-                                        launchMenu(userId)
-                                    }
-                                })
+                                newName = username
+                            )
+
+                            launchMenu(userId)
                         } else {  // User exist and logged in automatically
                             val lastId = sharedPreferences.getString("ID", "").toString()
                             launchMenu(lastId)
