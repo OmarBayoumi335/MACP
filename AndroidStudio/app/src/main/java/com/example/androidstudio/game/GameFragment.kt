@@ -420,6 +420,7 @@ class GameFragment : Fragment(), View.OnTouchListener{
                     override fun onError() {
                         buttonPass.isFocusableInTouchMode = false
                         buttonPass.text = resources.getString(R.string.pass_button)
+                        buttonPass.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
                     }
                 }
             )
