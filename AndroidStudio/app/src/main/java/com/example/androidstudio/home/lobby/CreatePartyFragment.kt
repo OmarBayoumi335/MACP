@@ -236,6 +236,12 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
                         gameCanStart = true
                     }
                 }
+            },
+            callBackError = object : ServerHandler.VolleyCallBackError {
+                override fun onError() {
+                    changeTeamImageButton.isFocusableInTouchMode = true
+                    gameCanStart = true
+                }
             }
         )
     }
@@ -308,7 +314,14 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
                         gameCanStart = true
                     }
                 }
-            })
+            },
+            callBackError = object : ServerHandler.VolleyCallBackError {
+                override fun onError() {
+                    readyButton.isFocusableInTouchMode = true
+                    gameCanStart = true
+                }
+            }
+        )
     }
 
     private fun intentToGame(starter: Boolean): Intent? {

@@ -415,7 +415,13 @@ class GameFragment : Fragment(), View.OnTouchListener{
                 gameLobbyId = gameLobby.lobbyId,
                 clue = gameLobby.clue.toString(),
                 team = userGame.team,
-                voteIndex = "16"
+                voteIndex = "16",
+                callBackError = object : ServerHandler.VolleyCallBackError {
+                    override fun onError() {
+                        buttonPass.isFocusableInTouchMode = false
+                        buttonPass.text = resources.getString(R.string.pass_button)
+                    }
+                }
             )
         }
     }
@@ -443,9 +449,15 @@ class GameFragment : Fragment(), View.OnTouchListener{
                     chatText = textToSend,
                     callBack = object : ServerHandler.VolleyCallBack {
                         override fun onSuccess(reply: JSONObject?) {
-                            buttonPass.isFocusableInTouchMode = false
+                            chatImageButton.isFocusableInTouchMode = false
                             canSend = true
                             chatEditText.text.clear()
+                        }
+                    },
+                    callBackError = object : ServerHandler.VolleyCallBackError {
+                        override fun onError() {
+                            chatImageButton.isFocusableInTouchMode = false
+                            canSend = true
                         }
                     }
                 )
