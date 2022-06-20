@@ -205,11 +205,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener{
                     finish()
                 }
             },
-//            callBackError = object : ServerHandler.VolleyCallBackError {
-//                override fun onError() {
-//                    launchMenu(userId)
-//                }
-//        }
+            callBackError = object : ServerHandler.VolleyCallBackError {
+                override fun onError() {
+                    launchMenu(userId)
+                }
+            }
         )
     }
 
