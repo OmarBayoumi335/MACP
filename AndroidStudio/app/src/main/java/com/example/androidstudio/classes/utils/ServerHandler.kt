@@ -2,9 +2,7 @@ package com.example.androidstudio.classes.utils
 
 import android.content.Context
 import android.util.Log
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.VolleyError
+import com.android.volley.*
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
@@ -123,6 +121,10 @@ class ServerHandler(context: Context?) {
             callBackError?.onError()
         })
         // Add the request to the RequestQueue.
+        stringRequest.retryPolicy = DefaultRetryPolicy(
+            20000,
+            3,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
         queue.add(stringRequest)
     }
 
