@@ -1,0 +1,7 @@
+nel login, piu di una persona non ha capito che il login si deve per forza fare con google. Il cheat consiglia di scrivere o comunque fare in modo di dire all'utente che puo SOLO accedere con google
+
+caricamento per entrare in partita, scrivere fasi, quanti giocatori sono entrati o comunque altre informazioni al posto di loading.. perché tutti mi hanno sempre detto "perché ci sta mettendo cosi tanto", "è normale?" io stesso non capisco se si sia buggato o no mentre invece scrivere le fasi fa capire all'utente che sta facendo qualcosa e che deve aspettare.
+
+nel profilo forse al posto di "username" mettere "your username" perché il cheat ha pensato che la richiesta doveva mandarmela da li
+
+in add friends bisogna specificare da qualche parte il fatto che l'utente debba cercare l'id dell'utente e non lo username, il cheat senza che glielo dicessi non avrebbe capito che doveva usare l'id mio.
