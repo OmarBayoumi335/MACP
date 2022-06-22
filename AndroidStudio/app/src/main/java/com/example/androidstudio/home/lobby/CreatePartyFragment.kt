@@ -340,7 +340,7 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
         return intent
     }
 
-    private fun getTeam(): String? {
+    private fun getTeam(): String {
         for (member in lobby.team1) {
             if (member.userId == user.userId) {
                 return resources.getString(R.string.team1)
@@ -349,7 +349,7 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
         return resources.getString(R.string.team2)
     }
 
-    private fun generateGameLobbyId(): String? {
+    private fun generateGameLobbyId(): String {
         var gameLobbyId = ""
         for (member in lobby.team1) {
             gameLobbyId = gameLobbyId.plus("-" + member.userId)
@@ -357,6 +357,7 @@ class CreatePartyFragment : Fragment(), View.OnTouchListener {
         for (member in lobby.team2) {
             gameLobbyId = gameLobbyId.plus("-" + member.userId)
         }
+        gameLobbyId = gameLobbyId.plus("-" + lobby.lobbyId)
         return gameLobbyId.substring(1)
     }
 
