@@ -189,29 +189,26 @@ class GuessCardView: View, View.OnTouchListener, SensorEventListener2 {
         }
 
         // vibration
-//        Log.i(Config.GAME_VIEW_TAG, roundYaw.toString())
-        if (startVibration) {
-            if ((card.word.direction == resources.getString(R.string.north) && roundYaw == 0)
-                || (card.word.direction == resources.getString(R.string.west) && roundYaw == 90)
-                || (card.word.direction == resources.getString(R.string.east) && roundYaw == -90)
-                || (card.word.direction == resources.getString(R.string.south) && roundYaw == 180)) {
-                if ((vibrationOff - vibrationOn) >= 250L) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        vibrationOn = System.currentTimeMillis()
-                        val vibratorManager =
-                            context?.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                        val vib = vibratorManager.defaultVibrator
-                        vib.vibrate(
-                            VibrationEffect.createOneShot(
-                                200,
-                                VibrationEffect.DEFAULT_AMPLITUDE
-                            )
+        if ((card.word.direction == resources.getString(R.string.north) && roundYaw == 0)
+            || (card.word.direction == resources.getString(R.string.west) && roundYaw == 90)
+            || (card.word.direction == resources.getString(R.string.east) && roundYaw == -90)
+            || (card.word.direction == resources.getString(R.string.south) && roundYaw == 180)) {
+            if ((vibrationOff - vibrationOn) >= 250L) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    vibrationOn = System.currentTimeMillis()
+                    val vibratorManager =
+                        context?.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                    val vib = vibratorManager.defaultVibrator
+                    vib.vibrate(
+                        VibrationEffect.createOneShot(
+                            200,
+                            VibrationEffect.DEFAULT_AMPLITUDE
                         )
-                    } else {
-                        @Suppress("DEPRECATION")
-                        val vib = context?.getSystemService(VIBRATOR_SERVICE) as Vibrator
-                        vib.vibrate(200)
-                    }
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    val vib = context?.getSystemService(VIBRATOR_SERVICE) as Vibrator
+                    vib.vibrate(200)
                 }
             }
         }
