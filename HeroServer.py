@@ -184,7 +184,7 @@ class EnigmaServer(Resource):
         
         #7 wake up our little hero. Input(req)
         if self.req == GET_WAKE_UP_HERO:
-            return "waking up for you <3"
+            return {"message": "waking up for you <3", "error": False}
         return {"message": "get request failed", "error": True}
         
       
