@@ -111,6 +111,8 @@ class EnigmaServer(Resource):
         
         #3 return if a friend request is sendable. Input(req, userId, friendId)
         if self.req == GET_SEARCH_FRIEND:
+            if self.friendId == "":
+                return {"message": "friend not found", "status": "notFound", "error": False}
             if self.userId == self.friendId:
                 return {"message": "you can't add yourself", "status": "yourself", "error": False}
             pendingFriendList = db.child("Users").child(self.userId).child("pendingFriendRequests").get().val()
@@ -188,8 +190,7 @@ class EnigmaServer(Resource):
         return {"message": "get request failed", "error": True}
         
       
-    def put(self):
-        
+    def put(self):        
         #0 create new user. Input(req, googleUserId, username)
         if self.req == PUT_NEW_USER:
             userId = self.serverUtils.createId()
@@ -243,8 +244,7 @@ class EnigmaServer(Resource):
             
         return {"message": "put request failed", "error": True}
     
-    def post(self):
-        
+    def post(self):        
         #0 update the username. Input(req, userId, newName)
         if self.req == POST_CHANGE_NAME:
             newName = self.newName
