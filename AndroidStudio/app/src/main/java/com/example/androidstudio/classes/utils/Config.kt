@@ -7,7 +7,8 @@ class Config {
     companion object{
         // Server
 //        val SERVER_BASE_URL = "http://192.168.1.73:5000/?"
-        val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
+//        val SERVER_BASE_URL = "http://omir97.pythonanywhere.com/?"
+        val SERVER_BASE_URL = "https://enigma-server-heroku.herokuapp.com/?"
 //        val SERVER_BASE_URL = "http://192.168.1.88:5000/?"  //cristiano
         val POLLING_PERIOD = 800L
 
@@ -40,6 +41,7 @@ class Config {
         val GET_INVITABLE_USER = "get4"
         val GET_GAME_LOBBY_NUMBER_OF_MEMBERS = "get5"
         val GET_GAME_INFORMATION = "get6"
+        val GET_WAKE_UP_HERO = "get7"
 
         val PUT = "put"
         val PUT_NEW_USER = "put0"

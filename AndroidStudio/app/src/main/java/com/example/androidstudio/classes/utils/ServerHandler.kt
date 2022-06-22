@@ -122,7 +122,7 @@ class ServerHandler(context: Context?) {
         })
         // Add the request to the RequestQueue.
         stringRequest.retryPolicy = DefaultRetryPolicy(
-            20000,
+            5000,
             3,
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
         queue.add(stringRequest)

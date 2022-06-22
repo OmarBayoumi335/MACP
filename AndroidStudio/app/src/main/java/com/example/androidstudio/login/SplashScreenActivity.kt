@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.androidstudio.Login.LoginActivity
 import com.example.androidstudio.R
+import com.example.androidstudio.classes.utils.Config
+import com.example.androidstudio.classes.utils.ServerHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -21,7 +23,8 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
-
+        val serverHandler = ServerHandler(applicationContext)
+        serverHandler.apiCall(Config.GET, Config.GET_WAKE_UP_HERO)
         splashScreenName = findViewById(R.id.splash_screen_name)
         splashScreenLayout = findViewById(R.id.background_layout_splashscreen)
 
